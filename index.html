@@ -87,6 +87,18 @@ const key='mikes-recipes-v1';
 const defaults=['Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
 let categories=['Alle',...defaults];
 const numbers=new Intl.NumberFormat('de-AT',{maximumSignificantDigits:5});
+function formatPortionedQuantity(amount,unit){
+ const normalized=unit.trim().toLocaleLowerCase('de-AT').replace(/\.$/,'');
+ if(normalized==='g'||normalized==='ml')return numbers.format(Math.round(amount/5)*5);
+ if(/^(stück|stücke|stueck|stuecke|stk|stck)$/.test(normalized))return numbers.format(Math.round(amount*2)/2);
+ if(normalized==='cup'||normalized==='cups'){
+  const eighths=Math.round(amount*8),whole=Math.floor(eighths/8);
+  const fraction=['','⅛','¼','⅜','½','⅝','¾','⅞'][eighths%8];
+  return whole&&fraction?whole+' '+fraction:String(whole||fraction||0);
+ }
+ return numbers.format(amount);
+}
+
 const hydrationNotes={
  58:'Fester, wenig klebriger Teig. Lässt sich leicht portionieren und aufnehmen, kann sich beim Öffnen aber etwas stärker zusammenziehen.',
  62:'Gut formbarer Teig mit etwas mehr Dehnbarkeit. Ein guter Einstieg, wenn du den Teig von Hand öffnest.',
@@ -277,7 +289,7 @@ async function printRecipe(r,n,hydration){
  const ingredients=el('section','print-box'),list=el('ul');
  for(const [index,[name,quantity,unit]] of r.ingredients.entries()){
   const amount=r.id==='pizza'&&index===1?r.ingredients[0][1]*hydration/100:quantity;
-  const item=el('li');item.append(el('span','',name),el('strong','',amount==null?unit:[numbers.format(amount*n/r.servings),unit].filter(Boolean).join(' ')));list.append(item);
+  const item=el('li');item.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/r.servings,unit),unit].filter(Boolean).join(' ')));list.append(item);
  }
  ingredients.append(el('h2','','Zutaten'),list);
  const stepBox=el('section','print-box'),steps=el('ol');
@@ -304,7 +316,7 @@ function openDetail(r){
   list.replaceChildren(...r.ingredients.map(([name,qty,unit],index)=>{
    const li=el('li');
    const amount=isDough&&index===1?r.ingredients[0][1]*hydration/100:qty;
-   li.append(el('span','',name),el('strong','',amount==null?unit:[numbers.format(amount*n/r.servings),unit].filter(Boolean).join(' ')));
+   li.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/r.servings,unit),unit].filter(Boolean).join(' ')));
    return li;
   }));
  }
