@@ -1,0 +1,89 @@
+{
+  "logo": "",
+  "categories": [
+    "Pizza",
+    "Pasta",
+    "Vorspeise",
+    "Dessert",
+    "Sonstiges",
+    "Suppeneinlagen"
+  ],
+  "recipes": [
+    {
+      "id": "pasta",
+      "title": "Spaghetti al Pomodoro",
+      "category": "Pasta",
+      "servings": 2,
+      "image": "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=1000&q=84",
+      "ingredients": [
+        [
+          "Spaghetti",
+          200,
+          "g"
+        ],
+        [
+          "Geschälte Tomaten",
+          400,
+          "g"
+        ],
+        [
+          "Olivenöl",
+          2,
+          "EL"
+        ],
+        [
+          "Knoblauch",
+          1,
+          "Zehe"
+        ],
+        [
+          "Basilikum",
+          null,
+          "nach Geschmack"
+        ]
+      ],
+      "steps": [
+        "Knoblauch im Olivenöl sanft anschwitzen. Tomaten dazugeben, zerdrücken und etwa 20 Minuten köcheln.",
+        "Spaghetti al dente kochen. Mit etwas Kochwasser in der Sauce schwenken und mit Basilikum servieren."
+      ]
+    },
+    {
+      "id": "salad",
+      "title": "Insalata mit Tomaten",
+      "category": "Vorspeise",
+      "servings": 2,
+      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=84",
+      "ingredients": [
+        [
+          "Cherrytomaten",
+          150,
+          "g"
+        ],
+        [
+          "Blattsalat",
+          100,
+          "g"
+        ],
+        [
+          "Gurke",
+          0.5,
+          "Stk."
+        ],
+        [
+          "Olivenöl",
+          2,
+          "EL"
+        ],
+        [
+          "Zitronensaft",
+          1,
+          "EL"
+        ]
+      ],
+      "steps": [
+        "Gemüse waschen und klein schneiden.",
+        "Olivenöl und Zitronensaft verrühren, abschmecken und mit dem Salat mischen."
+      ]
+    }
+  ]
+}
