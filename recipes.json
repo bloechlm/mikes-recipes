@@ -10,6 +10,63 @@
   ],
   "recipes": [
     {
+      "id": "a472b29b-9815-41d2-99ba-c18dfdb2b8c6",
+      "title": "Mama’s Topfennockerl",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/6ae7c9c3-88a3-4c28-ac83-780c73635472.png",
+      "source": "",
+      "ingredients": [
+        [
+          "Butter",
+          8,
+          "dag"
+        ],
+        [
+          "Topfen",
+          1,
+          "kg"
+        ],
+        [
+          "Eier",
+          3,
+          "Stück"
+        ],
+        [
+          "Salz",
+          null,
+          "1 Prise"
+        ],
+        [
+          "Weizenmehl glatt",
+          250,
+          "g"
+        ],
+        [
+          "Butter",
+          3,
+          "EL"
+        ],
+        [
+          "Brösel",
+          3,
+          "EL"
+        ],
+        [
+          "Zucker",
+          1,
+          "EL"
+        ]
+      ],
+      "category": "Dessert",
+      "servings": 15,
+      "steps": [
+        "Butter schaumig rühren und den Topfen, die Eier, eine Prise Salz sowie das Mehl unterrühren, bis ein glatter Teig entsteht.",
+        "Den Teig kurz ruhen lassen.",
+        "Mit einem Löffel Nockerl formen und diese in kochendes Wasser einlegen, bis sie an der Oberfläche schwimmen.",
+        "Für die Brösel Butter in einer Pfanne schmelzen, die Brösel und den Zucker hinzufügen und goldbraun anrösten.",
+        "Die fertigen Topfennockerl in der Bröselmischung wälzen und mit Sauce nach Wahl servieren."
+      ]
+    },
+    {
       "id": "dc69ab7c-6a82-4249-b646-9c175f53d4fc",
       "title": "Apple Crumble",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/c0cc6438-e4d2-4dc3-b20d-270966e2636f.png",
