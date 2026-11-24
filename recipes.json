@@ -10,6 +10,41 @@
   ],
   "recipes": [
     {
+      "id": "9a816253-8c11-4845-b40a-3adc980896bb",
+      "title": "Grießnockerl",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/9725c6d1-2d4d-4d56-b2b0-426fd9c7f739.png",
+      "source": "https://www.finis-feinstes.at/r/griessnockerl-649/",
+      "ingredients": [
+        [
+          "weiche Butter",
+          30,
+          "g"
+        ],
+        [
+          "Ei, verquirlt",
+          1,
+          ""
+        ],
+        [
+          "Bio-Nockerlgrieß oder Weizengrieß",
+          70,
+          "g"
+        ],
+        [
+          "etwas Salz",
+          null,
+          ""
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 6,
+      "steps": [
+        "In einer kleinen Schüssel die weiche Butter schaumig rühren. Das verquirlte Ei langsam zugeben. Weizengrieß und Salz einrühren und die Masse ca. 5 Min. rasten lassen.",
+        "Inzwischen einen mittelgroßen Topf mit Salzwasser zum Kochen bringen.",
+        "Nach dem Rasten aus der Grießmasse mithilfe von zwei Tee- oder Mokkalöffeln Nockerl formen und ca. 5 Min. im Salzwasser kochen. Danach ca. 15 Min. zugedeckt ziehen lassen."
+      ]
+    },
+    {
       "id": "pasta",
       "title": "Spaghetti al Pomodoro",
       "category": "Pasta",
