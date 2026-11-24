@@ -402,10 +402,27 @@ function openDetail(r){
  panel.append(actions);
  dialog.replaceChildren(...(r.image?[imageFor(r.image,'detail-image'),panel]:[panel]));dialog.showModal();
 }
+const fractionValues={'¼':1/4,'½':1/2,'¾':3/4,'⅐':1/7,'⅑':1/9,'⅒':1/10,'⅓':1/3,'⅔':2/3,'⅕':1/5,'⅖':2/5,'⅗':3/5,'⅘':4/5,'⅙':1/6,'⅚':5/6,'⅛':1/8,'⅜':3/8,'⅝':5/8,'⅞':7/8};
+const quantityToken=/(?:\d+\s+\d+\s*[\/⁄]\s*\d+|\d+\s*[\/⁄]\s*\d+|\d*\s*[¼½¾⅐⅑⅒⅓⅔⅕⅖⅗⅘⅙⅚⅛⅜⅝⅞]|\d+(?:[.,]\d+)?|[.,]\d+)/.source;
+const quantityInput=new RegExp('^'+quantityToken+'$');
+const quantityPrefix=new RegExp('^('+quantityToken+')(?![\\d.,/⁄])\\s*');
+function parseQuantity(text){
+ const value=text.trim();
+ if(!quantityInput.test(value))return NaN;
+ const vulgar=value.at(-1);
+ if(Object.hasOwn(fractionValues,vulgar))return Number(value.slice(0,-1).trim())+fractionValues[vulgar];
+ const fraction=value.match(/^(?:(\d+)\s+)?(\d+)\s*[\/⁄]\s*(\d+)$/);
+ if(fraction){
+  const [,whole='0',numerator,denominator]=fraction;
+  return Number(denominator)>0?Number(whole)+Number(numerator)/Number(denominator):NaN;
+ }
+ return Number(value.replace(',','.'));
+}
+
 function row(values=['','','']){
  const wrapper=el('div','line-item'),name=el('input'),amount=el('input'),unit=el('input');
  name.placeholder='Zutat';name.setAttribute('aria-label','Zutat');name.maxLength=100;
- amount.placeholder='Menge';amount.setAttribute('aria-label','Menge');amount.inputMode='decimal';amount.pattern='[0-9]+([.,][0-9]+)?';
+ amount.placeholder='Menge';amount.setAttribute('aria-label','Menge');amount.title='Dezimalzahl oder Bruch, z. B. 0,5, 1/2 oder 1 1/4';
  unit.placeholder='Einheit';unit.setAttribute('aria-label','Einheit');unit.maxLength=50;
  [name,amount,unit].forEach((input,index)=>input.value=values[index]??'');
  const remove=action('×','btn icon',()=>{wrapper.remove();if(!$('rows').children.length)row();});remove.setAttribute('aria-label','Zutat entfernen');
@@ -466,14 +483,9 @@ function parseRecipeWithoutAI(text,fallbackTitle=''){
   const cells=String(value).trim().replace(/^\||\|$/g,'').split('|').map(clean);
   const line=cells.join(' ').trim();
   if(!line||/^[:\s-]+$/.test(line))return null;
-  const match=line.match(/^(\d+\s+\d+\/\d+|\d+\/\d+|\d+(?:[.,]\d+)?|[¼½¾⅓⅔⅛])(?:\s*([¼½¾⅓⅔⅛]))?(?![\d.,/])\s*/);
+  const match=line.match(quantityPrefix);
   if(!match||/^[-–]/.test(line.slice(match?.[0].length??0)))return {name:line,amount:null,unit:''};
-  const fractions={'¼':.25,'½':.5,'¾':.75,'⅓':1/3,'⅔':2/3,'⅛':.125};
-  const amount=match[1].split(/\s+/).reduce((sum,part)=>{
-   if(part in fractions)return sum+fractions[part];
-   if(part.includes('/')){const [a,b]=part.split('/').map(Number);return sum+a/b;}
-   return sum+Number(part.replace(',','.'));
-  },fractions[match[2]]||0);
+  const amount=parseQuantity(match[1]);
   const rest=line.slice(match[0].length),unit=rest.match(unitPattern)?.[0]||'',name=rest.slice(unit.length).trim();
   return name&&Number.isFinite(amount)?{name,amount,unit}:{name:line,amount:null,unit:''};
  }
@@ -619,7 +631,7 @@ form.onsubmit=async event=>{
  for(const item of $('rows').children){
   const [name,amount,unit]=[...item.querySelectorAll('input')].map(input=>input.value.trim());
   if(!name&&(amount||unit)){$('error').textContent='Bitte gib jeder Zutatenzeile einen Namen.';return;}
-  if(name){const qty=amount?Number(amount.replace(',','.')):null;if(qty!==null&&!Number.isFinite(qty)){$('error').textContent='Bitte überprüfe die Zutatenmenge.';return;}ingredients.push([name,qty,unit]);}
+  if(name){const qty=amount?parseQuantity(amount):null;if(qty!==null&&!Number.isFinite(qty)){$('error').textContent='Ungültige Menge bei „'+name+'“. Verwende zum Beispiel 0,5, 1/2 oder 1 1/4.';return;}ingredients.push([name,qty,unit]);}
  }
  if(!ingredients.length){$('error').textContent='Bitte füge mindestens eine Zutat hinzu.';return;}
  const id=editing??(globalThis.crypto?.randomUUID?.()??String(Date.now()));
