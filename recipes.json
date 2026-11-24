@@ -24,42 +24,42 @@
         [
           "whole milk, can add saffron",
           null,
-          "@0.25~cup"
+          "@0.25~Cup"
         ],
         [
           "active dry yeast",
           null,
-          "@0.5~package|0.125~ounce|1~teaspoons"
+          "@1~Teaspoon"
         ],
         [
           "granulated sugar, plus a pinch",
           null,
-          "@0.16666666666666666~cup"
+          "@0.16666666666666666~Cup"
         ],
         [
           "all-purpose flour, more as needed",
           null,
-          "@2.125~cups"
+          "@2.125~Cups"
         ],
         [
           "fine sea salt",
           null,
-          "@0.75~teaspoons"
+          "@0.75~Teaspoons"
         ],
         [
           "vanilla extract/ cardamom",
           null,
-          "@0.5~teaspoon"
+          "@0.5~Teaspoon"
         ],
         [
           "grated lemon zest (optional)",
           null,
-          "@0.5~teaspoon"
+          "@0.5~Teaspoon"
         ],
         [
           "freshly grated nutmeg",
           null,
-          "@0.25~teaspoon"
+          "@0.25~Teaspoon"
         ],
         [
           "large eggs, at room temperature, lightly beaten",
@@ -69,7 +69,7 @@
         [
           "unsalted butter, at room temperature, plus more for greasing bowls and pans",
           null,
-          "@5~tablespoons"
+          "@5~Tablespoons"
         ],
         [
           "FOR THE FUDGE FILLING",
@@ -79,32 +79,32 @@
         [
           "granulated sugar",
           null,
-          "@0.25~cup"
+          "@0.25~Cup"
         ],
         [
           "heavy cream or half-and-half",
           null,
-          "@0.375~cup"
+          "@0.375~Cup"
         ],
         [
           "kosher salt",
           null,
-          "@0.5~pinch"
+          "@0.5~Pinch"
         ],
         [
           "extra bittersweet chocolate, preferably between 66 and 74 percent cocoa, coarsely chopped",
           null,
-          "@3~ounces"
+          "@0.5~Cup"
         ],
         [
           "unsalted butter, diced, at room temperature",
           null,
-          "@4~tablespoons|0.5~stick"
+          "@4~Tablespoons"
         ],
         [
           "vanilla extract",
           null,
-          "@1~teaspoons"
+          "@1~Teaspoons"
         ],
         [
           "FOR THE CHOCOLATE STREUSEL",
@@ -114,32 +114,32 @@
         [
           "all-purpose flour",
           null,
-          "@0.25~cup"
+          "@0.25~Cup"
         ],
         [
           "granulated sugar",
           null,
-          "@1.5~tablespoons"
+          "@1.5~Tablespoons"
         ],
         [
           "cocoa powder",
           null,
-          "@0.75~tablespoons"
+          "@0.75~Tablespoons"
         ],
         [
           "kosher salt",
           null,
-          "@0.25~teaspoon"
+          "@0.25~Teaspoon"
         ],
         [
           "unsalted butter, melted",
           null,
-          "@2.25~tablespoons"
+          "@2.25~Tablespoons"
         ],
         [
           "mini semisweet chocolate chips",
           null,
-          "@0.16666666666666666~cup"
+          "@0.16666666666666666~Cup"
         ],
         [
           "FOR THE SYRUP",
@@ -149,12 +149,12 @@
         [
           "granulated sugar",
           null,
-          "@0.3333333333333333~cup"
+          "@0.3333333333333333~Cup"
         ],
         [
           "water",
           null,
-          "@0.3333333333333333~cup"
+          "@0.3333333333333333~Cup"
         ]
       ],
       "category": "Dessert",
