@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="de">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta id="theme-color" name="theme-color" content="#191e18"><title>Mike’s Recipes</title>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta id="theme-color" name="theme-color" content="#191e18"><title>EM Recipes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
 <script>
@@ -110,7 +110,7 @@ try {
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
  <details class="brand-menu" id="brand-menu">
-  <summary class="brand" id="brand-toggle" aria-label="Mike’s Recipes – Menü"><img id="site-logo" class="brand-logo" alt="Oceanfactory" hidden><span class="brand-name">Mike’s Recipes</span></summary>
+  <summary class="brand" id="brand-toggle" aria-label="EM Recipes – Menü"><img id="site-logo" class="brand-logo" alt="Oceanfactory" hidden><span class="brand-name">EM Recipes</span></summary>
   <div class="brand-menu-items">
    <button id="admin" type="button">Admin-Login</button>
    <button id="cats" type="button" hidden>Kategorien &amp; Logo</button>
@@ -440,7 +440,7 @@ function render(){
  if(!shown.length)$('grid').append(el('p','empty','Keine Rezepte gefunden.'));
 }
 async function printRecipe(r,n,hydration){
- const page=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · Mike’s Recipes');
+ const page=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · EM Recipes');
  const logo=siteLogo?imageFor(siteLogo):null;if(logo)brand.prepend(logo);
  head.append(brand,el('h1','',r.title),el('div','print-meta',r.category+' · '+n+(n===1?' Portion':' Portionen')+(r.id==='pizza'?' · '+hydration+' % Hydration':'')));
  const ingredients=el('section','print-box'),list=el('ul');
@@ -456,7 +456,7 @@ async function printRecipe(r,n,hydration){
  const images=[picture,logo].filter(img=>img?.tagName==='IMG');
  await Promise.race([Promise.allSettled(images.map(img=>img.decode())),new Promise(resolve=>setTimeout(resolve,3000))]);
  for(const img of images){if(!img.naturalWidth)img.remove();}
- const title=document.title;document.title=r.title+' – Mike’s Recipes';
+ const title=document.title;document.title=r.title+' – EM Recipes';
  try{window.print();}finally{document.title=title;}
 }
 function openDetail(r){
