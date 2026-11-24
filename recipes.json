@@ -11,6 +11,63 @@
   ],
   "recipes": [
     {
+      "id": "9cb9d681-194b-4adc-b4f2-d96e7822d487",
+      "title": "Sauerteigbrot",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1ee1a7ac-88b8-4648-84e0-eb4c5e93829d.png",
+      "source": "",
+      "ingredients": [
+        [
+          "Weizenmehl",
+          600,
+          "g"
+        ],
+        [
+          "Roggenmehl",
+          300,
+          "g"
+        ],
+        [
+          "Wasser lauwarm",
+          700,
+          "ml"
+        ],
+        [
+          "Sauerteig",
+          50,
+          "g"
+        ],
+        [
+          "Salz",
+          18,
+          "g"
+        ],
+        [
+          "Brotgewürz",
+          70,
+          "g"
+        ],
+        [
+          "Olivenöl",
+          2,
+          "EL"
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 1,
+      "steps": [
+        "Die trockenen Zutaten in den Mixtopf geben und gut vermengen.",
+        "Den Sauerteig mit dem Wasser vermischen und unter langsam eingeschaltetem Rührwerk langsam zugeben.",
+        "Sobald das Wasser gebunden ist, das Olivenöl hinzugeben und das Rührwerk schneller schalten.",
+        "Den Teig so lange kneten, bis er klebrig und ballig wird.",
+        "Den Teig abgedeckt im Backofen bei eingeschaltetem Licht 3 Stunden gehen lassen.",
+        "Den Teig auf eine bemehlte Arbeitsfläche stürzen, die Hände mit Olivenöl einreiben und den Teig dehnen und falten. Den Teig zu einer Kugel auf der Arbeitsfläche ziehen, bis Oberflächenspannung entsteht.",
+        "Den Teig in eine bemehlte Brotform geben und eine weitere Stunde im Ofen gehen lassen.",
+        "Das Brot in den Deckel der Gusseisen-Backform geben, die Oberseite beliebig einritzen und den Topf als Deckel daraufsetzen.",
+        "Im Backofen ohne Vorheizen bei 240 °C Ober-/Unterhitze 80 Minuten backen.",
+        "Das Brot sofort herausholen und abgedeckt abkühlen lassen."
+      ]
+    },
+    {
       "id": "chocolate-babka-streusel-20261124",
       "title": "Hina's Chocolate Babka",
       "image": "https://images.food52.com/Xhr85bbZtbFOAPebcwZPFBvfCiE%3D/311f9558-1388-4c40-8bcb-8af9c6bc950b--babka_yossy_arefi-14.jpg?q=75&w=1200",
