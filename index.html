@@ -106,7 +106,7 @@ try {
  [data-theme=light] input,[data-theme=light] textarea,[data-theme=light] select{background:#fffdf6}
  [data-theme=light] .danger,[data-theme=light] .error{color:#9e3325}
 }
-.ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong,.print-box li strong{white-space:nowrap;text-align:right;overflow-wrap:normal;flex-shrink:0}.ingredients li>span{min-width:0;overflow-wrap:break-word}</style></head>
+.ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong,.print-box li strong{white-space:nowrap;text-align:right;overflow-wrap:normal;flex-shrink:0}.ingredients li>span{min-width:0;overflow-wrap:break-word}.line-item.heading-editor{grid-template-columns:minmax(0,1fr) 42px 42px 42px;margin-top:12px}.heading-editor input{color:var(--leaf);font-weight:700;border-color:var(--leaf)}@media(max-width:480px){.line-item.heading-editor{grid-template-columns:minmax(0,1fr) 34px 34px 34px}}</style></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
  <details class="brand-menu" id="brand-menu">
@@ -153,7 +153,7 @@ try {
 <label class="photo-field">Oder öffentliche Bild-URL importieren<input name="image" type="url" placeholder="https://…"></label><p class="photo-note">Falls der direkte Abruf scheitert, kann die Bildadresse an den Bildproxy wsrv.nl gesendet werden.</p>
 
 <p class="photo-note" id="image-current" hidden></p></fieldset>
-<h3>Zutaten</h3><div class="rows" id="rows"></div><button class="btn" id="add-row" type="button">＋ Zutat hinzufügen</button>
+<h3>Zutaten</h3><div class="rows" id="rows"></div><button class="btn" id="add-row" type="button">＋ Zutat hinzufügen</button> <button class="btn" id="add-heading" type="button">＋ Zwischenüberschrift</button>
 <label class="photo-field">Zubereitung<textarea name="steps" placeholder="Ein Schritt pro Zeile"></textarea></label>
 <p class="error" id="error" role="alert"></p><div class="actions"><button class="btn" type="button" data-close="editor">Abbrechen</button><button class="btn primary" type="submit">Rezept speichern</button></div></form></dialog>
 <article id="print-recipe" aria-hidden="true"></article>
@@ -562,7 +562,21 @@ function parseQuantity(text){
  return Number(value.replace(',','.'));
 }
 
+function isIngredientHeading(value){
+ const v=String(value??'').trim().replace(/^#{1,6}\s+/,'').replace(/\*\*/g,'').replace(/:$/,'').trim();
+ return /^(?:for (?:the |a )?\p{L}|für (?:den |die |das |der |eine?n? )?\p{L})/iu.test(v)||/^(?:dough|filling|streusel|syrup|sauce|topping|glaze|frosting|marinade|crust|teig|hefeteig|füllung|streusel|sirup|soße|sosse|glasur|belag|marinade|boden)$/i.test(v);
+}
 function row(values=['','','']){
+ if(values[1]==null&&values[2]===' '){
+  const wrapper=el('div','line-item heading-editor'),name=el('input');
+  name.value=values[0]??'';name.placeholder='Zwischenüberschrift';name.setAttribute('aria-label','Zwischenüberschrift');name.maxLength=100;
+  wrapper.dataset.heading='true';
+  const up=action('↑','btn icon',()=>{if(wrapper.previousElementSibling)wrapper.parentNode.insertBefore(wrapper,wrapper.previousElementSibling);});
+  const down=action('↓','btn icon',()=>{if(wrapper.nextElementSibling)wrapper.parentNode.insertBefore(wrapper.nextElementSibling,wrapper);});
+  const remove=action('×','btn icon',()=>{wrapper.remove();if(!$('rows').children.length)row();});
+  up.setAttribute('aria-label','Überschrift nach oben');down.setAttribute('aria-label','Überschrift nach unten');remove.setAttribute('aria-label','Überschrift entfernen');
+  wrapper.append(name,up,down,remove);$('rows').append(wrapper);return name;
+ }
  const wrapper=el('div','line-item'),name=el('input'),amount=el('input'),unit=el('input');
  name.placeholder='Zutat';name.setAttribute('aria-label','Zutat');name.maxLength=100;
  amount.placeholder='Menge';amount.setAttribute('aria-label','Menge');amount.title='Dezimalzahl oder Bruch, z. B. 0,5, 1/2 oder 1 1/4';
@@ -621,11 +635,12 @@ function parseRecipeWithoutAI(text,fallbackTitle=''){
   const match=String(Array.isArray(value)?value[0]:value??'').match(/(?:^|\bfür\s+)([1-9]\d{0,2})(?![\d.,]|\s*[-–])/i);
   return match?Number(match[1]):null;
  };
- const unitPattern=/^(kg|mg|g|ml|cl|dl|l|el|tl|stk\.?|stück|prise[n]?|päckchen|gramm|milliliter|liter)(?=\s|$)/i;
+ const unitPattern=/^(kg|mg|g|ml|cl|dl|l|el|tl|stk\.?|stück|prise[n]?|päckchen|gramm|milliliter|liter|cups?|tablespoons?|teaspoons?|ounces?|tbsp\.?|tsp\.?|oz\.?|sticks?|packages?)(?=\s|$)/i;
  function ingredient(value){
   const cells=String(value).trim().replace(/^\||\|$/g,'').split('|').map(clean);
   const line=cells.join(' ').trim();
   if(!line||/^[:\s-]+$/.test(line))return null;
+  if(isIngredientHeading(line))return {name:line.replace(/:$/,''),amount:null,unit:' ',heading:true};
   const match=line.match(quantityPrefix);
   if(!match||/^[-–]/.test(line.slice(match?.[0].length??0)))return {name:line,amount:null,unit:''};
   const amount=parseQuantity(match[1]);
@@ -648,7 +663,9 @@ function parseRecipeWithoutAI(text,fallbackTitle=''){
   if(heading?.[1].length===1&&!recipe.title)recipe.title=value;
   if(/^(zutaten(?:liste)?|ingredients)\s*:?\s*$/i.test(value)){section='ingredients';level=heading?.[1].length||2;continue;}
   if(/^(zubereitung|anleitung|instructions|method|preparation|directions)\s*:?\s*$/i.test(value)){section='steps';level=heading?.[1].length||2;continue;}
+  if((section==='ingredients'||!section)&&isIngredientHeading(value)){section='ingredients';recipe.ingredients.push({name:value.replace(/:$/,''),amount:null,unit:' ',heading:true});continue;}
   if(heading){
+   if(section==='ingredients'&&heading[1].length>level){recipe.ingredients.push({name:value.replace(/:$/,''),amount:null,unit:' ',heading:true});continue;}
    if(section==='steps'||heading[1].length<=level)section='';
    continue;
   }
@@ -687,7 +704,8 @@ async function importRecipeDraft(useAI){
   const fallbackTitle=form.elements.title.value.trim()||(slug?slug[0].toLocaleUpperCase('de')+slug.slice(1):'');
   const recipe=useAI?await formatRecipeWithWorker(input,key,controller.signal):parseRecipeWithoutAI(input,fallbackTitle);
   const title=typeof recipe?.title==='string'?recipe.title.trim():'';
-  const lines=Array.isArray(recipe?.ingredients)?recipe.ingredients.filter(i=>typeof i?.name==='string'&&i.name.trim()).slice(0,75):[];
+  let lines=Array.isArray(recipe?.ingredients)?recipe.ingredients.filter(i=>typeof i?.name==='string'&&i.name.trim()).slice(0,75):[];
+  if(useAI){const original=parseRecipeWithoutAI(input,fallbackTitle).ingredients;if(original.some(i=>i.heading)&&!lines.some(i=>i.heading||i.unit===' '||(!Number.isFinite(i.amount)&&isIngredientHeading(i.name)))){lines=original;}}
   if(!title||!lines.length||(!useAI&&!recipe.steps?.length))throw new Error('Kein vollständiges Rezept erkannt. Füge bei Bedarf den Text mit den Überschriften Zutaten und Zubereitung ein.');
   if(useAI){importAccess=key;try{localStorage.setItem(importAccessStorage,key);}catch{}
   $('import-key').value='';refreshImportAccessControls();}
@@ -696,7 +714,7 @@ async function importRecipeDraft(useAI){
   const validServings=Number.isInteger(recipe.servings)&&recipe.servings>0&&recipe.servings<=999;
   form.elements.servings.value=validServings?recipe.servings:'';
   form.elements.steps.value=Array.isArray(recipe.steps)?recipe.steps.filter(step=>typeof step==='string').join('\n'):'';
-  $('rows').replaceChildren();lines.forEach(i=>row([i.name.slice(0,100),Number.isFinite(i.amount)&&i.amount>=0?i.amount:'',typeof i.unit==='string'?i.unit.slice(0,50):'']));
+  $('rows').replaceChildren();lines.forEach(i=>{if(i.heading===true||i.unit===' '||(!Number.isFinite(i.amount)&&isIngredientHeading(i.name)))row([i.name.replace(/:$/,'').slice(0,100),null,' ']);else row([i.name.slice(0,100),Number.isFinite(i.amount)&&i.amount>=0?i.amount:'',typeof i.unit==='string'?i.unit.slice(0,250):'']);});
   sourceLink=url;
   status.textContent=validServings?'Importiert. Prüfe Zutaten und Portionen und speichere dann.':'Importiert. Die Portionenzahl war unklar. Bitte ergänze sie vor dem Speichern.';
  }catch(error){if(!controller.signal.aborted)status.textContent=error.name==='TimeoutError'?'Der Import dauert zu lange. Versuche es erneut oder füge den Rezepttext ein.':error.message||'Import fehlgeschlagen.';}
@@ -764,6 +782,7 @@ function openEditor(r){
  (r?.ingredients.length?r.ingredients:[[]]).forEach(row);$('editor').showModal();form.elements.title.focus();
 }
 $('add-row').onclick=()=>row().focus();
+$('add-heading').onclick=()=>row(['',null,' ']).focus();
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(!form.querySelector('[type=submit]').disabled)$(b.dataset.close).close();});
 $('editor').addEventListener('cancel',event=>{if(form.querySelector('[type=submit]').disabled)event.preventDefault();});
 form.onsubmit=async event=>{
@@ -772,11 +791,12 @@ form.onsubmit=async event=>{
  if(!title){$('error').textContent='Bitte gib deinem Rezept einen Namen.';return;}
  if(image&&!/^https?:\/\//i.test(image)){$('error').textContent='Bitte verwende eine Bild-URL mit https:// oder http://.';return;}
  for(const item of $('rows').children){
+  if(item.dataset.heading==='true'){const name=item.querySelector('input').value.trim();if(!name){$('error').textContent='Bitte gib der Zwischenüberschrift einen Namen.';return;}ingredients.push([name,null,' ']);continue;}
   const [name,amount,unit]=[...item.querySelectorAll('input')].map(input=>input.value.trim());
   if(!name&&(amount||unit)){$('error').textContent='Bitte gib jeder Zutatenzeile einen Namen.';return;}
   if(name){const qty=amount?parseQuantity(amount):null;if(qty!==null&&!Number.isFinite(qty)){$('error').textContent='Ungültige Menge bei „'+name+'“. Verwende zum Beispiel 0,5, 1/2 oder 1 1/4.';return;}ingredients.push([name,qty,qty===null&&!unit&&/^FOR THE /i.test(name)?' ':unit]);}
  }
- if(!ingredients.length){$('error').textContent='Bitte füge mindestens eine Zutat hinzu.';return;}
+ if(!ingredients.some(i=>i[2]!==' ')){$('error').textContent='Bitte füge mindestens eine Zutat hinzu.';return;}
  const id=editing??(globalThis.crypto?.randomUUID?.()??String(Date.now()));
  const file=inputs.get('imageFile'),hasFile=Boolean(file?.size),button=form.querySelector('[type=submit]');
  let savedImage=currentImage;
