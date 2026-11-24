@@ -11,6 +11,48 @@
   ],
   "recipes": [
     {
+      "id": "ddfbcd0c-305d-45b6-ac0e-0698a58e40ec",
+      "title": "Spätzleteig",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/9b3a68d5-d26a-425e-8b9a-86ffce39c160.png",
+      "source": "https://www.gutekueche.at/spaetzleteig-rezept-3858",
+      "ingredients": [
+        [
+          "Eier (Größe M)",
+          3,
+          "Stk"
+        ],
+        [
+          "Wasser (lauwarm)",
+          125,
+          "ml"
+        ],
+        [
+          "Salz",
+          1,
+          "TL"
+        ],
+        [
+          "Weizenmehl (griffig, Type 480)",
+          250,
+          "g"
+        ],
+        [
+          "Muskatnuss (gerieben)",
+          1,
+          "Prise"
+        ]
+      ],
+      "category": "Beilagen",
+      "servings": 4,
+      "steps": [
+        "Für den Spätzleteig die Eier, Wasser, Salz und Muskatnuss mit einem Kochlöffel verrühren, nach und nach das Mehl einarbeiten.",
+        "Mit dem Kochlöffel von Hand schlagen, bis der Teig schön glatt ist - er muss fest, aber leicht fließend sein. Ist der Teig zu dünn, gibt man etwas Mehl dazu.",
+        "Danach Spätzle mit Hilfe eines Spätzlehobels, einer Spätzlepresse oder eines Spätzleschabers in reichlich, leicht kochendes Wasser schaben.",
+        "Nach ca. 2 bis 4 Minuten herausnehmen bzw. mit dem Schaumlöffel abschöpfen, wenn sie an der Oberfläche schwimmen.",
+        "Sofern man die Spätzle nicht sofort weiterverarbeitet, mit kaltem Wasser abschrecken und abtropfen lassen. Wenn man die Spätzle zum Beispiel sofort in einer Pfanne mit Butter anröstet, ist das Abschrecken nicht notwendig."
+      ]
+    },
+    {
       "id": "4d5b4a0f-7f91-4da8-b2e3-ab4a4806d86b",
       "title": "Klassischer Erdäpfelsalat nach Wiener Art",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/665f03ce-c426-4595-bcc1-e1a1440a0824.png",
