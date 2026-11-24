@@ -18,15 +18,16 @@
 @media print{
  html,body{background:white!important;color:#252a21!important;min-height:auto;margin:0}
  body>header,body>main,body>dialog{display:none!important}
- #print-recipe{display:block;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ #print-recipe{display:block;padding:4mm;border:1px solid #e0e6d7;border-radius:5mm;background:linear-gradient(145deg,rgba(132,155,102,.17),rgba(215,195,147,.10) 65%,rgba(132,155,102,.11));box-decoration-break:clone;-webkit-box-decoration-break:clone;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
  .print-head,.print-box,.print-photo{border:1px solid #87916c;border-radius:4mm}
- .print-head{padding:5mm 7mm;margin-bottom:4mm}
+ .print-head{padding:5mm 7mm;margin-bottom:4mm;background:rgba(255,255,255,.55)}
  .print-brand{font:700 8pt system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#4f6140}
  .print-brand img{display:block;width:47mm;max-height:17mm;object-fit:contain;object-position:left center;filter:invert(1);margin-bottom:2mm}
  .print-head h1{font:500 27pt/1.12 Georgia,serif;letter-spacing:-.02em;margin:2mm 0}
  .print-meta{font:9.5pt system-ui,sans-serif;color:#4f6140}
  .print-photo{display:block;width:100%;height:43mm;object-fit:cover;margin:0 0 4mm}
- .print-box{padding:4mm 6mm;margin:0 0 4mm}
+ .print-box{padding:4mm 6mm;margin:0 0 4mm;background:rgba(255,255,255,.62);box-decoration-break:clone;-webkit-box-decoration-break:clone}
+ .print-box:last-child{margin-bottom:0}
  .print-box h2{font:500 16pt Georgia,serif;margin:0 0 2mm;break-after:avoid}
  .print-box ul,.print-box ol{margin:0;padding:0}
  .print-box ol{padding-left:5mm}
@@ -34,7 +35,7 @@
  .print-box ul li{list-style:none;border-bottom:1px solid #d9dece;display:flex;justify-content:space-between;gap:4mm}
  .print-box ul li:last-child{border-bottom:0}
  .print-box strong{white-space:nowrap}
- .print-source{font:8pt system-ui,sans-serif;color:#4f6140;overflow-wrap:anywhere}
+
 }
 #editor .dialog-head,#detail .dialog-head{position:sticky;top:0;z-index:3;background:#22291f;border-bottom:1px solid var(--line);padding:10px 0;margin-top:-10px}
 
@@ -88,15 +89,14 @@ const defaults=['Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
 let categories=['Alle',...defaults];
 const numbers=new Intl.NumberFormat('de-AT',{maximumSignificantDigits:5});
 function formatPortionedQuantity(amount,unit){
- const normalized=unit.trim().toLocaleLowerCase('de-AT').replace(/\.$/,'');
+ const normalized=(unit||'').trim().toLocaleLowerCase('de-AT').replace(/\.$/,'');
  if(normalized==='g'||normalized==='ml')return numbers.format(Math.round(amount/5)*5);
- if(/^(stück|stücke|stueck|stuecke|stk|stck)$/.test(normalized))return numbers.format(Math.round(amount*2)/2);
  if(normalized==='cup'||normalized==='cups'){
   const eighths=Math.round(amount*8),whole=Math.floor(eighths/8);
   const fraction=['','⅛','¼','⅜','½','⅝','¾','⅞'][eighths%8];
   return whole&&fraction?whole+' '+fraction:String(whole||fraction||0);
  }
- return numbers.format(amount);
+ return numbers.format(amount>0?Math.max(.5,Math.round(amount*2)/2):0);
 }
 
 const hydrationNotes={
@@ -156,6 +156,7 @@ async function save(next,nextCategories=categories.slice(1),logo=siteLogo){
 }
 function updateAdmin(){
  $('admin').textContent=adminToken?'Abmelden':'Admin';$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
+ if(!adminToken)$('detail').querySelector('.admin-source')?.remove();
 }
 function clearAdmin(){
  adminToken='';recipeSHA=null;try{sessionStorage.removeItem(sessionKey);}catch{}updateAdmin();
@@ -296,7 +297,6 @@ async function printRecipe(r,n,hydration){
  steps.append(...r.steps.map(step=>el('li','',step)));stepBox.append(el('h2','','Zubereitung'),steps);
  const picture=r.image?imageFor(r.image,'print-photo'):null;
  page.replaceChildren(head,...(picture?.tagName==='IMG'?[picture]:[]),ingredients,...(r.steps.length?[stepBox]:[]));
- if(r.source){const source=el('a','print-source','Originalrezept: '+r.source);source.href=r.source;page.append(source);}
  const images=[picture,logo].filter(img=>img?.tagName==='IMG');
  await Promise.race([Promise.allSettled(images.map(img=>img.decode())),new Promise(resolve=>setTimeout(resolve,3000))]);
  for(const img of images){if(!img.naturalWidth)img.remove();}
@@ -336,7 +336,7 @@ function openDetail(r){
  list.setAttribute('aria-live','polite');
  panel.append(el('h3','','Zutaten'),list);
  if(r.steps.length){const steps=el('ol','instructions');steps.append(...r.steps.map(s=>el('li','',s)));panel.append(el('h3','','Zubereitung'),steps);}
- if(r.source){const source=el('a','source-link','Originalrezept öffnen');source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';panel.append(source);}
+ if(adminToken&&r.source){const source=el('a','source-link admin-source','Originalrezept öffnen');source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';panel.append(source);}
  const pdf=action('Als PDF speichern','btn',()=>printRecipe(r,n,hydration));panel.append(pdf);
  if(!isDough&&adminToken){const actions=el('div','actions');const error=el('p','error');error.setAttribute('role','alert');actions.append(action('Löschen','btn danger',async()=>{if(!confirm('Rezept „'+r.title+'“ löschen?'))return;try{await save(recipes.filter(item=>item.id!==r.id));dialog.close();}catch(e){error.textContent=e.message;}}),action('Bearbeiten','btn',()=>{dialog.close();openEditor(r);}));panel.append(error,actions);}
  dialog.replaceChildren(...(r.image?[imageFor(r.image,'detail-image'),panel]:[panel]));dialog.showModal();
