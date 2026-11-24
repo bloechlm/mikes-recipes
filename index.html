@@ -10,11 +10,44 @@
 
 .import-box{border:1px solid var(--line);border-radius:16px;background:var(--glass);padding:14px;margin-bottom:18px}.import-box summary{cursor:pointer;color:var(--leaf);font-weight:700}.import-box label{margin:12px 0}.import-box p{margin:10px 0}.source-link{color:var(--leaf)}
 .import-box [hidden]{display:none}
+
+[hidden]{display:none!important}.nav-actions,.category-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.category-row{padding:10px 0;border-bottom:1px solid var(--line)}.category-row span{flex:1}.category-row input{width:auto;flex:1}.brand-logo{width:clamp(90px,18vw,170px);height:auto;max-height:54px;object-fit:contain}.brand-name{white-space:nowrap}@media(max-width:650px){nav{padding-block:10px;flex-wrap:wrap}.nav-actions .btn{padding:8px 11px}.brand-name{font-size:18px}}
+
+#print-recipe{display:none}
+@page{size:A4 portrait;margin:13mm}
+@media print{
+ html,body{background:white!important;color:#252a21!important;min-height:auto;margin:0}
+ body>header,body>main,body>dialog{display:none!important}
+ #print-recipe{display:block;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ .print-head,.print-box,.print-photo{border:1px solid #87916c;border-radius:4mm}
+ .print-head{padding:5mm 7mm;margin-bottom:4mm}
+ .print-brand{font:700 8pt system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#4f6140}
+ .print-brand img{display:block;width:47mm;max-height:17mm;object-fit:contain;object-position:left center;filter:invert(1);margin-bottom:2mm}
+ .print-head h1{font:500 27pt/1.12 Georgia,serif;letter-spacing:-.02em;margin:2mm 0}
+ .print-meta{font:9.5pt system-ui,sans-serif;color:#4f6140}
+ .print-photo{display:block;width:100%;height:43mm;object-fit:cover;margin:0 0 4mm}
+ .print-box{padding:4mm 6mm;margin:0 0 4mm}
+ .print-box h2{font:500 16pt Georgia,serif;margin:0 0 2mm;break-after:avoid}
+ .print-box ul,.print-box ol{margin:0;padding:0}
+ .print-box ol{padding-left:5mm}
+ .print-box li{padding:1.2mm 0;break-inside:avoid}
+ .print-box ul li{list-style:none;border-bottom:1px solid #d9dece;display:flex;justify-content:space-between;gap:4mm}
+ .print-box ul li:last-child{border-bottom:0}
+ .print-box strong{white-space:nowrap}
+ .print-source{font:8pt system-ui,sans-serif;color:#4f6140;overflow-wrap:anywhere}
+}
 </style></head>
 <body>
-<header><nav class="wrap"><div class="brand"><span class="seal" aria-hidden="true">M</span>Mike’s Recipes</div><button class="btn primary" id="new" type="button">＋ Rezept anlegen</button></nav></header>
+<header><nav class="wrap"><div class="brand"><img id="site-logo" class="brand-logo" alt="Oceanfactory" hidden><span class="brand-name">Mike’s Recipes</span></div><div class="nav-actions"><button class="btn" id="admin" type="button">Admin</button><button class="btn" id="cats" type="button" hidden>Kategorien</button><button class="btn primary" id="new" type="button" hidden>＋ Rezept anlegen</button></div></nav></header>
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Ricette di casa</span><h1>Meine Küche,<br><em>meine Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
 <section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><div class="grid" id="grid"></div></section></main>
+<dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
+<label>GitHub-Zugriffstoken<input id="admin-token" type="password" required autocomplete="off"></label>
+<p class="photo-note"><a class="source-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained Token erstellen</a> für <strong>bloechlm/mikes-recipes</strong> mit <strong>Contents: Read and write</strong>. Das Token bleibt während dieser Sitzung im Arbeitsspeicher. Gespeicherte Rezepte und Bilder sind öffentlich.</p>
+<p id="admin-error" class="error" role="alert"></p><button class="btn primary" type="submit">Anmelden</button></form></dialog>
+<dialog id="category-dialog" aria-labelledby="category-title"><div class="panel"><div class="dialog-head"><h2 id="category-title">Kategorien &amp; Logo</h2><button class="btn icon" type="button" id="cats-close" aria-label="Schließen">×</button></div>
+<form id="cat-form"><label>Neue Kategorie<input id="cat-name" required maxlength="45"></label><p><button class="btn primary">Hinzufügen</button></p></form><div id="cat-list"></div><p id="cat-error" class="error" role="alert"></p><button id="migrate" class="btn" type="button" hidden>Lokale Rezepte übernehmen</button>
+<form id="logo-form"><h3>Oceanfactory-Logo</h3><label>Logo auswählen<input id="logo-file" type="file" accept="image/png,image/webp,image/jpeg" required></label><p><button class="btn" type="submit">Logo speichern</button></p></form></div></dialog>
 <dialog id="detail" aria-labelledby="detail-title"></dialog>
 <dialog id="editor" aria-labelledby="editor-title"><form class="panel" id="form"><div class="dialog-head"><h2 id="editor-title">Rezept anlegen</h2><button class="btn icon" type="button" data-close="editor" aria-label="Schließen">×</button></div>
 <details class="import-box" id="import-box"><summary>Rezept per Link importieren</summary>
@@ -30,12 +63,12 @@
 <fieldset class="photo-fieldset"><legend>Rezeptbild (optional)</legend>
 <label>Datei auswählen<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"></label>
 <label class="photo-field">Oder Bild-URL importieren<input name="image" type="url" placeholder="https://…"></label>
-<div id="image-auth" hidden><label>GitHub-Zugriffstoken<input name="imageToken" type="password" autocomplete="off"></label>
-<p class="photo-note">Das Bild wird im öffentlichen Repository gespeichert. Verwende einen <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained Token</a> nur für <strong>mikes-recipes</strong> mit <strong>Contents: Read and write</strong>. Das Token bleibt nur bis zum Neuladen im Arbeitsspeicher.</p></div>
+
 <p class="photo-note" id="image-current" hidden></p></fieldset>
 <h3>Zutaten</h3><div class="rows" id="rows"></div><button class="btn" id="add-row" type="button">＋ Zutat hinzufügen</button>
 <label class="photo-field">Zubereitung<textarea name="steps" placeholder="Ein Schritt pro Zeile"></textarea></label>
 <p class="error" id="error" role="alert"></p><div class="actions"><button class="btn" type="button" data-close="editor">Abbrechen</button><button class="btn primary" type="submit">Rezept speichern</button></div></form></dialog>
+<article id="print-recipe" aria-hidden="true"></article>
 <script>
 const photo=(id,width=1000)=>'https://images.unsplash.com/'+id+'?auto=format&fit=crop&w='+width+'&q=84';
 const pizza='https://cdn.ilclubdellericette.it/wp-content/uploads/2017/12/impasto-pizza-napoletana-1580x1000.jpg';
@@ -46,7 +79,8 @@ const samples=[
 ];
 const $=id=>document.getElementById(id);
 const key='mikes-recipes-v1';
-const categories=['Alle','Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
+const defaults=['Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
+let categories=['Alle',...defaults];
 const numbers=new Intl.NumberFormat('de-AT',{maximumSignificantDigits:5});
 const hydrationNotes={
  58:'Fester, wenig klebriger Teig. Lässt sich leicht portionieren und aufnehmen, kann sich beim Öffnen aber etwas stärker zusammenziehen.',
@@ -58,8 +92,109 @@ function readRecipes(){
  try{const data=JSON.parse(localStorage.getItem(key));if(Array.isArray(data))return [samples[0],...data.filter(r=>r.id!=='pizza')];}catch{}
  return samples;
 }
-let recipes=readRecipes(),category='Alle',editing=null;
-function save(next){localStorage.setItem(key,JSON.stringify(next));recipes=[samples[0],...next.filter(r=>r.id!=='pizza')];render();}
+const apiRepo='https://api.github.com/repos/bloechlm/mikes-recipes';
+const recipeFile='recipes.json';
+let adminToken='',recipeSHA=null,saving=false,siteLogo='';
+let recipes=[...samples],category='Alle',editing=null;
+function applyCollection(data){
+ siteLogo=typeof data.logo==='string'&&data.logo.startsWith('https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/')?data.logo:'';
+ $('site-logo').hidden=!siteLogo;if(siteLogo)$('site-logo').src=siteLogo;else $('site-logo').removeAttribute('src');
+ categories=['Alle',...new Set([...defaults.filter(c=>c==='Pizza'||c==='Sonstiges'),...(data.categories||defaults)])];
+ recipes=[samples[0],...data.recipes.filter(r=>r.id!=='pizza')];
+ if(!categories.includes(category))category='Alle';
+ render();
+}
+async function github(url,token,options={}){
+ return fetch(url,{...options,cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000),headers:{Accept:'application/vnd.github+json',...(token?{Authorization:'Bearer '+token}:{}),...options.headers}});
+}
+function decodeCollection(base64){return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(base64),c=>c.charCodeAt(0))));}
+function encodeCollection(data){
+ const bytes=new TextEncoder().encode(JSON.stringify(data,null,2));
+ let binary='';for(const byte of bytes)binary+=String.fromCharCode(byte);
+ return btoa(binary);
+}
+async function loadCollection(token){
+ if(token){
+  const res=await github(apiRepo+'/contents/'+recipeFile,token);
+  if(res.status===404){recipeSHA=null;return;}
+  if(!res.ok)throw new Error('GitHub konnte die Rezeptsammlung nicht laden ('+res.status+').');
+  const file=await res.json();applyCollection(decodeCollection(file.content));recipeSHA=file.sha;return;
+ }
+ const res=await fetch('https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+recipeFile,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+ if(res.ok&&!adminToken&&!saving)applyCollection(await res.json());
+}
+async function save(next,nextCategories=categories.slice(1),logo=siteLogo){
+ if(!adminToken||saving)throw new Error('Melde dich als Admin an oder warte auf den laufenden Speichervorgang.');
+ saving=true;
+ try{
+  const data={logo,categories:nextCategories,recipes:next.filter(r=>r.id!=='pizza')};
+  const res=await github(apiRepo+'/contents/'+recipeFile,adminToken,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Update recipe collection',content:encodeCollection(data),branch:'main',...(recipeSHA?{sha:recipeSHA}:{})})});
+  if(res.status===409||res.status===422){await loadCollection(adminToken);throw new Error('Die Sammlung wurde zwischenzeitlich geändert. Prüfe den aktuellen Stand und versuche es erneut.');}
+  if(!res.ok)throw new Error('GitHub konnte nicht speichern ('+res.status+'). Prüfe Contents: Read and write.');
+  recipeSHA=(await res.json()).content.sha;applyCollection(data);
+ }finally{saving=false;}
+}
+function updateAdmin(){
+ $('admin').textContent=adminToken?'Abmelden':'Admin';$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
+}
+$('admin').onclick=()=>{
+ if(adminToken){adminToken='';recipeSHA=null;updateAdmin();return;}
+ $('admin-error').textContent='';$('admin-dialog').showModal();$('admin-token').focus();
+};
+$('admin-close').onclick=()=>$('admin-dialog').close();
+$('admin-form').onsubmit=async event=>{
+ event.preventDefault();const token=$('admin-token').value.trim(),button=event.currentTarget.querySelector('[type=submit]');
+ if(button.disabled)return;button.disabled=true;$('admin-error').textContent='';
+ try{
+  const res=await github('https://api.github.com/user',token);
+  if(!res.ok||(await res.json()).login?.toLowerCase()!=='bloechlm')throw new Error('Melde dich mit einem Token des GitHub-Kontos bloechlm an.');
+  const repo=await github(apiRepo,token);
+  if(!repo.ok||!(await repo.json()).permissions?.push)throw new Error('Das Token benötigt Schreibzugriff auf mikes-recipes.');
+  await loadCollection(token);adminToken=token;updateAdmin();$('admin-dialog').close();
+ }catch(error){$('admin-error').textContent=error.message;}finally{$('admin-token').value='';button.disabled=false;}
+};
+function renderCategories(){
+ const list=$('cat-list');list.replaceChildren();
+ const local=readRecipes().filter(r=>r.id!=='pizza'&&!recipes.some(item=>item.id===r.id));
+ $('migrate').hidden=!local.length;
+ for(const name of categories.slice(1)){
+  const line=el('div','category-row');line.append(el('span','',name));
+  if(!['Pizza','Sonstiges'].includes(name)){
+   line.append(action('Umbenennen','btn',()=>{
+    const input=el('input');input.value=name;input.maxLength=45;input.setAttribute('aria-label','Neuer Kategoriename');
+    line.replaceChildren(input,action('Speichern','btn primary',()=>changeCategory(name,input.value)),action('Abbrechen','btn',renderCategories));input.focus();
+   }),action('Löschen','btn danger',()=>{
+    if(confirm('Kategorie „'+name+'“ löschen? Ihre Rezepte werden nach Sonstiges verschoben.'))changeCategory(name,'');
+   }));
+  }
+  list.append(line);
+ }
+}
+async function changeCategory(oldName,newName){
+ const name=newName.trim();$('cat-error').textContent='';
+ if(oldName===name)return renderCategories();
+ if((!oldName&&!name)||name.length>45||categories.some(c=>c.toLocaleLowerCase('de')===name.toLocaleLowerCase('de')&&c!==oldName)){
+  $('cat-error').textContent='Bitte verwende einen neuen Kategorienamen mit bis zu 45 Zeichen.';return;
+ }
+ const updated=oldName?categories.slice(1).map(c=>c===oldName?name:c).filter(Boolean):[...categories.slice(1),name];
+ try{await save(recipes.map(r=>r.category===oldName?{...r,category:name||'Sonstiges'}:r),updated);renderCategories();}
+ catch(error){$('cat-error').textContent=error.message;}
+}
+$('cats').onclick=()=>{$('cat-error').textContent='';renderCategories();$('category-dialog').showModal();};
+$('cats-close').onclick=()=>$('category-dialog').close();
+$('cat-form').onsubmit=event=>{event.preventDefault();changeCategory('',$('cat-name').value);$('cat-name').value='';};
+$('migrate').onclick=async()=>{
+ if(!confirm('Deine lokalen Rezepte öffentlich in die gemeinsame Sammlung übernehmen?'))return;
+ const local=readRecipes().filter(r=>r.id!=='pizza'&&!recipes.some(item=>item.id===r.id));
+ try{await save([...recipes,...local.map(r=>({...r,category:categories.includes(r.category)?r.category:'Sonstiges'}))]);renderCategories();}
+ catch(error){$('cat-error').textContent=error.message;}
+};
+$('logo-form').onsubmit=async event=>{
+ event.preventDefault();const button=event.currentTarget.querySelector('button');if(!adminToken||button.disabled)return;
+ button.disabled=true;$('cat-error').textContent='';
+ try{const logo=await uploadImage($('logo-file').files[0],'',adminToken);await save(recipes,categories.slice(1),logo);$('logo-form').reset();}
+ catch(error){$('cat-error').textContent=error.message;}finally{button.disabled=false;}
+};
 function el(tag,cls,value){const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=value;return node;}
 function action(label,cls,fn){const b=el('button',cls,label);b.type='button';b.onclick=fn;return b;}
 function imageFor(url,cls){if(!url)return el('div',cls||'placeholder');const img=el('img',cls);img.src=url;img.alt='';img.onerror=()=>img.replaceWith(el('div',cls||'placeholder'));return img;}
@@ -73,6 +208,27 @@ function render(){
  const shown=recipes.filter(r=>(category==='Alle'||r.category===category)&&[r.title,...r.ingredients.map(row=>row[0])].some(value=>value.toLocaleLowerCase('de').includes(query)));
  $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',r.id==='pizza'?'Pizza · Angepinnt':r.category),el('h3','',r.title),el('span','muted',r.servings+(r.servings===1?' Portion':' Portionen')));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
  if(!shown.length)$('grid').append(el('p','empty','Keine Rezepte gefunden.'));
+}
+async function printRecipe(r,n,hydration){
+ const page=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · Mike’s Recipes');
+ const logo=siteLogo?imageFor(siteLogo):null;if(logo)brand.prepend(logo);
+ head.append(brand,el('h1','',r.title),el('div','print-meta',r.category+' · '+n+(n===1?' Portion':' Portionen')+(r.id==='pizza'?' · '+hydration+' % Hydration':'')));
+ const ingredients=el('section','print-box'),list=el('ul');
+ for(const [index,[name,quantity,unit]] of r.ingredients.entries()){
+  const amount=r.id==='pizza'&&index===1?r.ingredients[0][1]*hydration/100:quantity;
+  const item=el('li');item.append(el('span','',name),el('strong','',amount==null?unit:[numbers.format(amount*n/r.servings),unit].filter(Boolean).join(' ')));list.append(item);
+ }
+ ingredients.append(el('h2','','Zutaten'),list);
+ const stepBox=el('section','print-box'),steps=el('ol');
+ steps.append(...r.steps.map(step=>el('li','',step)));stepBox.append(el('h2','','Zubereitung'),steps);
+ const picture=r.image?imageFor(r.image,'print-photo'):null;
+ page.replaceChildren(head,...(picture?.tagName==='IMG'?[picture]:[]),ingredients,...(r.steps.length?[stepBox]:[]));
+ if(r.source){const source=el('a','print-source','Originalrezept: '+r.source);source.href=r.source;page.append(source);}
+ const images=[picture,logo].filter(img=>img?.tagName==='IMG');
+ await Promise.race([Promise.allSettled(images.map(img=>img.decode())),new Promise(resolve=>setTimeout(resolve,3000))]);
+ for(const img of images){if(!img.naturalWidth)img.remove();}
+ const title=document.title;document.title=r.title+' – Mike’s Recipes';
+ try{window.print();}finally{document.title=title;}
 }
 function openDetail(r){
  const dialog=$('detail'),panel=el('div','panel'),head=el('div','dialog-head'),title=el('h2','',r.title),close=action('×','btn icon',()=>dialog.close());
@@ -108,7 +264,8 @@ function openDetail(r){
  panel.append(el('h3','','Zutaten'),list);
  if(r.steps.length){const steps=el('ol','instructions');steps.append(...r.steps.map(s=>el('li','',s)));panel.append(el('h3','','Zubereitung'),steps);}
  if(r.source){const source=el('a','source-link','Originalrezept öffnen');source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';panel.append(source);}
- if(!isDough){const actions=el('div','actions');const error=el('p','error');error.setAttribute('role','alert');actions.append(action('Löschen','btn danger',()=>{if(!confirm('Rezept „'+r.title+'“ löschen?'))return;try{save(recipes.filter(item=>item.id!==r.id));dialog.close();}catch{error.textContent='Das Rezept konnte nicht gelöscht werden.';}}),action('Bearbeiten','btn',()=>{dialog.close();openEditor(r);}));panel.append(error,actions);}
+ const pdf=action('Als PDF speichern','btn',()=>printRecipe(r,n,hydration));panel.append(pdf);
+ if(!isDough&&adminToken){const actions=el('div','actions');const error=el('p','error');error.setAttribute('role','alert');actions.append(action('Löschen','btn danger',async()=>{if(!confirm('Rezept „'+r.title+'“ löschen?'))return;try{await save(recipes.filter(item=>item.id!==r.id));dialog.close();}catch(e){error.textContent=e.message;}}),action('Bearbeiten','btn',()=>{dialog.close();openEditor(r);}));panel.append(error,actions);}
  dialog.replaceChildren(...(r.image?[imageFor(r.image,'detail-image'),panel]:[panel]));dialog.showModal();
 }
 function row(values=['','','']){
@@ -124,7 +281,7 @@ const form=$('form');
 const importAccessStorage='mikes-recipes:import-access-code';
 try{localStorage.removeItem('mikes-recipes:gemini-key');}catch{}
 function storedImportAccess(){try{return localStorage.getItem(importAccessStorage)||'';}catch{return '';}}
-let currentImage='',uploadToken='',sourceLink='',importAccess=storedImportAccess(),importController=null;
+let currentImage='',sourceLink='',importAccess=storedImportAccess(),importController=null;
 function refreshImportAccessControls(){
  const saved=Boolean(importAccess);
  $('import-key-label').hidden=saved;
@@ -203,11 +360,6 @@ $('import-start').onclick=async()=>{
  finally{if(importController===controller){importController=null;button.disabled=false;saveButton.disabled=false;}}
 };
 $('editor').addEventListener('close',()=>{importController?.abort();});
-function updateImageAuth(){
- $('image-auth').hidden=!(form.elements.imageFile.files.length||form.elements.image.value.trim())||Boolean(uploadToken);
-}
-form.elements.imageFile.onchange=updateImageAuth;
-form.elements.image.oninput=updateImageAuth;
 async function uploadImage(file,url,token){
  if(!token)throw new Error('Für ein neues Bild brauchst du einen GitHub-Zugriffstoken.');
  let blob=file;
@@ -235,8 +387,10 @@ async function uploadImage(file,url,token){
  return 'https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+path;
 }
 function openEditor(r){
+ if(!adminToken)return;
+ form.elements.category.replaceChildren(...categories.slice(1).map(name=>el('option','',name)));
  editing=r?.id??null;sourceLink=r?.source??'';form.reset();$('import-box').open=false;refreshImportAccessControls();$('import-status').textContent='';$('error').textContent='';$('rows').replaceChildren();$('editor-title').textContent=r?'Rezept bearbeiten':'Rezept anlegen';
- currentImage=r?.image??'';$('image-current').hidden=!currentImage;$('image-current').textContent='Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.';updateImageAuth();
+ currentImage=r?.image??'';$('image-current').hidden=!currentImage;$('image-current').textContent='Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.';
  if(r){for(const name of ['title','category','servings'])form.elements[name].value=r[name];form.elements.steps.value=r.steps.join('\n');}
  (r?.ingredients.length?r.ingredients:[[]]).forEach(row);$('editor').showModal();form.elements.title.focus();
 }
@@ -244,7 +398,7 @@ $('add-row').onclick=()=>row().focus();
 document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>{if(!form.querySelector('[type=submit]').disabled)$(b.dataset.close).close();});
 $('editor').addEventListener('cancel',event=>{if(form.querySelector('[type=submit]').disabled)event.preventDefault();});
 form.onsubmit=async event=>{
- event.preventDefault();const inputs=new FormData(form),title=inputs.get('title').trim(),image=inputs.get('image').trim(),ingredients=[];
+ event.preventDefault();if(!adminToken||form.querySelector('[type=submit]').disabled)return;const inputs=new FormData(form),title=inputs.get('title').trim(),image=inputs.get('image').trim(),ingredients=[];
  $('error').textContent='';
  if(!title){$('error').textContent='Bitte gib deinem Rezept einen Namen.';return;}
  if(image&&!/^https?:\/\//i.test(image)){$('error').textContent='Bitte verwende eine Bild-URL mit https:// oder http://.';return;}
@@ -255,18 +409,20 @@ form.onsubmit=async event=>{
  }
  if(!ingredients.length){$('error').textContent='Bitte füge mindestens eine Zutat hinzu.';return;}
  const id=editing??(globalThis.crypto?.randomUUID?.()??String(Date.now()));
- const file=inputs.get('imageFile'),hasFile=file.size>0,button=form.querySelector('[type=submit]');
+ const file=inputs.get('imageFile'),hasFile=Boolean(file?.size),button=form.querySelector('[type=submit]');
  let savedImage=currentImage;
  if(hasFile||image){
   button.disabled=true;button.textContent='Bild wird hochgeladen …';
-  const token=uploadToken||inputs.get('imageToken').trim();
-  try{savedImage=await uploadImage(hasFile?file:null,image,token);uploadToken=token;form.elements.imageToken.value='';currentImage=savedImage;form.elements.imageFile.value='';form.elements.image.value='';updateImageAuth();}
+  const token=adminToken;
+  try{savedImage=await uploadImage(hasFile?file:null,image,token);currentImage=savedImage;form.elements.imageFile.value='';form.elements.image.value='';}
   catch(error){$('error').textContent=error.message||'Das Bild konnte nicht gespeichert werden.';return;}
   finally{button.disabled=false;button.textContent='Rezept speichern';}
  }
  const recipe={id,title,image:savedImage,source:sourceLink,ingredients,category:inputs.get('category'),servings:Number(inputs.get('servings')),steps:inputs.get('steps').split('\n').map(s=>s.trim()).filter(Boolean)};
- try{save(editing?recipes.map(r=>r.id===id?recipe:r):[recipe,...recipes]);}catch{$('error').textContent='Der Browser konnte das Rezept nicht speichern.';return;}
+ button.disabled=true;button.textContent='Rezept wird gespeichert …';
+ try{await save(editing?recipes.map(r=>r.id===id?recipe:r):[recipe,...recipes]);}catch(error){$('error').textContent=error.message;return;}
+ finally{button.disabled=false;button.textContent='Rezept speichern';}
  $('editor').close();openDetail(recipe);
 };
-render();
+render();updateAdmin();loadCollection().catch(()=>{});
 </script></body></html>
