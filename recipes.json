@@ -11,6 +11,47 @@
   ],
   "recipes": [
     {
+      "id": "d5563044-d58f-4fb0-976f-fd9737e32cbf",
+      "title": "Tepache",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1d3d752f-24d2-4c57-9ec4-c1b0bd462962.png",
+      "source": "https://www.vegetaria.at/tepache-selbstgebrautes-ananasbier-aus-mexiko/",
+      "ingredients": [
+        [
+          "Bio-Ananas",
+          1,
+          ""
+        ],
+        [
+          "Wasser",
+          2,
+          "L"
+        ],
+        [
+          "Demerara-Zucker (Rohrzucker)",
+          100,
+          "g"
+        ],
+        [
+          "Zimtstange",
+          1,
+          "Stange"
+        ],
+        [
+          "Plastikflaschen",
+          null,
+          "zum Abfüllen"
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 1,
+      "steps": [
+        "Alle Zutaten gemeinsam in ein grosses verschliessbares Glas füllen. Wer kein so grosses Glas hat, teilt die Zutaten in kleineren Gläsern auf. Wer mehr Wasser verwenden will, muss die entsprechende Menge Zucker mehr dazugeben.",
+        "Das Glas auf einen tiefen Teller stellen, für den Fall, dass beim Gären Flüssigkeit austritt, und auf einem sonnigen Fensterbrett für 1-2 Tage stehen lassen.",
+        "Sobald die Fermentation begonnen hat (wenn kleine Bläschen sichtbar werden), das Ananasbier aus der Sonne nehmen und bei Zimmertemperatur noch für ein paar Tage weiter gären lassen. Während der Fermentation eventuell entstehenden Schaum oder weissen Belag (Kahmhefe) mit einem Löffel entfernen.",
+        "Zwischendurch kosten: Wenn die Säure zusagt, das Ananasbier abseihen und in Plastikflaschen umfüllen. Die gut verschlossenen Plastikflaschen noch ca. 2-3 Tage bei Zimmertemperatur stehen lassen, danach in den Kühlschrank stellen und gekühlt geniessen."
+      ]
+    },
+    {
       "id": "30e791ce-ef3f-48da-8983-f1586f0f1311",
       "title": "Waffles",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/23839bfe-8a86-40b5-9c70-cbecb1ba04e9.png",
