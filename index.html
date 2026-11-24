@@ -122,7 +122,17 @@ try {
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Ricette di casa</span><h1>Meine Küche,<br><em>meine Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
 <section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><div class="grid" id="grid"></div></section></main>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
-<p id="admin-error" class="error" role="alert"></p><a class="btn primary" href="https://mikes-recipes-import.prince-of-turbo.workers.dev/auth/login">Mit GitHub anmelden</a></form></dialog>
+<p id="admin-error" class="error" role="alert"></p>
+<p id="admin-status" class="muted" role="status" hidden></p>
+<div class="fields">
+ <label>E-Mail<input type="email" name="email" autocomplete="username" maxlength="254" required></label>
+ <label>Passwort<input type="password" name="password" autocomplete="current-password" maxlength="128" required></label>
+</div>
+<div class="nav-actions">
+ <button class="btn primary" type="submit">Mit E-Mail anmelden</button>
+ <button class="btn" type="button" id="admin-reset">Passwort festlegen / zurücksetzen</button>
+ <a class="btn" href="https://mikes-recipes-import.prince-of-turbo.workers.dev/auth/login">Mit GitHub anmelden</a>
+</div></form></dialog>
 <dialog id="category-dialog" aria-labelledby="category-title"><div class="panel"><div class="dialog-head"><h2 id="category-title">Kategorien &amp; Logo</h2><button class="btn icon" type="button" id="cats-close" aria-label="Schließen">×</button></div>
 <form id="cat-form"><label>Neue Kategorie<input id="cat-name" required maxlength="45"></label><p><button class="btn primary">Hinzufügen</button></p></form><p class="photo-note">Ziehe Kategorien am Griff in die gewünschte Reihenfolge.</p><div id="cat-list"></div><p id="cat-error" class="error" role="alert"></p><button id="migrate" class="btn" type="button" hidden>Lokale Rezepte übernehmen</button>
 <form id="logo-form"><h3>Oceanfactory-Logo</h3><label>Logo auswählen<input id="logo-file" type="file" accept="image/png,image/webp,image/jpeg" required></label><p><button class="btn" type="submit">Logo speichern</button></p></form></div></dialog>
@@ -227,7 +237,7 @@ function applyCollection(data){
 }
 async function github(url,token,options={}){
  const response=await fetch(url,{...options,cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+token,...options.headers}});
- if(response.status===401){clearAdmin();throw new Error('Die Anmeldung ist abgelaufen. Melde dich erneut mit GitHub an.');}
+ if(response.status===401){clearAdmin();throw new Error('Die Anmeldung ist abgelaufen. Melde dich erneut an.');}
  return response;
 }
 function decodeCollection(base64){return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(base64),c=>c.charCodeAt(0))));}
@@ -267,10 +277,51 @@ function clearAdmin(){
 }
 function showAdmin(message=''){
  $('admin-error').textContent=message;
+ $('admin-status').hidden=true;
  if(!$('admin-dialog').open)$('admin-dialog').showModal();
 }
 $('admin').onclick=()=>adminToken?clearAdmin():showAdmin();
 $('admin-close').onclick=()=>$('admin-dialog').close();
+$('admin-form').onsubmit=async event=>{
+ event.preventDefault();
+ const form=event.currentTarget,button=form.querySelector('button[type=submit]');
+ if(button.disabled)return;
+ button.disabled=true;
+ $('admin-error').textContent='';
+ $('admin-status').hidden=true;
+ try {
+  const res=await fetch(new URL('../auth/password',adminApi),{
+   method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',credentials:'omit',
+   signal:AbortSignal.timeout(20000),body:JSON.stringify({email:form.elements.email.value.trim(),password:form.elements.password.value})
+  });
+  const result=await res.json();
+  if(!res.ok)throw new Error(result.error||'Die Anmeldung ist vorübergehend nicht verfügbar.');
+  if(!/^\d{10}\.[0-9a-f]{64}$/.test(result.session||''))throw new Error('Die Anmeldung hat keine gültige Sitzung zurückgegeben.');
+  await loadCollection(result.session);
+  adminToken=result.session;updateAdmin();
+  try{sessionStorage.setItem(sessionKey,adminToken);}catch{}
+  $('admin-dialog').close();
+ }catch(error){
+  $('admin-error').textContent=error instanceof TypeError||error.name==='TimeoutError'?'Die Anmeldung ist vorübergehend nicht erreichbar.':error.message;
+ }finally{form.elements.password.value='';button.disabled=false;}
+};
+$('admin-reset').onclick=async()=>{
+ const email=$('admin-form').elements.email,button=$('admin-reset'),status=$('admin-status');
+ if(!email.reportValidity()||button.disabled)return;
+ button.disabled=true;status.hidden=true;$('admin-error').textContent='';
+ try {
+  const res=await fetch(new URL('../auth/password-reset',adminApi),{
+   method:'POST',headers:{'Content-Type':'application/json'},cache:'no-store',credentials:'omit',
+   signal:AbortSignal.timeout(20000),body:JSON.stringify({email:email.value.trim()})
+  });
+  const result=await res.json();
+  if(!res.ok)throw new Error(result.error||'Der Passwort-Link konnte gerade nicht gesendet werden.');
+  status.textContent='Falls diese E-Mail-Adresse hinterlegt ist, erhältst du einen Link zum Festlegen deines Passworts.';
+  status.hidden=false;
+ }catch(error){
+  $('admin-error').textContent=error instanceof TypeError||error.name==='TimeoutError'?'Die Anmeldung ist vorübergehend nicht erreichbar.':error.message;
+ }finally{button.disabled=false;}
+};
 async function restoreAdmin(){
  const fragment=new URLSearchParams(location.hash.slice(1)),received=fragment.get('admin-session'),error=fragment.get('admin-error');
  if(received||error)history.replaceState(null,'',location.pathname+location.search);
