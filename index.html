@@ -67,7 +67,7 @@
 <div class="fields"><label>Kategorie<select name="category"><option>Pizza</option><option>Pasta</option><option>Vorspeise</option><option>Dessert</option><option>Sonstiges</option></select></label><label>Grundportionen<input name="servings" type="number" min="1" max="999" required value="2"></label></div>
 <fieldset class="photo-fieldset"><legend>Rezeptbild (optional)</legend>
 <label>Datei auswählen<input name="imageFile" type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif"></label>
-<label class="photo-field">Oder Bild-URL importieren<input name="image" type="url" placeholder="https://…"></label>
+<label class="photo-field">Oder öffentliche Bild-URL importieren<input name="image" type="url" placeholder="https://…"></label><p class="photo-note">Falls der direkte Abruf scheitert, kann die Bildadresse an den Bildproxy wsrv.nl gesendet werden.</p>
 
 <p class="photo-note" id="image-current" hidden></p></fieldset>
 <h3>Zutaten</h3><div class="rows" id="rows"></div><button class="btn" id="add-row" type="button">＋ Zutat hinzufügen</button>
@@ -489,21 +489,31 @@ async function importRecipeDraft(useAI){
 $('import-start').onclick=()=>importRecipeDraft(true);
 $('import-plain').onclick=()=>importRecipeDraft(false);
 $('editor').addEventListener('close',()=>{importController?.abort();});
-async function uploadImage(file,url,token){
- if(!token)throw new Error('Für ein neues Bild brauchst du einen GitHub-Zugriffstoken.');
- let blob=file;
- if(!blob){
-  const source=new URL(url);
-  let response;
-  if(source.protocol==='https:'&&['finis-feinstes.at','www.finis-feinstes.at'].includes(source.hostname)&&source.pathname.startsWith('/media/')){
-   response=await github(adminApi+'download-image',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:source.href})});
-   if(!response.ok){const result=await response.json().catch(()=>null);throw new Error(result?.error||'Der Server konnte das Bild nicht abrufen.');}
-  }else{
-   try{response=await fetch(url,{credentials:'omit',signal:AbortSignal.timeout(15000)});}catch{throw new Error('Direkter Bildabruf blockiert. Lade das Bild herunter und wähle es als Datei aus.');}
-   if(!response.ok)throw new Error('Der Bildserver meldet HTTP '+response.status+'.');
-  }
-  blob=await response.blob();
+async function fetchRecipeImage(url,token){
+ const source=new URL(url);
+ if(!['https:','http:'].includes(source.protocol)||source.username||source.password)throw new Error('Verwende einen öffentlichen HTTP- oder HTTPS-Bildlink ohne Zugangsdaten.');
+ source.hash='';
+ const options=()=>({credentials:'omit',referrerPolicy:'no-referrer',signal:AbortSignal.timeout(12000)});
+ try{
+  const direct=await fetch(source.href,options());
+  if(direct.ok)return await direct.blob();
+ }catch{}
+ if(source.protocol==='https:'&&['finis-feinstes.at','www.finis-feinstes.at'].includes(source.hostname)&&source.pathname.startsWith('/media/')){
+  try{
+   const worker=await github(adminApi+'download-image',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:source.href})});
+   if(worker.ok)return await worker.blob();
+  }catch(error){if(!adminToken)throw error;}
  }
+ const proxy='https://wsrv.nl/?w=1600&h=1600&fit=inside&output=webp&url='+encodeURIComponent(source.href);
+ try{
+  const response=await fetch(proxy,options());
+  if(response.ok)return await response.blob();
+ }catch{}
+ throw new Error('Das Bild konnte auch über den Bildproxy nicht geladen werden. Prüfe, ob der Link direkt zu einer öffentlich zugänglichen Bilddatei führt, oder wähle das Bild als Datei aus.');
+}
+async function uploadImage(file,url,token){
+ if(!token)throw new Error('Bitte melde dich als Admin an.');
+ const blob=file||await fetchRecipeImage(url,token);
  if(!/^image\/(jpeg|png|webp|gif|avif)$/.test(blob.type)||blob.size>15*1024*1024)throw new Error('Wähle ein JPEG, PNG, WebP, GIF oder AVIF mit maximal 15 MB.');
  let bitmap;
  try{bitmap=await createImageBitmap(blob);}catch{throw new Error('Das Bildformat konnte nicht geöffnet werden.');}
