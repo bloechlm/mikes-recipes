@@ -367,9 +367,15 @@ async function uploadImage(file,url,token){
  if(!token)throw new Error('Für ein neues Bild brauchst du einen GitHub-Zugriffstoken.');
  let blob=file;
  if(!blob){
+  const source=new URL(url);
   let response;
-  try{response=await fetch(url,{credentials:'omit',signal:AbortSignal.timeout(15000)});}catch{throw new Error('Die Bild-URL ist nicht abrufbar. Lade das Bild herunter und wähle es als Datei aus.');}
-  if(!response.ok)throw new Error('Das Bild konnte nicht von der URL geladen werden.');
+  if(source.protocol==='https:'&&['finis-feinstes.at','www.finis-feinstes.at'].includes(source.hostname)&&source.pathname.startsWith('/media/')){
+   response=await github(adminApi+'download-image',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({url:source.href})});
+   if(!response.ok){const result=await response.json().catch(()=>null);throw new Error(result?.error||'Der Server konnte das Bild nicht abrufen.');}
+  }else{
+   try{response=await fetch(url,{credentials:'omit',signal:AbortSignal.timeout(15000)});}catch{throw new Error('Direkter Bildabruf blockiert. Lade das Bild herunter und wähle es als Datei aus.');}
+   if(!response.ok)throw new Error('Der Bildserver meldet HTTP '+response.status+'.');
+  }
   blob=await response.blob();
  }
  if(!/^image\/(jpeg|png|webp|gif|avif)$/.test(blob.type)||blob.size>15*1024*1024)throw new Error('Wähle ein JPEG, PNG, WebP, GIF oder AVIF mit maximal 15 MB.');
