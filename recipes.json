@@ -11,6 +11,73 @@
   ],
   "recipes": [
     {
+      "id": "dc69ab7c-6a82-4249-b646-9c175f53d4fc",
+      "title": "Apple Crumble",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/c0cc6438-e4d2-4dc3-b20d-270966e2636f.png",
+      "source": "https://www.gutekueche.at/apple-crumble-rezept-6030",
+      "ingredients": [
+        [
+          "Butter (für die Form)",
+          1,
+          "TL"
+        ],
+        [
+          "Äpfel (säuerliche)",
+          600,
+          "g"
+        ],
+        [
+          "Zitronensaft",
+          3,
+          "EL"
+        ],
+        [
+          "Zucker (braun)",
+          2,
+          "EL"
+        ],
+        [
+          "Vanillezucker",
+          1,
+          "Pk"
+        ],
+        [
+          "Weizenmehl (glatt, W480)",
+          170,
+          "g"
+        ],
+        [
+          "Zucker",
+          110,
+          "g"
+        ],
+        [
+          "Butter (kalt, in Stücke geschnitten)",
+          120,
+          "g"
+        ],
+        [
+          "Salz",
+          1,
+          "Prise"
+        ],
+        [
+          "Zimt (gemahlen)",
+          0.5,
+          "TL"
+        ]
+      ],
+      "category": "Dessert",
+      "servings": 1,
+      "steps": [
+        "Den Backofen auf 200 °C Ober-/Unterhitze vorheizen und eine Auflaufform mit Butter einfetten.",
+        "Die Äpfel schälen, entkernen, in Würfel schneiden und in die Auflaufform geben. Anschließend mit Zitronensaft beträufeln sowie mit braunem Zucker und Vanillezucker bestreuen.",
+        "Für das Crumble das Mehl mit Zucker, Salz und Zimt vermischen. Die kalten Butterstücke dazugeben und alles mit den Händen zu Streuseln verkneten.",
+        "Die Streuselmasse gleichmäßig auf den Äpfeln verteilen.",
+        "Den Apple Crumble auf mittlerer Schiene für etwa 30 bis 40 Minuten backen."
+      ]
+    },
+    {
       "id": "9cb9d681-194b-4adc-b4f2-d96e7822d487",
       "title": "Mike's Sauerteigbrot",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1ee1a7ac-88b8-4648-84e0-eb4c5e93829d.png",
