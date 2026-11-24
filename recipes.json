@@ -11,6 +11,59 @@
   ],
   "recipes": [
     {
+      "id": "8a9b9f4b-2d8d-427f-8a89-0008f092f19d",
+      "title": "Einfaches Palatschinkenrezept",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/85d628e4-69b0-45a8-8ee3-69967657bf44.png",
+      "source": "https://www.gutekueche.at/einfaches-palatschinkenrezept-rezept-4278",
+      "ingredients": [
+        [
+          "Weizenmehl (glatt)",
+          250,
+          "g"
+        ],
+        [
+          "Milch",
+          500,
+          "ml"
+        ],
+        [
+          "Eier (Größe M)",
+          2,
+          "Stk"
+        ],
+        [
+          "Salz",
+          1,
+          "Prise"
+        ],
+        [
+          "Öl (oder Butter für die Pfanne)",
+          1,
+          "Schuss"
+        ],
+        [
+          "Staubzucker",
+          1,
+          "EL"
+        ],
+        [
+          "Marmelade",
+          4,
+          "EL"
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 5,
+      "steps": [
+        "Mehl, Milch, Eier und Salz in einer Schüssel mit dem Schneebesen glatt rühren.",
+        "Den Teig etwa 10 Minuten ruhen lassen und anschließend nochmals gut durchrühren (bei Bedarf mit etwas Mineralwasser oder Soda verdünnen, falls er zu dick ist).",
+        "Etwas Öl in einer beschichteten Pfanne erhitzen.",
+        "Etwas Teig mittig in die heiße Pfanne geben und durch Schwenken gleichmäßig dünn am Boden verteilen.",
+        "Die Palatschinke mit einem Pfannenwender wenden und von beiden Seiten goldgelb ausbacken.",
+        "Die fertigen Palatschinken nach Belieben mit Marmelade oder anderen Zutaten bestreichen, mit Staubzucker bestreuen und zusammenrollen."
+      ]
+    },
+    {
       "id": "44dfba3a-86f7-4bc1-9ba1-50069c06f639",
       "title": "Old Fashioned Pancakes",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/35511c73-6e13-4afe-a539-71e0f3cc8f64.png",
