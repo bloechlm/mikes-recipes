@@ -11,6 +11,54 @@
   ],
   "recipes": [
     {
+      "id": "bd2dc9e9-b534-4d14-9597-4cc5314d34c3",
+      "title": "Oma's Grießknödel",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/77290f8a-6a47-49cd-8543-8037a06fa679.png",
+      "source": "https://www.gutekueche.at/omas-griessknodel-rezept-33121",
+      "ingredients": [
+        [
+          "Milch",
+          500,
+          "ml"
+        ],
+        [
+          "Butter",
+          100,
+          "g"
+        ],
+        [
+          "Salz",
+          1,
+          "Prise"
+        ],
+        [
+          "Muskatnuss (gerieben)",
+          1,
+          "Prise"
+        ],
+        [
+          "Weizengrieß",
+          250,
+          "g"
+        ],
+        [
+          "Eier (Größe M)",
+          3,
+          "Stk"
+        ]
+      ],
+      "category": "Beilagen",
+      "servings": 6,
+      "steps": [
+        "Milch, Butter, Salz und Muskatnuss in einem Topf aufkochen.",
+        "Den Grieß unter ständigem Rühren einfließen lassen, bis sich die Masse vom Topfboden löst. Den Topf von der Hitze nehmen und die Masse überkühlen lassen.",
+        "Die Eier unterrühren und die Masse etwa 15 Minuten ruhen lassen.",
+        "Mit feuchten Händen mittelgroße Knödel aus der Masse formen und in einen Topf mit kochendem Salzwasser geben.",
+        "Die Knödel für etwa 12 bis 15 Minuten unter dem Siedepunkt ziehen lassen, bis sie an die Oberfläche steigen.",
+        "Mit einem Siebschöpfer herausnehmen und gut abtropfen lassen."
+      ]
+    },
+    {
       "id": "8a9b9f4b-2d8d-427f-8a89-0008f092f19d",
       "title": "Einfaches Palatschinkenrezept",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/85d628e4-69b0-45a8-8ee3-69967657bf44.png",
