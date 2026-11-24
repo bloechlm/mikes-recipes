@@ -44,6 +44,13 @@
 .card>img,.card>.placeholder{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:center}
 .card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#10150ef5 0%,#10150ec7 21%,#10150e22 67%,transparent 100%);pointer-events:none}
 .card div.copy{position:relative;z-index:1;width:100%;padding:16px 18px}.card h3{margin:4px 0 0;color:var(--ink);font-size:clamp(21px,2.4vw,27px);overflow-wrap:anywhere}
+
+.recipe-actions{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px 24px;margin-top:24px;padding-top:16px;border-top:1px solid var(--line)}
+.recipe-action-group{display:flex;align-items:center;flex-wrap:wrap;gap:10px}
+.recipe-action-group.admin-edit-actions{margin-left:auto}
+.recipe-actions a.btn{display:inline-flex;align-items:center;text-decoration:none;color:var(--ink)}
+.recipe-action-error:empty{display:none}
+@media(max-width:480px){.recipe-action-group.admin-edit-actions{margin-left:0}}
 </style></head>
 <body>
 <header><nav class="wrap"><div class="brand"><img id="site-logo" class="brand-logo" alt="Oceanfactory" hidden><span class="brand-name">Mike’s Recipes</span></div><div class="nav-actions"><button class="btn" id="admin" type="button">Admin</button><button class="btn" id="cats" type="button" hidden>Kategorien</button><button class="btn primary" id="new" type="button" hidden>＋ Rezept anlegen</button></div></nav></header>
@@ -156,7 +163,7 @@ async function save(next,nextCategories=categories.slice(1),logo=siteLogo){
 }
 function updateAdmin(){
  $('admin').textContent=adminToken?'Abmelden':'Admin';$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
- if(!adminToken)$('detail').querySelector('.admin-source')?.remove();
+ if(!adminToken)$('detail').querySelectorAll('.admin-source,.admin-edit-actions').forEach(node=>node.remove());
 }
 function clearAdmin(){
  adminToken='';recipeSHA=null;try{sessionStorage.removeItem(sessionKey);}catch{}updateAdmin();
@@ -336,9 +343,27 @@ function openDetail(r){
  list.setAttribute('aria-live','polite');
  panel.append(el('h3','','Zutaten'),list);
  if(r.steps.length){const steps=el('ol','instructions');steps.append(...r.steps.map(s=>el('li','',s)));panel.append(el('h3','','Zubereitung'),steps);}
- if(adminToken&&r.source){const source=el('a','source-link admin-source','Originalrezept öffnen');source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';panel.append(source);}
- const pdf=action('Als PDF speichern','btn',()=>printRecipe(r,n,hydration));panel.append(pdf);
- if(!isDough&&adminToken){const actions=el('div','actions');const error=el('p','error');error.setAttribute('role','alert');actions.append(action('Löschen','btn danger',async()=>{if(!confirm('Rezept „'+r.title+'“ löschen?'))return;try{await save(recipes.filter(item=>item.id!==r.id));dialog.close();}catch(e){error.textContent=e.message;}}),action('Bearbeiten','btn',()=>{dialog.close();openEditor(r);}));panel.append(error,actions);}
+ const actions=el('footer','recipe-actions'),links=el('div','recipe-action-group');
+ if(adminToken&&r.source){
+  const source=el('a','btn admin-source','Originalrezept öffnen');
+  source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';
+  links.append(source);
+ }
+ links.append(action('Als PDF speichern','btn',()=>printRecipe(r,n,hydration)));
+ actions.append(links);
+ if(!isDough&&adminToken){
+  const editActions=el('div','recipe-action-group admin-edit-actions'),error=el('p','error recipe-action-error');
+  error.setAttribute('role','alert');
+  const remove=action('Löschen','btn danger',async()=>{
+   if(!confirm('Rezept „'+r.title+'“ löschen?'))return;
+   try{await save(recipes.filter(item=>item.id!==r.id));dialog.close();}
+   catch(e){error.textContent=e.message;}
+  });
+  const edit=action('Bearbeiten','btn primary',()=>{dialog.close();openEditor(r);});
+  editActions.append(remove,edit);actions.append(editActions);
+  panel.append(error);
+ }
+ panel.append(actions);
  dialog.replaceChildren(...(r.image?[imageFor(r.image,'detail-image'),panel]:[panel]));dialog.showModal();
 }
 function row(values=['','','']){
