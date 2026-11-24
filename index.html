@@ -106,7 +106,7 @@ try {
  [data-theme=light] input,[data-theme=light] textarea,[data-theme=light] select{background:#fffdf6}
  [data-theme=light] .danger,[data-theme=light] .error{color:#9e3325}
 }
-</style></head>
+.ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong{white-space:normal;text-align:right;overflow-wrap:anywhere}</style></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
  <details class="brand-menu" id="brand-menu">
@@ -199,6 +199,24 @@ const key='mikes-recipes-v1';
 const defaults=['Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
 let categories=['Alle',...defaults];
 const numbers=new Intl.NumberFormat('de-AT',{maximumSignificantDigits:5});
+function ingredientDisplay(row,amount,n,servings){
+ const [name,qty,unit]=row;
+ if(qty==null&&unit===' ' )return el('li','ingredient-heading',name);
+ if(qty==null&&unit.startsWith('@')){
+  const parts=unit.slice(1).split('|').map(part=>{
+   const [raw,label]=part.split('~');const value=Number(raw)*n/servings;
+   if(!Number.isFinite(value))return raw;
+   const whole=Math.floor(value),fraction=value-whole;
+   const fractions=[[1/16,'¹⁄₁₆'],[1/12,'¹⁄₁₂'],[1/8,'⅛'],[1/6,'⅙'],[1/4,'¼'],[1/3,'⅓'],[3/8,'⅜'],[1/2,'½'],[5/8,'⅝'],[2/3,'⅔'],[3/4,'¾'],[5/6,'⅚'],[7/8,'⅞']];
+   const f=fractions.find(([v])=>Math.abs(v-fraction)<1e-8);
+   const metric=/^(grams|milliliters)$/.test(label||'');
+   const formatted=metric?String(Number(value.toFixed(3))):f?(whole?whole+' ':'')+f[1]:String(Number(value.toFixed(4)));
+   return [formatted,label].filter(Boolean).join(' ');
+  });
+  const li=el('li');li.append(el('span','',name),el('strong','',parts.join(' / ')));return li;
+ }
+ const li=el('li');li.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/servings,unit),unit].filter(Boolean).join(' ')));return li;
+}
 function formatPortionedQuantity(amount,unit){
  const normalized=(unit||'').trim().toLocaleLowerCase('de-AT').replace(/\.$/,'');
  if(normalized==='g'||normalized==='ml')return numbers.format(Math.round(amount/5)*5);
@@ -446,7 +464,7 @@ async function printRecipe(r,n,hydration){
  const ingredients=el('section','print-box'),list=el('ul');
  for(const [index,[name,quantity,unit]] of r.ingredients.entries()){
   const amount=r.id==='pizza'&&index===1?r.ingredients[0][1]*hydration/100:quantity;
-  const item=el('li');item.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/r.servings,unit),unit].filter(Boolean).join(' ')));list.append(item);
+  list.append(ingredientDisplay([name,quantity,unit],amount,n,r.servings));
  }
  ingredients.append(el('h2','','Zutaten'),list);
  const stepBox=el('section','print-box'),steps=el('ol');
@@ -470,10 +488,8 @@ function openDetail(r){
   count.textContent=n;
   minus.disabled=n===1;plus.disabled=n===999;
   list.replaceChildren(...r.ingredients.map(([name,qty,unit],index)=>{
-   const li=el('li');
    const amount=isDough&&index===1?r.ingredients[0][1]*hydration/100:qty;
-   li.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/r.servings,unit),unit].filter(Boolean).join(' ')));
-   return li;
+   return ingredientDisplay([name,qty,unit],amount,n,r.servings);
   }));
  }
  function step(by){n=Math.max(1,Math.min(999,n+by));refresh();}
@@ -550,7 +566,7 @@ function row(values=['','','']){
  const wrapper=el('div','line-item'),name=el('input'),amount=el('input'),unit=el('input');
  name.placeholder='Zutat';name.setAttribute('aria-label','Zutat');name.maxLength=100;
  amount.placeholder='Menge';amount.setAttribute('aria-label','Menge');amount.title='Dezimalzahl oder Bruch, z. B. 0,5, 1/2 oder 1 1/4';
- unit.placeholder='Einheit';unit.setAttribute('aria-label','Einheit');unit.maxLength=50;
+ unit.placeholder='Einheit';unit.setAttribute('aria-label','Einheit');unit.maxLength=250;
  [name,amount,unit].forEach((input,index)=>input.value=values[index]??'');
  const remove=action('×','btn icon',()=>{wrapper.remove();if(!$('rows').children.length)row();});remove.setAttribute('aria-label','Zutat entfernen');
  wrapper.append(name,amount,unit,remove);$('rows').append(wrapper);return name;
@@ -758,7 +774,7 @@ form.onsubmit=async event=>{
  for(const item of $('rows').children){
   const [name,amount,unit]=[...item.querySelectorAll('input')].map(input=>input.value.trim());
   if(!name&&(amount||unit)){$('error').textContent='Bitte gib jeder Zutatenzeile einen Namen.';return;}
-  if(name){const qty=amount?parseQuantity(amount):null;if(qty!==null&&!Number.isFinite(qty)){$('error').textContent='Ungültige Menge bei „'+name+'“. Verwende zum Beispiel 0,5, 1/2 oder 1 1/4.';return;}ingredients.push([name,qty,unit]);}
+  if(name){const qty=amount?parseQuantity(amount):null;if(qty!==null&&!Number.isFinite(qty)){$('error').textContent='Ungültige Menge bei „'+name+'“. Verwende zum Beispiel 0,5, 1/2 oder 1 1/4.';return;}ingredients.push([name,qty,qty===null&&!unit&&/^FOR THE /i.test(name)?' ':unit]);}
  }
  if(!ingredients.length){$('error').textContent='Bitte füge mindestens eine Zutat hinzu.';return;}
  const id=editing??(globalThis.crypto?.randomUUID?.()??String(Date.now()));
