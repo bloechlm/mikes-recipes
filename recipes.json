@@ -11,6 +11,32 @@
   ],
   "recipes": [
     {
+      "id": "955426f9-5d81-4e47-9051-7df39b80fa28",
+      "title": "Tabasco",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/2c8f99d2-0eea-4c0d-bfa5-3b79df7e8331.png",
+      "source": "",
+      "ingredients": [
+        [
+          "Chilis (Sorte nach Belieben)",
+          1600,
+          "g"
+        ],
+        [
+          "Salz (10%)",
+          160,
+          "g"
+        ],
+        [
+          "Tafelessig (10%)",
+          160,
+          "g"
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 5,
+      "steps": []
+    },
+    {
       "id": "d5563044-d58f-4fb0-976f-fd9737e32cbf",
       "title": "Tepache",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1d3d752f-24d2-4c57-9ec4-c1b0bd462962.png",
