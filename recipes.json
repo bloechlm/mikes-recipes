@@ -11,6 +11,78 @@
   ],
   "recipes": [
     {
+      "id": "fa47b66f-07ae-4a5e-9db0-7a6b3831a467",
+      "title": "Bananen-Kuchen",
+      "image": "",
+      "source": "",
+      "ingredients": [
+        [
+          "Flohsamenschrot",
+          2,
+          "EL"
+        ],
+        [
+          "Wasser",
+          6,
+          "EL"
+        ],
+        [
+          "Haselnüsse",
+          50,
+          "g"
+        ],
+        [
+          "überreife Bananen",
+          3,
+          "bis 4"
+        ],
+        [
+          "Dinkelmehl",
+          50,
+          "g"
+        ],
+        [
+          "Keksmehl",
+          150,
+          "g"
+        ],
+        [
+          "gemahlene Haferflocken",
+          200,
+          "g"
+        ],
+        [
+          "Backpulver",
+          2,
+          "TL"
+        ],
+        [
+          "Kakao",
+          2,
+          "TL"
+        ],
+        [
+          "Salz",
+          0.25,
+          "TL"
+        ],
+        [
+          "Backschokolade",
+          null,
+          "etwas"
+        ]
+      ],
+      "category": "Dessert",
+      "servings": 10,
+      "steps": [
+        "Das Flohsamenschrot mit dem Wasser vermerken und quellen lassen.",
+        "Die überreifenden Bananen zerdrücken.",
+        "Alle trockenen Zutaten wie Mehl, gemahlene Haferflocken, Haselnüsse, Backpulver, Kakao und Salz vermischen.",
+        "Die gehackte Backschokolade unterheben.",
+        "Die feuchten Zutaten mit den trockenen vermengen und den Teig verarbeiten."
+      ]
+    },
+    {
       "id": "955426f9-5d81-4e47-9051-7df39b80fa28",
       "title": "Uncle Mike's Tabasco",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/2c8f99d2-0eea-4c0d-bfa5-3b79df7e8331.png",
