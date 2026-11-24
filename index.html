@@ -19,9 +19,12 @@
 <details class="import-box" id="import-box"><summary>Rezept per Link importieren</summary>
 <label>Rezept-Link<input id="import-url" type="text" inputmode="url" placeholder="https://…"></label>
 <label id="import-key-label">Gemini API-Key<input id="import-key" type="password" autocomplete="off"></label>
+<button class="btn" type="button" id="import-key-save">Key in diesem Browser speichern</button>
+<button class="btn" type="button" id="import-key-remove" hidden>Gespeicherten Key entfernen</button>
+<p class="photo-note" id="import-key-state" role="status"></p>
 <p class="photo-note"><a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">API-Key in Google AI Studio erstellen</a>. Für den kostenlosen Tarif nutze ein Projekt ohne aktivierte Abrechnung.</p>
 <details><summary>Rezepttext einfügen, falls der Link blockiert ist</summary><label>Rezepttext<textarea id="import-text" maxlength="16000"></textarea></label></details>
-<p class="photo-note">Beim Import erhält Jina Reader den öffentlichen Link, wenn der Browser ihn nicht direkt lesen kann. Google Gemini erhält den Rezepttext zur Aufbereitung. Der Key bleibt bis zum Neuladen im Arbeitsspeicher.</p>
+<p class="photo-note">Beim Import erhält Jina Reader den öffentlichen Link, wenn der Browser ihn nicht direkt lesen kann. Google Gemini erhält den Rezepttext zur Aufbereitung. Ein gespeicherter Key bleibt in diesem Browserprofil. Verwende diese Option auf deinem eigenen Gerät.</p>
 <button class="btn" type="button" id="import-start">Mit KI importieren</button><p class="photo-note" id="import-status" role="status"></p></details>
 <label>Rezeptname<input name="title" required maxlength="100"></label>
 <div class="fields"><label>Kategorie<select name="category"><option>Pizza</option><option>Pasta</option><option>Vorspeise</option><option>Dessert</option><option>Sonstiges</option></select></label><label>Grundportionen<input name="servings" type="number" min="1" max="999" required value="2"></label></div>
@@ -119,7 +122,28 @@ function row(values=['','','']){
  wrapper.append(name,amount,unit,remove);$('rows').append(wrapper);return name;
 }
 const form=$('form');
-let currentImage='',uploadToken='',sourceLink='',geminiKey='',importController=null;
+const geminiKeyStorage='mikes-recipes:gemini-key';
+function storedGeminiKey(){try{return localStorage.getItem(geminiKeyStorage)||'';}catch{return '';}}
+let currentImage='',uploadToken='',sourceLink='',geminiKey=storedGeminiKey(),importController=null;
+function refreshGeminiKeyControls(){
+ const saved=Boolean(storedGeminiKey());
+ $('import-key-label').hidden=saved;
+ $('import-key-save').hidden=saved;
+ $('import-key-remove').hidden=!saved;
+ $('import-key-state').textContent=saved?'Gemini-Key in diesem Browser gespeichert.':'';
+}
+$('import-key-save').onclick=()=>{
+ const key=$('import-key').value.trim();
+ if(!key){$('import-key-state').textContent='Gib zuerst deinen Gemini API-Key ein.';return;}
+ try{localStorage.setItem(geminiKeyStorage,key);}
+ catch{$('import-key-state').textContent='Dieser Browser erlaubt das Speichern des Keys nicht.';return;}
+ geminiKey=key;$('import-key').value='';refreshGeminiKeyControls();
+};
+$('import-key-remove').onclick=()=>{
+ try{localStorage.removeItem(geminiKeyStorage);}
+ catch{$('import-key-state').textContent='Der Key konnte nicht entfernt werden.';return;}
+ geminiKey='';$('import-key').value='';refreshGeminiKeyControls();$('import-key').focus();
+};
 function publicRecipeUrl(raw){
  const url=new URL(raw);
  if(url.protocol!=='https:'||url.username||url.password||!url.hostname.includes('.')||url.hostname.endsWith('.local'))throw new Error('Verwende einen öffentlichen HTTPS-Rezeptlink ohne Zugangsdaten.');
@@ -158,7 +182,17 @@ async function formatRecipeWithGemini(recipeText,key,signal){
   })
  });
  let response=await request('gemini-3.1-flash-lite');
- if(response.status===404)response=await request('gemini-2.5-flash-lite');
+ if([404,500,502,503,504].includes(response.status)){
+  const preferred=response;
+  const fallback=await request('gemini-2.5-flash-lite');
+  response=fallback.status===404&&preferred.status!==404?preferred:fallback;
+  if([500,502,503,504].includes(response.status)){
+   await new Promise(resolve=>setTimeout(resolve,1500));
+   if(signal.aborted)throw signal.reason;
+   response=await request(response===preferred||fallback.status===404?'gemini-3.1-flash-lite':'gemini-2.5-flash-lite');
+  }
+ }
+ if([500,502,503,504].includes(response.status))throw new Error('Gemini ist gerade vorübergehend nicht verfügbar. Versuche den Import in einer Minute erneut.');
  if(response.status===404)throw new Error('Google stellt für dieses Projekt keines der unterstützten Flash-Lite-Modelle bereit. Prüfe den Modellzugriff in Google AI Studio.');
  if(response.status===429)throw new Error('Das Gemini-Limit ist gerade erreicht. Versuche es später erneut.');
  if(!response.ok)throw new Error('Gemini meldet Fehler '+response.status+'. Prüfe deinen Key und ob Gemini Flash-Lite in deinem Projekt verfügbar ist.');
@@ -178,7 +212,7 @@ $('import-start').onclick=async()=>{
   const title=typeof recipe?.title==='string'?recipe.title.trim():'';
   const lines=Array.isArray(recipe?.ingredients)?recipe.ingredients.filter(i=>typeof i?.name==='string'&&i.name.trim()).slice(0,75):[];
   if(!title||!lines.length)throw new Error('Auf der Seite wurde kein vollständiges Rezept erkannt. Versuche es mit eingefügtem Rezepttext.');
-  geminiKey=key;$('import-key').value='';$('import-key-label').hidden=true;
+  geminiKey=key;
   form.elements.title.value=title.slice(0,100);
   form.elements.category.value=categories.slice(1).includes(recipe.category)?recipe.category:'Sonstiges';
   const validServings=Number.isInteger(recipe.servings)&&recipe.servings>0&&recipe.servings<=999;
@@ -223,7 +257,7 @@ async function uploadImage(file,url,token){
  return 'https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+path;
 }
 function openEditor(r){
- editing=r?.id??null;sourceLink=r?.source??'';form.reset();$('import-box').open=false;$('import-key-label').hidden=Boolean(geminiKey);$('import-status').textContent='';$('error').textContent='';$('rows').replaceChildren();$('editor-title').textContent=r?'Rezept bearbeiten':'Rezept anlegen';
+ editing=r?.id??null;sourceLink=r?.source??'';form.reset();$('import-box').open=false;geminiKey=storedGeminiKey()||geminiKey;refreshGeminiKeyControls();$('import-status').textContent='';$('error').textContent='';$('rows').replaceChildren();$('editor-title').textContent=r?'Rezept bearbeiten':'Rezept anlegen';
  currentImage=r?.image??'';$('image-current').hidden=!currentImage;$('image-current').textContent='Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.';updateImageAuth();
  if(r){for(const name of ['title','category','servings'])form.elements[name].value=r[name];form.elements.steps.value=r.steps.join('\n');}
  (r?.ingredients.length?r.ingredients:[[]]).forEach(row);$('editor').showModal();form.elements.title.focus();
