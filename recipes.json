@@ -11,6 +11,56 @@
   ],
   "recipes": [
     {
+      "id": "44dfba3a-86f7-4bc1-9ba1-50069c06f639",
+      "title": "Old Fashioned Pancakes",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/35511c73-6e13-4afe-a539-71e0f3cc8f64.png",
+      "source": "",
+      "ingredients": [
+        [
+          "All-purpose flour",
+          1,
+          "Cups"
+        ],
+        [
+          "Baking powder",
+          3,
+          "Teaspoons"
+        ],
+        [
+          "White sugar",
+          1,
+          "Tablespoon"
+        ],
+        [
+          "Salt, or more to taste",
+          1,
+          "Teaspoon"
+        ],
+        [
+          "Milk",
+          1,
+          "Cups"
+        ],
+        [
+          "Butter, melted",
+          3,
+          "Tablespoons"
+        ],
+        [
+          "Egg, large",
+          1,
+          ""
+        ]
+      ],
+      "category": "Dessert",
+      "servings": 8,
+      "steps": [
+        "Sift flour, baking powder, sugar, and salt together in a large bowl. Make a well in the center and add milk, melted butter, and egg; mix until smooth.",
+        "Heat a lightly oiled griddle or pan over medium-high heat. Pour or scoop the batter onto the griddle, using approximately 1/4 cup for each pancake; cook until bubbles form and the edges are dry, about 2 to 3 minutes.",
+        "Flip and cook until browned on the other side. Repeat with remaining batter."
+      ]
+    },
+    {
       "id": "ddfbcd0c-305d-45b6-ac0e-0698a58e40ec",
       "title": "Spätzleteig",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/9b3a68d5-d26a-425e-8b9a-86ffce39c160.png",
