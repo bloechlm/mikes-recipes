@@ -38,7 +38,7 @@
 }
 #editor .dialog-head,#detail .dialog-head{position:sticky;top:0;z-index:3;background:#22291f;border-bottom:1px solid var(--line);padding:10px 0;margin-top:-10px}
 
-.category-order{display:flex;gap:6px}.category-order .btn{padding:7px 11px}.category-order .btn:disabled{opacity:.42;cursor:default}
+.category-grip{cursor:grab;touch-action:none;user-select:none;font-size:21px;padding:4px 12px;color:var(--leaf)}.category-grip:active{cursor:grabbing}.category-row.is-dragging{opacity:.5}.category-row.drop-before{box-shadow:inset 0 2px var(--leaf)}.category-row.drop-after{box-shadow:inset 0 -2px var(--leaf)}
 .card{position:relative;display:flex;align-items:flex-end;min-width:0;width:100%;aspect-ratio:1.55;isolation:isolate;background:#293124}
 .card>img,.card>.placeholder{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:center}
 .card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#10150ef5 0%,#10150ec7 21%,#10150e22 67%,transparent 100%);pointer-events:none}
@@ -51,7 +51,7 @@
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
 <p id="admin-error" class="error" role="alert"></p><a class="btn primary" href="https://mikes-recipes-import.prince-of-turbo.workers.dev/auth/login">Mit GitHub anmelden</a></form></dialog>
 <dialog id="category-dialog" aria-labelledby="category-title"><div class="panel"><div class="dialog-head"><h2 id="category-title">Kategorien &amp; Logo</h2><button class="btn icon" type="button" id="cats-close" aria-label="Schließen">×</button></div>
-<form id="cat-form"><label>Neue Kategorie<input id="cat-name" required maxlength="45"></label><p><button class="btn primary">Hinzufügen</button></p></form><div id="cat-list"></div><p id="cat-error" class="error" role="alert"></p><button id="migrate" class="btn" type="button" hidden>Lokale Rezepte übernehmen</button>
+<form id="cat-form"><label>Neue Kategorie<input id="cat-name" required maxlength="45"></label><p><button class="btn primary">Hinzufügen</button></p></form><p class="photo-note">Ziehe Kategorien am Griff in die gewünschte Reihenfolge.</p><div id="cat-list"></div><p id="cat-error" class="error" role="alert"></p><button id="migrate" class="btn" type="button" hidden>Lokale Rezepte übernehmen</button>
 <form id="logo-form"><h3>Oceanfactory-Logo</h3><label>Logo auswählen<input id="logo-file" type="file" accept="image/png,image/webp,image/jpeg" required></label><p><button class="btn" type="submit">Logo speichern</button></p></form></div></dialog>
 <dialog id="detail" aria-labelledby="detail-title"></dialog>
 <dialog id="editor" aria-labelledby="editor-title"><form class="panel" id="form"><div class="dialog-head"><h2 id="editor-title">Rezept anlegen</h2><button class="btn icon" type="button" data-close="editor" aria-label="Schließen">×</button></div>
@@ -170,15 +170,15 @@ function renderCategories(){
  const ordered=categories.slice(1);
  for(const [index,name] of ordered.entries()){
   const line=el('div','category-row');line.append(el('span','',name));
-  const controls=el('div','category-order');
-  for(const [label,offset] of [['Hoch',-1],['Runter',1]]){
-   const button=action(label,'btn',()=>moveCategory(name,offset));
-   button.dataset.category=name;button.dataset.offset=offset;
-   button.setAttribute('aria-label',name+' nach '+(offset===-1?'oben':'unten')+' verschieben');
-   button.disabled=index+offset<0||index+offset>=ordered.length;
-   controls.append(button);
-  }
-  line.append(controls);
+  const handle=action('⠿','btn category-grip',()=>{});
+  handle.dataset.category=name;
+  handle.setAttribute('aria-label',name+' verschieben. Mit Pfeiltasten nach oben oder unten.');
+  handle.addEventListener('keydown',event=>{
+   if(!['ArrowUp','ArrowDown'].includes(event.key))return;
+   event.preventDefault();moveCategory(name,index+(event.key==='ArrowUp'?-1:1),true);
+  });
+  enableCategoryDrag(handle,line,name);
+  line.prepend(handle);
   if(!['Pizza','Sonstiges'].includes(name)){
    line.append(action('Umbenennen','btn',()=>{
     const input=el('input');input.value=name;input.maxLength=45;input.setAttribute('aria-label','Neuer Kategoriename');
@@ -190,17 +190,45 @@ function renderCategories(){
   list.append(line);
  }
 }
-async function moveCategory(name,offset){
+function enableCategoryDrag(handle,line,name){
+ let pointer=null,startY=0,target=-1,rows=[];
+ handle.addEventListener('pointerdown',event=>{
+  if(saving||pointer!==null||!event.isPrimary||event.button!==0)return;
+  pointer=event.pointerId;startY=event.clientY;
+  rows=[...$('cat-list').children];handle.setPointerCapture(pointer);
+ });
+ handle.addEventListener('pointermove',event=>{
+  if(event.pointerId!==pointer||(!line.classList.contains('is-dragging')&&Math.abs(event.clientY-startY)<5))return;
+  line.classList.add('is-dragging');
+  const siblings=rows.filter(row=>row!==line);
+  target=siblings.findIndex(row=>{const box=row.getBoundingClientRect();return event.clientY<box.top+box.height/2;});
+  if(target<0)target=siblings.length;
+  rows.forEach(row=>row.classList.remove('drop-before','drop-after'));
+  if(siblings[target])siblings[target].classList.add('drop-before');
+  else siblings.at(-1)?.classList.add('drop-after');
+ });
+ function finish(event,drop){
+  if(event.pointerId!==pointer)return;
+  const destination=target;
+  pointer=null;target=-1;
+  rows.forEach(row=>row.classList.remove('is-dragging','drop-before','drop-after'));
+  rows=[];
+  if(drop&&destination>=0)moveCategory(name,destination);
+ }
+ handle.addEventListener('pointerup',event=>finish(event,true));
+ handle.addEventListener('pointercancel',event=>finish(event,false));
+ handle.addEventListener('lostpointercapture',event=>finish(event,false));
+}
+async function moveCategory(name,target,restoreFocus=false){
  if(saving)return;
- const ordered=categories.slice(1),index=ordered.indexOf(name),target=index+offset;
- if(index<0||target<0||target>=ordered.length)return;
- [ordered[index],ordered[target]]=[ordered[target],ordered[index]];
+ const ordered=categories.slice(1),index=ordered.indexOf(name);
+ if(index<0||target<0||target>=ordered.length||target===index)return;
+ ordered.splice(index,1);ordered.splice(target,0,name);
  $('cat-error').textContent='';
  try{
   await save(recipes,ordered);
   renderCategories();
-  const buttons=[...$('cat-list').querySelectorAll('button[data-category]')].filter(button=>button.dataset.category===name&&!button.disabled);
-  (buttons.find(button=>Number(button.dataset.offset)===offset)||buttons[0])?.focus();
+  if(restoreFocus)[...$('cat-list').querySelectorAll('button[data-category]')].find(button=>button.dataset.category===name)?.focus();
  }catch(error){$('cat-error').textContent=error.message;}
 }
 async function changeCategory(oldName,newName){
@@ -516,5 +544,22 @@ form.onsubmit=async event=>{
  finally{button.disabled=false;button.textContent='Rezept speichern';}
  $('editor').close();openDetail(recipe);
 };
+document.querySelectorAll('dialog').forEach(dialog=>{
+ let outsidePointer=null;
+ const onBackdrop=event=>{
+  if(event.target!==dialog)return false;
+  const box=dialog.getBoundingClientRect();
+  return event.clientX<box.left||event.clientX>=box.right||event.clientY<box.top||event.clientY>=box.bottom;
+ };
+ dialog.addEventListener('pointerdown',event=>{outsidePointer=event.isPrimary&&event.button===0&&onBackdrop(event)?event.pointerId:null;});
+ dialog.addEventListener('pointercancel',()=>{outsidePointer=null;});
+ dialog.addEventListener('pointerup',event=>{
+  const shouldClose=event.pointerId===outsidePointer&&onBackdrop(event);
+  outsidePointer=null;
+  if(!shouldClose)return;
+  if(typeof dialog.requestClose==='function')dialog.requestClose();
+  else if(dialog.dispatchEvent(new Event('cancel',{cancelable:true})))dialog.close();
+ });
+});
 render();updateAdmin();restoreAdmin().finally(()=>loadCollection().catch(()=>{}));
 </script></body></html>
