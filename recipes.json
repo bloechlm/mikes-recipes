@@ -109,44 +109,6 @@
         "Inzwischen einen mittelgroßen Topf mit Salzwasser zum Kochen bringen.",
         "Nach dem Rasten aus der Grießmasse mithilfe von zwei Tee- oder Mokkalöffeln Nockerl formen und ca. 5 Min. im Salzwasser kochen. Danach ca. 15 Min. zugedeckt ziehen lassen."
       ]
-    },
-    {
-      "id": "salad",
-      "title": "Insalata mit Tomaten",
-      "category": "Vorspeise",
-      "servings": 2,
-      "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=1000&q=84",
-      "ingredients": [
-        [
-          "Cherrytomaten",
-          150,
-          "g"
-        ],
-        [
-          "Blattsalat",
-          100,
-          "g"
-        ],
-        [
-          "Gurke",
-          0.5,
-          "Stk."
-        ],
-        [
-          "Olivenöl",
-          2,
-          "EL"
-        ],
-        [
-          "Zitronensaft",
-          1,
-          "EL"
-        ]
-      ],
-      "steps": [
-        "Gemüse waschen und klein schneiden.",
-        "Olivenöl und Zitronensaft verrühren, abschmecken und mit dem Salat mischen."
-      ]
     }
   ]
 }
