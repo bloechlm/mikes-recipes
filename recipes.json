@@ -11,6 +11,74 @@
   ],
   "recipes": [
     {
+      "id": "4d5b4a0f-7f91-4da8-b2e3-ab4a4806d86b",
+      "title": "Klassischer Erdäpfelsalat nach Wiener Art",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/665f03ce-c426-4595-bcc1-e1a1440a0824.png",
+      "source": "https://www.ichkoche.at/klassischer-erdaepfelsalat-nach-wiener-art-zum-wiener-schnitzel-rezept-12925",
+      "ingredients": [
+        [
+          "Erdäpfel",
+          600,
+          "g"
+        ],
+        [
+          "Suppe (Rindsuppe)",
+          250,
+          "ml"
+        ],
+        [
+          "Essig",
+          3,
+          "EL"
+        ],
+        [
+          "Öl",
+          6,
+          "EL"
+        ],
+        [
+          "Zwiebeln",
+          60,
+          "g"
+        ],
+        [
+          "Salz",
+          1,
+          "Prise"
+        ],
+        [
+          "Pfeffer",
+          1,
+          "Prise"
+        ],
+        [
+          "Senf",
+          1,
+          "TL"
+        ],
+        [
+          "Zucker",
+          1,
+          "Prise"
+        ],
+        [
+          "Frische Kräuter (z.B. Schnittlauch oder Petersilie)",
+          null,
+          "nach Belieben"
+        ]
+      ],
+      "category": "Beilagen",
+      "servings": 4,
+      "steps": [
+        "Die Erdäpfel mit der Schale weich kochen.",
+        "Die gekochten Kartoffeln noch warm schälen und in dünne Scheiben in eine große Schüssel schneiden.",
+        "Die Suppe erwärmen und direkt über die warmen Kartoffeln gießen.",
+        "Mit Essig, Öl, Zwiebeln, Salz sowie Pfeffer würzen und so lange rühren, bis eine sämige Konsistenz entsteht.",
+        "Den Salat nach Geschmack mit etwas Senf und Zucker abrunden.",
+        "Vor dem Servieren nach Wunsch mit frisch gehackten Kräutern wie Schnittlauch oder Petersilie bestreuen."
+      ]
+    },
+    {
       "id": "9b1ecee8-d93d-44d2-85f5-859f822f4ec8",
       "title": "Oma's Semmelknödel",
       "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/501fd369-8996-429f-94bb-065c3a978852.png",
