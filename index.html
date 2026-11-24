@@ -37,6 +37,12 @@
  .print-source{font:8pt system-ui,sans-serif;color:#4f6140;overflow-wrap:anywhere}
 }
 #editor .dialog-head,#detail .dialog-head{position:sticky;top:0;z-index:3;background:#22291f;border-bottom:1px solid var(--line);padding:10px 0;margin-top:-10px}
+
+.category-order{display:flex;gap:6px}.category-order .btn{padding:7px 11px}.category-order .btn:disabled{opacity:.42;cursor:default}
+.card{position:relative;display:flex;align-items:flex-end;min-width:0;width:100%;aspect-ratio:1.55;isolation:isolate;background:#293124}
+.card>img,.card>.placeholder{position:absolute;inset:0;width:100%;height:100%;aspect-ratio:auto;object-fit:cover;object-position:center}
+.card::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,#10150ef5 0%,#10150ec7 21%,#10150e22 67%,transparent 100%);pointer-events:none}
+.card div.copy{position:relative;z-index:1;width:100%;padding:16px 18px}.card h3{margin:4px 0 0;color:var(--ink);font-size:clamp(21px,2.4vw,27px);overflow-wrap:anywhere}
 </style></head>
 <body>
 <header><nav class="wrap"><div class="brand"><img id="site-logo" class="brand-logo" alt="Oceanfactory" hidden><span class="brand-name">Mike’s Recipes</span></div><div class="nav-actions"><button class="btn" id="admin" type="button">Admin</button><button class="btn" id="cats" type="button" hidden>Kategorien</button><button class="btn primary" id="new" type="button" hidden>＋ Rezept anlegen</button></div></nav></header>
@@ -99,7 +105,7 @@ let recipes=[...samples],category='Alle',editing=null;
 function applyCollection(data){
  siteLogo=typeof data.logo==='string'&&data.logo.startsWith('https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/')?data.logo:'';
  $('site-logo').hidden=!siteLogo;if(siteLogo)$('site-logo').src=siteLogo;else $('site-logo').removeAttribute('src');
- categories=['Alle',...new Set([...defaults.filter(c=>c==='Pizza'||c==='Sonstiges'),...(data.categories||defaults)])];
+ categories=['Alle',...new Set([...(data.categories||defaults),'Pizza','Sonstiges'])];
  recipes=[samples[0],...data.recipes.filter(r=>r.id!=='pizza')];
  if(!categories.includes(category))category='Alle';
  render();
@@ -161,8 +167,18 @@ function renderCategories(){
  const list=$('cat-list');list.replaceChildren();
  const local=readRecipes().filter(r=>r.id!=='pizza'&&!recipes.some(item=>item.id===r.id));
  $('migrate').hidden=!local.length;
- for(const name of categories.slice(1)){
+ const ordered=categories.slice(1);
+ for(const [index,name] of ordered.entries()){
   const line=el('div','category-row');line.append(el('span','',name));
+  const controls=el('div','category-order');
+  for(const [label,offset] of [['Hoch',-1],['Runter',1]]){
+   const button=action(label,'btn',()=>moveCategory(name,offset));
+   button.dataset.category=name;button.dataset.offset=offset;
+   button.setAttribute('aria-label',name+' nach '+(offset===-1?'oben':'unten')+' verschieben');
+   button.disabled=index+offset<0||index+offset>=ordered.length;
+   controls.append(button);
+  }
+  line.append(controls);
   if(!['Pizza','Sonstiges'].includes(name)){
    line.append(action('Umbenennen','btn',()=>{
     const input=el('input');input.value=name;input.maxLength=45;input.setAttribute('aria-label','Neuer Kategoriename');
@@ -173,6 +189,19 @@ function renderCategories(){
   }
   list.append(line);
  }
+}
+async function moveCategory(name,offset){
+ if(saving)return;
+ const ordered=categories.slice(1),index=ordered.indexOf(name),target=index+offset;
+ if(index<0||target<0||target>=ordered.length)return;
+ [ordered[index],ordered[target]]=[ordered[target],ordered[index]];
+ $('cat-error').textContent='';
+ try{
+  await save(recipes,ordered);
+  renderCategories();
+  const buttons=[...$('cat-list').querySelectorAll('button[data-category]')].filter(button=>button.dataset.category===name&&!button.disabled);
+  (buttons.find(button=>Number(button.dataset.offset)===offset)||buttons[0])?.focus();
+ }catch(error){$('cat-error').textContent=error.message;}
 }
 async function changeCategory(oldName,newName){
  const name=newName.trim();$('cat-error').textContent='';
@@ -210,7 +239,7 @@ function render(){
  $('filters').replaceChildren(...categories.map(name=>{const b=action(name,'chip',()=>{category=name;render();[...$('filters').children].find(item=>item.textContent===name)?.focus();});b.setAttribute('aria-pressed',name===category);return b;}));
  const query=$('search').value.trim().toLocaleLowerCase('de');
  const shown=recipes.filter(r=>(category==='Alle'||r.category===category)&&[r.title,...r.ingredients.map(row=>row[0])].some(value=>value.toLocaleLowerCase('de').includes(query)));
- $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',r.id==='pizza'?'Pizza · Angepinnt':r.category),el('h3','',r.title),el('span','muted',r.servings+(r.servings===1?' Portion':' Portionen')));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
+ $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',r.id==='pizza'?'Pizza · Angepinnt':r.category),el('h3','',r.title));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
  if(!shown.length)$('grid').append(el('p','empty','Keine Rezepte gefunden.'));
 }
 async function printRecipe(r,n,hydration){
