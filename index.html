@@ -517,15 +517,26 @@ async function uploadImage(file,url,token){
  if(!/^image\/(jpeg|png|webp|gif|avif)$/.test(blob.type)||blob.size>15*1024*1024)throw new Error('Wähle ein JPEG, PNG, WebP, GIF oder AVIF mit maximal 15 MB.');
  let bitmap;
  try{bitmap=await createImageBitmap(blob);}catch{throw new Error('Das Bildformat konnte nicht geöffnet werden.');}
- const canvas=document.createElement('canvas'),scale=Math.min(1,1600/Math.max(bitmap.width,bitmap.height));
- canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
- canvas.getContext('2d').drawImage(bitmap,0,0,canvas.width,canvas.height);bitmap.close();
- const compact=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',0.86));
- if(!compact)throw new Error('Das Bild konnte nicht verarbeitet werden.');
+ const canvas=document.createElement('canvas'),context=canvas.getContext('2d');
+ // Base64 grows by a third. Leave room below the Worker's 3 MB JSON limit.
+ const maxImageBytes=1800000;
+ let compact;
+ try{
+  for(const [edge,quality] of [[1600,.86],[1280,.82],[1000,.78],[800,.74],[600,.7],[480,.66]]){
+   const scale=Math.min(1,edge/Math.max(bitmap.width,bitmap.height));
+   canvas.width=Math.max(1,Math.round(bitmap.width*scale));canvas.height=Math.max(1,Math.round(bitmap.height*scale));
+   context.drawImage(bitmap,0,0,canvas.width,canvas.height);
+   const candidate=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
+   if(candidate?.size>0&&candidate.size<=maxImageBytes){compact=candidate;break;}
+  }
+ }finally{bitmap.close();}
+ if(!compact)throw new Error('Das Bild konnte nicht ausreichend komprimiert werden. Wähle eine kleinere Datei.');
  const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(compact);});
  const path='recipe-images/'+crypto.randomUUID()+(compact.type==='image/webp'?'.webp':'.png');
  const response=await github(adminApi+path,token,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:data})});
- if(!response.ok)throw new Error('GitHub konnte das Bild nicht speichern ('+response.status+'). Prüfe die Berechtigung für mikes-recipes.');
+ if(response.status===413)throw new Error('Das Bild überschreitet das Uploadlimit. Wähle eine kleinere Datei.');
+ if(response.status===403)throw new Error('GitHub verweigert den Upload (403). Prüfe den Schreibzugriff für mikes-recipes.');
+ if(!response.ok)throw new Error('Das Bild konnte nicht gespeichert werden (HTTP '+response.status+').');
  return 'https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+path;
 }
 function openEditor(r){
