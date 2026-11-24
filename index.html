@@ -449,7 +449,7 @@ function el(tag,cls,value){const node=document.createElement(tag);if(cls)node.cl
 function action(label,cls,fn){const b=el('button',cls,label);b.type='button';b.onclick=fn;return b;}
 function imageFor(url,cls){if(!url)return el('div',cls||'placeholder');const img=el('img',cls);img.src=url;img.alt='';img.onerror=()=>img.replaceWith(el('div',cls||'placeholder'));return img;}
 $('hero-image').src=photo('photo-1574071318508-1cdbab80d002',1800);
-$('browse').onclick=()=>$('collection').scrollIntoView({block:'start'});
+$('browse').onclick=()=>$('collection').scrollIntoView({block:'start',behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});
 $('new').onclick=()=>openEditor();
 $('search').oninput=render;
 function render(){
