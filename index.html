@@ -106,7 +106,7 @@ try {
  [data-theme=light] input,[data-theme=light] textarea,[data-theme=light] select{background:#fffdf6}
  [data-theme=light] .danger,[data-theme=light] .error{color:#9e3325}
 }
-.ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong{white-space:normal;text-align:right;overflow-wrap:anywhere}</style></head>
+.ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong,.print-box li strong{white-space:nowrap;text-align:right;overflow-wrap:normal;flex-shrink:0}.ingredients li>span{min-width:0;overflow-wrap:break-word}</style></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
  <details class="brand-menu" id="brand-menu">
@@ -211,7 +211,7 @@ function ingredientDisplay(row,amount,n,servings){
    const f=fractions.find(([v])=>Math.abs(v-fraction)<1e-8);
    const metric=/^(grams|milliliters)$/.test(label||'');
    const formatted=metric?String(Number(value.toFixed(3))):f?(whole?whole+' ':'')+f[1]:String(Number(value.toFixed(4)));
-   return [formatted,label].filter(Boolean).join(' ');
+   const singular={Cups:'Cup',Tablespoons:'Tablespoon',Teaspoons:'Teaspoon',Pinches:'Pinch',Packages:'Package',Sticks:'Stick'};const plural={Cup:'Cups',Tablespoon:'Tablespoons',Teaspoon:'Teaspoons',Pinch:'Pinches',Package:'Packages',Stick:'Sticks'};const displayLabel=value>1?(plural[label]||label):(singular[label]||label);return [formatted,displayLabel].filter(Boolean).join('\u00a0');
   });
   const li=el('li');li.append(el('span','',name),el('strong','',parts.join(' / ')));return li;
  }
