@@ -10,6 +10,71 @@
   ],
   "recipes": [
     {
+      "id": "9b1ecee8-d93d-44d2-85f5-859f822f4ec8",
+      "title": "Omas Semmelknödel: locker, gelingsicher & einfach",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/501fd369-8996-429f-94bb-065c3a978852.png",
+      "source": "https://foodbyjos.de/semmelknoedel-grundrezept/",
+      "ingredients": [
+        [
+          "kleine Zwiebeln",
+          3,
+          ""
+        ],
+        [
+          "Bund glatte Petersilie",
+          0.5,
+          ""
+        ],
+        [
+          "Butter",
+          25,
+          "g"
+        ],
+        [
+          "Salz",
+          1,
+          "Prise"
+        ],
+        [
+          "Pfeffer",
+          1,
+          "Prise"
+        ],
+        [
+          "Muskat",
+          1,
+          "Prise"
+        ],
+        [
+          "warme Milch",
+          280,
+          "ml"
+        ],
+        [
+          "altbackene Semmel oder Knödelbrot (ca. 5 Kaisersemmel)",
+          280,
+          "g"
+        ],
+        [
+          "Eier Größe M",
+          2,
+          ""
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 6,
+      "steps": [
+        "Die Zwiebeln in sehr feine Würfel schneiden.",
+        "Die Petersilie sehr fein hacken und mit den Zwiebeln in der Butter andünsten.",
+        "Die altbackenen Brötchen zuerst in feine Scheiben schneiden und anschließend mit der Hand grob zerbrechen.",
+        "Auf die Brotkrumen die gedünsteten Zwiebelchen, die warme Milch und die Petersilie aus Schritt 1 + 2 geben.",
+        "Mit einer guten Prise Salz, Pfeffer und Muskat würzen. Alles vorsichtig mit dem Rührlöffel vermengen. Die Masse 10-15 Minuten abkühlen lassen.",
+        "Die Eier hinzugeben und nochmals vorsichtig zu einer gebundenen Masse verrühren | 10-15 Minuten ruhen.",
+        "Mit nassen Händen einen Probekloß formen und in gesalzenes, siedendes Wasser einlegen. Kochzeit ca. 15 Minuten.",
+        "Den Kloß probieren und ggf. die Masse nachwürzen."
+      ]
+    },
+    {
       "id": "d1906760-4c0b-4d05-82eb-b02d3fb879d2",
       "title": "Oma's Semmelknödel",
       "image": "",
