@@ -2,13 +2,31 @@
   "logo": "",
   "categories": [
     "Pizza",
+    "Sonstiges",
     "Pasta",
     "Vorspeise",
     "Dessert",
-    "Sonstiges",
     "Suppeneinlagen"
   ],
   "recipes": [
+    {
+      "id": "603b02b4-b6db-48e2-8daa-3df617a8edd3",
+      "title": "Test",
+      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/a61a8f01-0542-43c5-bab0-eee99ace4bbf.png",
+      "source": "",
+      "ingredients": [
+        [
+          "Ei",
+          1,
+          ""
+        ]
+      ],
+      "category": "Suppeneinlagen",
+      "servings": 6,
+      "steps": [
+        "komisch"
+      ]
+    },
     {
       "id": "pasta",
       "title": "Spaghetti al Pomodoro",
