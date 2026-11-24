@@ -42,9 +42,7 @@
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Ricette di casa</span><h1>Meine Küche,<br><em>meine Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
 <section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><div class="grid" id="grid"></div></section></main>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
-<label>GitHub-Zugriffstoken<input id="admin-token" type="password" required autocomplete="off"></label>
-<p class="photo-note"><a class="source-link" href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">Fine-grained Token erstellen</a> für <strong>bloechlm/mikes-recipes</strong> mit <strong>Contents: Read and write</strong>. Das Token bleibt während dieser Sitzung im Arbeitsspeicher. Gespeicherte Rezepte und Bilder sind öffentlich.</p>
-<p id="admin-error" class="error" role="alert"></p><button class="btn primary" type="submit">Anmelden</button></form></dialog>
+<p id="admin-error" class="error" role="alert"></p><a class="btn primary" href="https://mikes-recipes-import.prince-of-turbo.workers.dev/auth/login">Mit GitHub anmelden</a></form></dialog>
 <dialog id="category-dialog" aria-labelledby="category-title"><div class="panel"><div class="dialog-head"><h2 id="category-title">Kategorien &amp; Logo</h2><button class="btn icon" type="button" id="cats-close" aria-label="Schließen">×</button></div>
 <form id="cat-form"><label>Neue Kategorie<input id="cat-name" required maxlength="45"></label><p><button class="btn primary">Hinzufügen</button></p></form><div id="cat-list"></div><p id="cat-error" class="error" role="alert"></p><button id="migrate" class="btn" type="button" hidden>Lokale Rezepte übernehmen</button>
 <form id="logo-form"><h3>Oceanfactory-Logo</h3><label>Logo auswählen<input id="logo-file" type="file" accept="image/png,image/webp,image/jpeg" required></label><p><button class="btn" type="submit">Logo speichern</button></p></form></div></dialog>
@@ -92,7 +90,8 @@ function readRecipes(){
  try{const data=JSON.parse(localStorage.getItem(key));if(Array.isArray(data))return [samples[0],...data.filter(r=>r.id!=='pizza')];}catch{}
  return samples;
 }
-const apiRepo='https://api.github.com/repos/bloechlm/mikes-recipes';
+const adminApi='https://mikes-recipes-import.prince-of-turbo.workers.dev/admin/';
+const sessionKey='mikes-recipes:admin-session';
 const recipeFile='recipes.json';
 let adminToken='',recipeSHA=null,saving=false,siteLogo='';
 let recipes=[...samples],category='Alle',editing=null;
@@ -105,7 +104,9 @@ function applyCollection(data){
  render();
 }
 async function github(url,token,options={}){
- return fetch(url,{...options,cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000),headers:{Accept:'application/vnd.github+json',...(token?{Authorization:'Bearer '+token}:{}),...options.headers}});
+ const response=await fetch(url,{...options,cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+token,...options.headers}});
+ if(response.status===401){clearAdmin();throw new Error('Die Anmeldung ist abgelaufen. Melde dich erneut mit GitHub an.');}
+ return response;
 }
 function decodeCollection(base64){return JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(base64),c=>c.charCodeAt(0))));}
 function encodeCollection(data){
@@ -115,7 +116,7 @@ function encodeCollection(data){
 }
 async function loadCollection(token){
  if(token){
-  const res=await github(apiRepo+'/contents/'+recipeFile,token);
+  const res=await github(adminApi+recipeFile,token);
   if(res.status===404){recipeSHA=null;return;}
   if(!res.ok)throw new Error('GitHub konnte die Rezeptsammlung nicht laden ('+res.status+').');
   const file=await res.json();applyCollection(decodeCollection(file.content));recipeSHA=file.sha;return;
@@ -128,7 +129,7 @@ async function save(next,nextCategories=categories.slice(1),logo=siteLogo){
  saving=true;
  try{
   const data={logo,categories:nextCategories,recipes:next.filter(r=>r.id!=='pizza')};
-  const res=await github(apiRepo+'/contents/'+recipeFile,adminToken,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Update recipe collection',content:encodeCollection(data),branch:'main',...(recipeSHA?{sha:recipeSHA}:{})})});
+  const res=await github(adminApi+recipeFile,adminToken,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Update recipe collection',content:encodeCollection(data),branch:'main',...(recipeSHA?{sha:recipeSHA}:{})})});
   if(res.status===409||res.status===422){await loadCollection(adminToken);throw new Error('Die Sammlung wurde zwischenzeitlich geändert. Prüfe den aktuellen Stand und versuche es erneut.');}
   if(!res.ok)throw new Error('GitHub konnte nicht speichern ('+res.status+'). Prüfe Contents: Read and write.');
   recipeSHA=(await res.json()).content.sha;applyCollection(data);
@@ -137,22 +138,24 @@ async function save(next,nextCategories=categories.slice(1),logo=siteLogo){
 function updateAdmin(){
  $('admin').textContent=adminToken?'Abmelden':'Admin';$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
 }
-$('admin').onclick=()=>{
- if(adminToken){adminToken='';recipeSHA=null;updateAdmin();return;}
- $('admin-error').textContent='';$('admin-dialog').showModal();$('admin-token').focus();
-};
+function clearAdmin(){
+ adminToken='';recipeSHA=null;try{sessionStorage.removeItem(sessionKey);}catch{}updateAdmin();
+}
+function showAdmin(message=''){
+ $('admin-error').textContent=message;
+ if(!$('admin-dialog').open)$('admin-dialog').showModal();
+}
+$('admin').onclick=()=>adminToken?clearAdmin():showAdmin();
 $('admin-close').onclick=()=>$('admin-dialog').close();
-$('admin-form').onsubmit=async event=>{
- event.preventDefault();const token=$('admin-token').value.trim(),button=event.currentTarget.querySelector('[type=submit]');
- if(button.disabled)return;button.disabled=true;$('admin-error').textContent='';
- try{
-  const res=await github('https://api.github.com/user',token);
-  if(!res.ok||(await res.json()).login?.toLowerCase()!=='bloechlm')throw new Error('Melde dich mit einem Token des GitHub-Kontos bloechlm an.');
-  const repo=await github(apiRepo,token);
-  if(!repo.ok||!(await repo.json()).permissions?.push)throw new Error('Das Token benötigt Schreibzugriff auf mikes-recipes.');
-  await loadCollection(token);adminToken=token;updateAdmin();$('admin-dialog').close();
- }catch(error){$('admin-error').textContent=error.message;}finally{$('admin-token').value='';button.disabled=false;}
-};
+async function restoreAdmin(){
+ const fragment=new URLSearchParams(location.hash.slice(1)),received=fragment.get('admin-session'),error=fragment.get('admin-error');
+ if(received||error)history.replaceState(null,'',location.pathname+location.search);
+ if(error){showAdmin(({setup:'Der Login ist noch nicht eingerichtet.',account:'Dieses GitHub-Konto ist nicht freigegeben.'})[error]||'GitHub konnte dich nicht anmelden. Versuche es erneut.');return;}
+ let token=received;try{token=token||sessionStorage.getItem(sessionKey);}catch{}
+ if(!token||!/^\d{10}\.[0-9a-f]{64}$/.test(token))return;
+ try{await loadCollection(token);adminToken=token;updateAdmin();try{sessionStorage.setItem(sessionKey,token);}catch{}}
+ catch(error){clearAdmin();showAdmin(error.message);}
+}
 function renderCategories(){
  const list=$('cat-list');list.replaceChildren();
  const local=readRecipes().filter(r=>r.id!=='pizza'&&!recipes.some(item=>item.id===r.id));
@@ -379,10 +382,7 @@ async function uploadImage(file,url,token){
  if(!compact)throw new Error('Das Bild konnte nicht verarbeitet werden.');
  const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=reject;reader.readAsDataURL(compact);});
  const path='recipe-images/'+crypto.randomUUID()+(compact.type==='image/webp'?'.webp':'.png');
- const response=await fetch('https://api.github.com/repos/bloechlm/mikes-recipes/contents/'+path,{
-  method:'PUT',headers:{Authorization:'Bearer '+token,Accept:'application/vnd.github+json','Content-Type':'application/json'},
-  body:JSON.stringify({message:'Add recipe image',content:data,branch:'main'}),signal:AbortSignal.timeout(20000)
- });
+ const response=await github(adminApi+path,token,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:data})});
  if(!response.ok)throw new Error('GitHub konnte das Bild nicht speichern ('+response.status+'). Prüfe die Berechtigung für mikes-recipes.');
  return 'https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+path;
 }
@@ -424,5 +424,5 @@ form.onsubmit=async event=>{
  finally{button.disabled=false;button.textContent='Rezept speichern';}
  $('editor').close();openDetail(recipe);
 };
-render();updateAdmin();loadCollection().catch(()=>{});
+render();updateAdmin();restoreAdmin().finally(()=>loadCollection().catch(()=>{}));
 </script></body></html>
