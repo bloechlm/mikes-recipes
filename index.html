@@ -112,6 +112,10 @@ try {
 .ingredients li.ingredient-heading,.print-box li.ingredient-heading{font-weight:700;color:var(--leaf);padding-top:20px;list-style:none;display:block}.print-box li.ingredient-heading{color:#52633a}.ingredients strong,.print-box li strong{white-space:nowrap;text-align:right;overflow-wrap:normal;flex-shrink:0}.ingredients li>span{min-width:0;overflow-wrap:break-word}.line-item.heading-editor{grid-template-columns:minmax(0,1fr) 42px 42px 42px;margin-top:12px}.heading-editor input{color:var(--leaf);font-weight:700;border-color:var(--leaf)}@media(max-width:480px){.line-item.heading-editor{grid-template-columns:minmax(0,1fr) 34px 34px 34px}}#rows .line-item{grid-template-columns:34px minmax(0,1fr) 82px 95px 42px;position:relative}#rows .heading-editor{grid-template-columns:34px minmax(0,1fr) 42px}.ingredient-grip{touch-action:none;cursor:grab;padding:0;min-width:0;width:34px;height:38px;color:var(--leaf);user-select:none}.ingredient-grip:active{cursor:grabbing}#rows .is-dragging{opacity:.45}#rows .drop-before:before,#rows .drop-after:after{content:'';position:absolute;left:0;right:0;height:3px;border-radius:3px;background:var(--leaf);pointer-events:none}#rows .drop-before:before{top:-5px}#rows .drop-after:after{bottom:-5px}@media(max-width:480px){#rows .line-item{grid-template-columns:28px minmax(0,1fr) 54px 60px 34px;gap:4px}#rows .heading-editor{grid-template-columns:28px minmax(0,1fr) 34px}.ingredient-grip{width:28px}}.brand-home{color:inherit;text-decoration:none;min-width:0;cursor:pointer}.brand-menu{margin-inline-start:auto;flex-shrink:0}.brand-menu > summary{display:grid;place-items:center;width:44px;height:44px;padding:0;outline:none!important;-webkit-tap-highlight-color:transparent}.brand-menu > summary::after{content:none}.brand-menu > summary:focus-visible{outline:none!important;box-shadow:inset 0 0 0 1px var(--dim)}.brand-menu > summary:hover{background:var(--glass)}.hamburger{display:grid;gap:5px;width:23px}.hamburger i{display:block;height:2px;border-radius:2px;background:currentColor}.brand-menu-items{inset-inline-start:auto;inset-inline-end:0}.brand-menu-items button:focus{outline:none}.brand-menu-items button:focus-visible{outline:none;box-shadow:inset 0 0 0 1px var(--dim)}header nav.wrap{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:10px}.brand-home{justify-self:start}.brand-home .brand-name{font-family:'Great Vibes','Snell Roundhand','Brush Script MT',cursive;font-size:clamp(16px,2.6vw,27px);font-weight:400;white-space:normal;line-height:1.15;letter-spacing:0}.brand-center{grid-column:2;justify-self:center;display:flex;align-items:center;justify-content:center}.brand-center .brand-logo{width:clamp(65px,17vw,170px)}.brand-menu{grid-column:3;justify-self:end;margin:0}@media(max-width:480px){header nav.wrap{gap:5px}.brand-home .brand-name{font-size:18px}}.brand-home .brand-name{word-spacing:0.16em}
  @media(max-width:650px){.brand-center .brand-logo--compass{width:clamp(36px,10vw,54px);height:clamp(36px,10vw,54px);object-fit:cover;object-position:center}}
 
+.language-picker{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding-top:4px;border-top:1px solid var(--line)}
+.brand-menu-items .language-picker button{text-align:center}
+.brand-menu-items .language-picker button[aria-pressed=true]{background:var(--glass);color:var(--leaf);box-shadow:inset 0 0 0 1px var(--line)}
+#translation-status:empty{display:none}
 </style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
@@ -123,12 +127,14 @@ try {
    <button id="admin" type="button">Admin-Login</button>
    <button id="cats" type="button" hidden>Kategorien &amp; Logo</button>
    <button id="new" type="button" hidden>＋ Rezept anlegen</button>
+   <div class="language-picker" role="group" aria-label="Sprache"><button type="button" data-language="de" lang="de">DE</button><button type="button" data-language="en" lang="en">EN</button></div>
+   <button id="translate-existing" type="button" hidden>Übersetzungen ergänzen</button>
    <button class="theme-toggle" id="theme-toggle" type="button">Helles Design</button>
   </div>
  </details>
 </nav></header>
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Ricette di casa</span><h1>Meine Küche,<br><em>meine Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
-<section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><div class="grid" id="grid"></div></section></main>
+<section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><p id="translation-status" class="photo-note" role="status"></p><div class="grid" id="grid"></div></section></main>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
 <p id="admin-error" class="error" role="alert"></p>
 <p id="admin-status" class="muted" role="status" hidden></p>
@@ -173,7 +179,148 @@ const samples=[
  {id:'pasta',title:'Spaghetti al Pomodoro',category:'Pasta',servings:2,image:photo('photo-1551183053-bf91a1d81141'),ingredients:[['Spaghetti',200,'g'],['Geschälte Tomaten',400,'g'],['Olivenöl',2,'EL'],['Knoblauch',1,'Zehe'],['Basilikum',null,'nach Geschmack']],steps:['Knoblauch im Olivenöl sanft anschwitzen. Tomaten dazugeben, zerdrücken und etwa 20 Minuten köcheln.','Spaghetti al dente kochen. Mit etwas Kochwasser in der Sauce schwenken und mit Basilikum servieren.']},
  {id:'salad',title:'Insalata mit Tomaten',category:'Vorspeise',servings:2,image:photo('photo-1512621776951-a57141f2eefd'),ingredients:[['Cherrytomaten',150,'g'],['Blattsalat',100,'g'],['Gurke',0.5,'Stk.'],['Olivenöl',2,'EL'],['Zitronensaft',1,'EL']],steps:['Gemüse waschen und klein schneiden.','Olivenöl und Zitronensaft verrühren, abschmecken und mit dem Salat mischen.']}
 ];
+
+const sampleEnglish={
+ pizza:['Pizza dough','Tipo 00 pizza flour','Water','Salt','Fresh yeast','Mix the flour, water, and yeast. Add the salt and knead until the dough is smooth and elastic.','Cover the dough and let fermentation start at room temperature for about one hour. Divide into equal dough balls, cover, and refrigerate for 18–24 hours.','Take the dough balls out of the refrigerator about two hours before shaping. At 70% hydration, a dough scraper helps with portioning.'],
+ pasta:['Spaghetti al Pomodoro','Spaghetti','Peeled tomatoes','Olive oil','Garlic','Basil','Gently sauté the garlic in olive oil. Add and crush the tomatoes, then simmer for about 20 minutes.','Cook the spaghetti al dente. Toss it in the sauce with a splash of pasta water and serve with basil.'],
+ salad:['Tomato salad','Cherry tomatoes','Lettuce','Cucumber','Olive oil','Lemon juice','Wash and chop the vegetables.','Whisk together the olive oil and lemon juice, season to taste, and toss with the salad.']
+};
+for(const recipe of samples)recipe.translations={de:[recipe.title,...recipe.ingredients.map(r=>r[0]),...recipe.steps],en:sampleEnglish[recipe.id]};
 const $=id=>document.getElementById(id);
+
+let language='de';
+try{if(localStorage.getItem('em-recipes:language')==='en')language='en';}catch{}
+const english={
+ 'Hauptnavigation':'Main navigation','Seitenanfang':'Back to top','Eva‘s & Michi‘s Recipes – Seitenanfang':'Eva’s & Michi’s Recipes – Back to top','Menü öffnen':'Open menu',
+ 'Meine Küche,':'My kitchen,','meine Rezepte.':'my recipes.','Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.':'A cookbook for your favorite dishes. Cook for yourself, for two, or for the whole table.','Rezepte entdecken':'Explore recipes','Rezeptsammlung':'Recipe collection','Rezept suchen …':'Search recipes …','Rezept suchen':'Search recipes','Nach Kategorie filtern':'Filter by category',
+ 'Alle':'All','Vorspeise':'Appetizers','Beilagen':'Side dishes','Dessert':'Dessert','Suppeneinlagen':'Soup add-ins','Getränke':'Drinks','Sonstiges':'Other','Angepinnt':'Pinned','Keine Rezepte gefunden.':'No recipes found.',
+ 'Admin-Login':'Admin sign-in','Admin-Zugang':'Admin access','Abmelden':'Sign out','Kategorien & Logo':'Categories & logo','＋ Rezept anlegen':'＋ Add recipe','Rezept anlegen':'Add recipe','Rezept bearbeiten':'Edit recipe','Helles Design':'Light mode','Dunkles Design':'Dark mode','Schließen':'Close',
+ 'E-Mail':'Email','Passwort':'Password','Mit E-Mail anmelden':'Sign in with email','Passwort festlegen / zurücksetzen':'Set / reset password','Mit GitHub anmelden':'Sign in with GitHub',
+ 'Neue Kategorie':'New category','Hinzufügen':'Add','Ziehe Kategorien am Griff in die gewünschte Reihenfolge.':'Drag the handles to reorder categories.','Lokale Rezepte übernehmen':'Import local recipes','Logo auswählen':'Choose logo','Logo speichern':'Save logo','Neuer Kategoriename':'New category name','Umbenennen':'Rename','Speichern':'Save',
+ 'Rezept per Link/Text importieren':'Import recipe from a link or text','Rezept-Link':'Recipe link','Import-Zugangscode':'Import access code','Zugangscode vergessen':'Forget access code','Rezepttext einfügen, falls der Link blockiert ist':'Paste recipe text if the link is blocked','Rezepttext':'Recipe text','Ohne KI importieren':'Import without AI','Mit KI importieren':'Import with AI',
+ 'Beim Import erhält Jina Reader den öffentlichen Link, wenn der Browser ihn nicht direkt lesen kann. Nur beim KI-Import wird der Rezepttext über Cloudflare an Google Gemini gesendet. Nach dem ersten erfolgreichen Import merkt sich dieser Browser den Zugangscode.':'Jina Reader receives the public link if the browser cannot read it directly. AI import sends the recipe text to Google Gemini through Cloudflare. This browser remembers your access code after the first successful import.',
+ 'Rezeptname':'Recipe name','Kategorie':'Category','Grundportionen':'Base servings','Rezeptbild (optional)':'Recipe image (optional)','Datei auswählen':'Choose file','Oder öffentliche Bild-URL importieren':'Or import a public image URL','Falls der direkte Abruf scheitert, kann die Bildadresse an den Bildproxy wsrv.nl gesendet werden.':'If direct download fails, the image URL may be sent to the wsrv.nl image proxy.',
+ 'Ein Schritt pro Zeile':'One step per line','＋ Zutat hinzufügen':'＋ Add ingredient','＋ Zwischenüberschrift':'＋ Section heading','Zwischenüberschrift':'Section heading','Zutat':'Ingredient','Menge':'Amount','Einheit':'Unit','Abbrechen':'Cancel','Rezept speichern':'Save recipe','Rezept wird gespeichert …':'Saving recipe …','Bild wird hochgeladen …':'Uploading image …','Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.':'The existing image is kept until you select a new one.',
+ 'Portion':'serving','Portionen':'Servings','Zutaten':'Ingredients','Zubereitung':'Instructions','Eine Portion weniger':'One fewer serving','Eine Portion mehr':'One more serving','Hydrationsstufe':'Hydration level','Wasser in Prozent der Mehlmenge. 66 % bedeutet 66 g Wasser pro 100 g Mehl.':'Water as a percentage of the flour weight. At 66%, use 66 g of water for every 100 g of flour.',
+ 'Originalrezept öffnen':'Open original recipe','Als PDF speichern':'Save as PDF','Pin lösen':'Unpin','Anpinnen':'Pin','Löschen':'Delete','Bearbeiten':'Edit',
+ 'Übersetzungen ergänzen':'Fill in missing translations','Übersetzung fehlt. Originaltext angezeigt.':'Translation unavailable. Showing the original recipe.',
+ 'Deutsch / Englisch':'German / English','Sprache':'Language'
+};
+const tr=value=>language==='en'&&Object.hasOwn(english,value)?english[value]:value;
+const locale=()=>language==='en'?'en-US':'de-AT';
+const quantityFormat=(number,max=3)=>new Intl.NumberFormat(locale(),{maximumFractionDigits:max}).format(number);
+const englishHydration={
+ 58:'Firm dough with little stickiness. Easy to portion and lift, but it may spring back as you stretch it.',
+ 62:'Easy to shape with a little more stretch. A good starting point for shaping by hand.',
+ 66:'Softer and stretchier, with the potential for an airier crust. My starting point for Neapolitan pizza with suitable tipo 00 flour.',
+ 70:'Very soft and sticky. A flour that absorbs more water and a dough scraper make it easier to handle. Fermentation and oven heat also affect how airy the crust gets.'
+};
+const staticLanguageBindings=[];
+function captureInterfaceLanguage(){
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ for(let node=walker.nextNode();node;node=walker.nextNode()){
+  if(node.parentElement.closest('script,style,select,textarea'))continue;
+  const raw=node.nodeValue,source=raw.trim();
+  if(Object.hasOwn(english,source))staticLanguageBindings.push(()=>{node.nodeValue=raw.replace(source,()=>tr(source));});
+ }
+ for(const node of document.querySelectorAll('[aria-label],[placeholder]')){
+  for(const name of ['aria-label','placeholder']){
+   const source=node.getAttribute(name);
+   if(Object.hasOwn(english,source))staticLanguageBindings.push(()=>node.setAttribute(name,tr(source)));
+  }
+ }
+}
+function setLanguage(next){
+ language=next==='en'?'en':'de';
+ document.documentElement.lang=language==='en'?'en-US':'de-AT';
+ try{localStorage.setItem('em-recipes:language',language);}catch{}
+ for(const update of staticLanguageBindings)update();
+ for(const button of document.querySelectorAll('[data-language]'))button.setAttribute('aria-pressed',String(button.dataset.language===language));
+ updateThemeButton();updateAdmin();render();
+}
+function recipeText(recipe){return [recipe.title,...recipe.ingredients.map(row=>row[0]),...recipe.steps];}
+function validTranslations(result,length){
+ return ['de','en'].every(id=>Array.isArray(result?.[id])&&result[id].length===length&&result[id].every(s=>typeof s==='string'&&s.trim()));
+}
+function recipeView(recipe){
+ const source=recipeText(recipe);
+ const found=recipe.translations;
+ if(!validTranslations(found,source.length))return recipe;
+ const [title,...translated]=found[language];
+ return {...recipe,title,ingredients:recipe.ingredients.map((row,index)=>[translated[index],row[1],row[2]]),steps:translated.slice(recipe.ingredients.length)};
+}
+async function translateRecipeText(recipe,token){
+ const texts=recipeText(recipe);
+ const response=await github(adminApi+'translate-recipe',token,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({texts}),signal:AbortSignal.timeout(36000)});
+ const result=await response.json().catch(()=>null);
+ if(!response.ok||!validTranslations(result,texts.length))throw new Error(result?.error||tr('Übersetzung fehlt. Originaltext angezeigt.'));
+ return {de:result.de,en:result.en};
+}
+function localizedUnit(unit){
+ const label={
+  'Stück':['Stück','pieces'],'Stk':['Stück','pieces'],'Stk.':['Stück','pieces'],'piece':['Stück','piece'],'pieces':['Stück','pieces'],
+  'Prise':['Prise','pinch'],'Prisen':['Prisen','pinches'],'Pinch':['Prise','pinch'],'Pinches':['Prisen','pinches'],
+  'Pk':['Päckchen','packet'],'Päckchen':['Päckchen','packet'],'Package':['Päckchen','packet'],'Packages':['Päckchen','packets'],
+  'Stange':['Stange','stick'],'Stick':['Stange','stick'],'Sticks':['Stangen','sticks'],
+  'Schuss':['Schuss','splash'],'Zehe':['Zehe','clove'],'Zehen':['Zehen','cloves'],'clove':['Zehe','clove'],'cloves':['Zehen','cloves'],
+  'etwas':['etwas','a little'],'zum Abfüllen':['zum Abfüllen','for bottling'],'nach Belieben':['nach Belieben','to taste'],'nach Geschmack':['nach Geschmack','to taste'],'to taste':['nach Geschmack','to taste'],'as needed':['nach Bedarf','as needed']
+ }[unit];
+ return label?.[language==='en'?1:0]??(language==='en'?unit.replace(/^\s*(\d+(?:[.,]\d+)?)\s+Prise(n)?$/i,'$1 pinch$2').replace(/^bis (\d+)$/i,'to $1').replace(/pinchn\b/i,'pinches'):unit);
+}
+const ouncesInGrams=28.349523125,fluidOuncesInMl=29.5735295625,cupInMl=8*fluidOuncesInMl;
+function convertIngredient(amount,unit){
+ const key=unit.trim().toLowerCase().replace(/\.$/,'');
+ const mass={g:1,gram:1,grams:1,gramm:1,dag:10,dkg:10,kg:1000,mg:.001,oz:ouncesInGrams,ounce:ouncesInGrams,ounces:ouncesInGrams,lb:16*ouncesInGrams,lbs:16*ouncesInGrams,pound:16*ouncesInGrams,pounds:16*ouncesInGrams};
+ const volume={ml:1,milliliter:1,milliliters:1,l:1000,liter:1000,liters:1000,'fl oz':fluidOuncesInMl,'fluid ounce':fluidOuncesInMl,'fluid ounces':fluidOuncesInMl,cup:cupInMl,cups:cupInMl};
+ if(Object.hasOwn(mass,key)){
+  const grams=amount*mass[key];
+  if(language==='en'&&['oz','ounce','ounces','lb','lbs','pound','pounds'].includes(key))return {amount,unit:['oz','ounce','ounces'].includes(key)?'oz':'lb',exact:true};
+  if(language==='de'&&['g','kg','dag','dkg','mg','gramm','gram','grams'].includes(key))return {amount,unit:key==='dkg'?'dag':['gramm','grams','gram'].includes(key)?'g':key,exact:key!=='g'};
+  return language==='en'?{amount:grams/ouncesInGrams,unit:'oz',exact:true}:{amount:grams,unit:'g',exact:true};
+ }
+ if(Object.hasOwn(volume,key)){
+  const ml=amount*volume[key];
+  if(language==='en'&&['cup','cups'].includes(key))return {amount,unit:'cup',exact:false};
+  if(language==='en'&&['fl oz','fluid ounce','fluid ounces'].includes(key))return {amount,unit:'fl oz',exact:true};
+  if(language==='de'&&['ml','milliliter','milliliters','l','liter','liters'].includes(key))return {amount,unit:['l','liter','liters'].includes(key)?'L':'ml',exact:key!=='ml'};
+  return language==='en'?{amount:ml/fluidOuncesInMl,unit:'fl oz',exact:true}:{amount:ml,unit:'ml',exact:true};
+ }
+ const spoon=/^(?:el|tbsp|tablespoons?)$/.test(key)?['EL','tbsp']:/^(?:tl|tsp|teaspoons?)$/.test(key)?['TL','tsp']:null;
+ return {amount,unit:spoon?.[language==='en'?1:0]??localizedUnit(unit),exact:Boolean(spoon)};
+}
+function ingredientAmount(amount,unit,precise=false){
+ const result=convertIngredient(amount,unit);
+ const value=result.amount;
+ const exact=result.exact||(precise&&result.unit!=='cup');
+ const decimals=value>0&&value<.01?Math.min(12,Math.ceil(-Math.log10(value))+2):2;
+ return [exact?quantityFormat(value,decimals):formatPortionedQuantity(value,result.unit),result.unit].filter(Boolean).join('\u00a0');
+}
+function portionText(n){
+ return n+' '+(language==='en'?(n===1?'serving':'servings'):(n===1?'Portion':'Portionen'));
+}
+async function translateMissingRecipes(){
+ const pending=recipes.filter(r=>r.id!=='pizza'&&!validTranslations(r.translations,recipeText(r).length));
+ const button=$('translate-existing'),status=$('translation-status'),token=adminToken;
+ if(!token||!pending.length||button.disabled)return;
+ button.disabled=true;const completed=new Map();
+ try{
+  for(const recipe of pending){
+   status.textContent=(language==='en'?'Translating ':'Übersetze ')+(completed.size+1)+' / '+pending.length+' …';
+   try{completed.set(recipe.id,{source:JSON.stringify(recipeText(recipe)),translations:await translateRecipeText(recipe,token)});}
+   catch(error){status.textContent=error.message;break;}
+  }
+  if(completed.size){
+   const next=recipes.map(recipe=>{
+    const translation=completed.get(recipe.id);
+    return translation?.source===JSON.stringify(recipeText(recipe))?{...recipe,translations:translation.translations}:recipe;
+   });
+   await save(next);
+   status.textContent=language==='en'?'Translations saved: '+completed.size+' / '+pending.length:'Übersetzungen gespeichert: '+completed.size+' / '+pending.length;
+  }
+ }catch(error){status.textContent=error.message;}
+ finally{button.disabled=false;updateAdmin();}
+}
+
 const brandMenu=$('brand-menu');
 [$('brand-home'),$('brand-center')].forEach(link=>link.addEventListener('click',event=>{event.preventDefault();closeBrandMenu();window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth'});}));
 function closeBrandMenu(restoreFocus=false){
@@ -182,7 +329,7 @@ function closeBrandMenu(restoreFocus=false){
 }
 function updateThemeButton(){
  const light=document.documentElement.dataset.theme==='light';
- $('theme-toggle').textContent=light?'Dunkles Design':'Helles Design';
+ $('theme-toggle').textContent=tr(light?'Dunkles Design':'Helles Design');
  $('theme-color').setAttribute('content',light?'#f7f5eb':'#191e18');
 }
 $('theme-toggle').onclick=()=>{
@@ -207,7 +354,7 @@ updateThemeButton();
 const key='mikes-recipes-v1';
 const defaults=['Pizza','Pasta','Vorspeise','Dessert','Sonstiges'];
 let categories=['Alle',...defaults];
-const numbers=new Intl.NumberFormat('de-AT',{maximumSignificantDigits:5});
+const numbers={format:value=>quantityFormat(value,5)};
 function ingredientDisplay(row,amount,n,servings){
  const [name,qty,unit]=row;
  if(qty==null&&unit===' ' )return el('li','ingredient-heading',name);
@@ -218,17 +365,17 @@ function ingredientDisplay(row,amount,n,servings){
    const whole=Math.floor(value),fraction=value-whole;
    const fractions=[[1/16,'¹⁄₁₆'],[1/12,'¹⁄₁₂'],[1/8,'⅛'],[1/6,'⅙'],[1/4,'¼'],[1/3,'⅓'],[3/8,'⅜'],[1/2,'½'],[5/8,'⅝'],[2/3,'⅔'],[3/4,'¾'],[5/6,'⅚'],[7/8,'⅞']];
    const f=fractions.find(([v])=>Math.abs(v-fraction)<1e-8);
-   const metric=/^(grams|milliliters)$/.test(label||'');
-   const formatted=metric?String(Number(value.toFixed(3))):f?(whole?whole+' ':'')+f[1]:String(Number(value.toFixed(4)));
-   const singular={Cups:'Cup',Tablespoons:'Tablespoon',Teaspoons:'Teaspoon',Pinches:'Pinch',Packages:'Package',Sticks:'Stick'};const plural={Cup:'Cups',Tablespoon:'Tablespoons',Teaspoon:'Teaspoons',Pinch:'Pinches',Package:'Packages',Stick:'Sticks'};const displayLabel=value>1?(plural[label]||label):(singular[label]||label);return [formatted,displayLabel].filter(Boolean).join('\u00a0');
+   const converted=convertIngredient(value,label||'');
+   if(converted.exact||converted.amount!==value)return ingredientAmount(value,label||'',true);
+   return [f?(whole?whole+' ':'')+f[1]:quantityFormat(value,4),converted.unit].filter(Boolean).join('\u00a0');
   });
   const li=el('li');li.append(el('span','',name),el('strong','',parts.join(' / ')));return li;
  }
- const li=el('li');li.append(el('span','',name),el('strong','',amount==null?unit:[formatPortionedQuantity(amount*n/servings,unit),unit].filter(Boolean).join(' ')));return li;
+ const li=el('li');li.append(el('span','',name),el('strong','',amount==null?localizedUnit(unit):ingredientAmount(amount*n/servings,unit)));return li;
 }
 function formatPortionedQuantity(amount,unit){
  const normalized=(unit||'').trim().toLocaleLowerCase('de-AT').replace(/\.$/,'');
- if(normalized==='g'||normalized==='ml')return numbers.format(Math.round(amount/5)*5);
+ if(normalized==='g'||normalized==='ml'){const rounded=Math.round(amount/5)*5;return numbers.format(rounded||amount);}
  if(normalized==='cup'||normalized==='cups'){
   const eighths=Math.round(amount*8),whole=Math.floor(eighths/8);
   const fraction=['','⅛','¼','⅜','½','⅝','¾','⅞'][eighths%8];
@@ -270,11 +417,12 @@ function applyCollection(data){
  categories=['Alle',...new Set([...(data.categories||defaults),'Pizza','Sonstiges'])];
  recipes=[samples[0],...data.recipes.filter(r=>r.id!=='pizza').map(r=>({...r,image:currentRecipeImage(r.image)}))];
  pinnedIds=new Set(Array.isArray(data.pinnedIds)?data.pinnedIds:['pizza']);
+ updateAdmin();
  if(!categories.includes(category))category='Alle';
  render();
 }
 async function github(url,token,options={}){
- const response=await fetch(url,{...options,cache:'no-store',credentials:'omit',signal:AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+token,...options.headers}});
+ const response=await fetch(url,{...options,cache:'no-store',credentials:'omit',signal:options.signal??AbortSignal.timeout(20000),headers:{Authorization:'Bearer '+token,...options.headers}});
  if(response.status===401){clearAdmin();throw new Error('Die Anmeldung ist abgelaufen. Melde dich erneut an.');}
  return response;
 }
@@ -307,7 +455,8 @@ async function save(next,nextCategories=categories.slice(1),logo=siteLogo,pins=p
  }finally{saving=false;}
 }
 function updateAdmin(){
- $('admin').textContent=adminToken?'Abmelden':'Admin-Login';$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
+ $('admin').textContent=tr(adminToken?'Abmelden':'Admin-Login');$('new').hidden=!adminToken;$('cats').hidden=!adminToken;
+ $('translate-existing').hidden=!adminToken||!recipes.some(r=>r.id!=='pizza'&&!validTranslations(r.translations,recipeText(r).length));
  if(!adminToken)$('detail').querySelectorAll('.admin-source,.admin-edit-actions').forEach(node=>node.remove());
 }
 function clearAdmin(){
@@ -462,7 +611,7 @@ $('logo-form').onsubmit=async event=>{
  try{const logo=await uploadImage($('logo-file').files[0],'',adminToken);await save(recipes,categories.slice(1),logo);$('logo-form').reset();}
  catch(error){$('cat-error').textContent=error.message;}finally{button.disabled=false;}
 };
-function el(tag,cls,value){const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=value;return node;}
+function el(tag,cls,value){const node=document.createElement(tag);if(cls)node.className=cls;if(value!==undefined)node.textContent=tr(value);return node;}
 function action(label,cls,fn){const b=el('button',cls,label);b.type='button';b.onclick=fn;return b;}
 function imageFor(url,cls){if(!url)return el('div',cls||'placeholder');const img=el('img',cls);img.src=url;img.alt='';img.onerror=()=>img.replaceWith(el('div',cls||'placeholder'));return img;}
 $('hero-image').src=photo('photo-1574071318508-1cdbab80d002',1800);
@@ -470,17 +619,18 @@ $('browse').onclick=()=>$('collection').scrollIntoView({block:'start',behavior:w
 $('new').onclick=()=>openEditor();
 $('search').oninput=render;
 function render(){
- $('filters').replaceChildren(...categories.map(name=>{const b=action(name,'chip',()=>{category=name;render();[...$('filters').children].find(item=>item.textContent===name)?.focus();});b.setAttribute('aria-pressed',name===category);return b;}));
- const query=$('search').value.trim().toLocaleLowerCase('de');
- const shown=recipes.filter(r=>(category==='Alle'||r.category===category)&&[r.title,...r.ingredients.map(row=>row[0])].some(value=>value.toLocaleLowerCase('de').includes(query)));
+ $('filters').replaceChildren(...categories.map(name=>{const b=action(name,'chip',()=>{category=name;render();[...$('filters').children].find(item=>item.textContent===tr(name))?.focus();});b.setAttribute('aria-pressed',name===category);return b;}));
+ const query=$('search').value.trim().toLocaleLowerCase(locale());
+ const shown=recipes.filter(r=>{const view=recipeView(r);return (category==='Alle'||r.category===category)&&[...recipeText(view),r.title].some(value=>value.toLocaleLowerCase(locale()).includes(query));});
  shown.sort((a,b)=>Number(pinnedIds.has(b.id))-Number(pinnedIds.has(a.id)));
- $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',pinnedIds.has(r.id)?r.category+' · Angepinnt':r.category),el('h3','',r.title));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
+ $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',pinnedIds.has(r.id)?tr(r.category)+' · '+tr('Angepinnt'):tr(r.category)),el('h3','',recipeView(r).title));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
  if(!shown.length)$('grid').append(el('p','empty','Keine Rezepte gefunden.'));
 }
-async function printRecipe(r,n,hydration){
+async function printRecipe(original,n,hydration){
+ const r=recipeView(original);
  const page=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · EM Recipes');
  const logo=siteLogo?imageFor(siteLogo):null;if(logo)brand.prepend(logo);
- head.append(brand,el('h1','',r.title),el('div','print-meta',r.category+' · '+n+(n===1?' Portion':' Portionen')+(r.id==='pizza'?' · '+hydration+' % Hydration':'')));
+ head.append(brand,el('h1','',r.title),el('div','print-meta',tr(r.category)+' · '+portionText(n)+(r.id==='pizza'?' · '+hydration+' % Hydration':'')));
  const ingredients=el('section','print-box'),list=el('ul');
  for(const [index,[name,quantity,unit]] of r.ingredients.entries()){
   const amount=r.id==='pizza'&&index===1?r.ingredients[0][1]*hydration/100:quantity;
@@ -497,13 +647,14 @@ async function printRecipe(r,n,hydration){
  const title=document.title;document.title=r.title+' – EM Recipes';
  try{window.print();}finally{document.title=title;}
 }
-function openDetail(r){
+function openDetail(original){
+ const r=recipeView(original);
  const dialog=$('detail'),panel=el('div','panel'),head=el('div','dialog-head'),title=el('h2','',r.title),close=action('×','btn icon',()=>dialog.close());
- title.id='detail-title';close.setAttribute('aria-label','Schließen');head.append(title,close);
+ title.id='detail-title';close.setAttribute('aria-label',tr('Schließen'));head.append(title,close);
  const isDough=r.id==='pizza';
  const portions=el('div','portion'),label=el('span','','Portionen'),stepper=el('div','stepper'),count=el('output'),list=el('ul','ingredients');
  let n=r.servings,hydration=66;
- count.setAttribute('aria-label','Portionen');
+ count.setAttribute('aria-label',tr('Portionen'));
  function refresh(){
   count.textContent=n;
   minus.disabled=n===1;plus.disabled=n===999;
@@ -514,13 +665,13 @@ function openDetail(r){
  }
  function step(by){n=Math.max(1,Math.min(999,n+by));refresh();}
  const minus=action('−','btn icon',()=>step(-1)),plus=action('+','btn icon',()=>step(1));
- minus.setAttribute('aria-label','Eine Portion weniger');plus.setAttribute('aria-label','Eine Portion mehr');
+ minus.setAttribute('aria-label',tr('Eine Portion weniger'));plus.setAttribute('aria-label',tr('Eine Portion mehr'));
  stepper.append(minus,count,plus);portions.append(label,stepper);refresh();
  panel.append(head,portions);
  if(isDough){
   const box=el('section','hydration'),options=el('div','hydration-options'),note=el('p');
-  options.setAttribute('aria-label','Hydrationsstufe');note.setAttribute('aria-live','polite');
-  function choose(level){hydration=level;note.textContent=hydrationNotes[level];for(const b of options.children)b.setAttribute('aria-pressed',Number(b.dataset.level)===level);refresh();}
+  options.setAttribute('aria-label',tr('Hydrationsstufe'));note.setAttribute('aria-live','polite');
+  function choose(level){hydration=level;note.textContent=(language==='en'?englishHydration:hydrationNotes)[level];for(const b of options.children)b.setAttribute('aria-pressed',Number(b.dataset.level)===level);refresh();}
   for(const level of [58,62,66,70]){const b=action(level+' %','chip',()=>choose(level));b.dataset.level=level;options.append(b);}
   box.append(el('h3','','Hydration'),el('p','','Wasser in Prozent der Mehlmenge. 66 % bedeutet 66 g Wasser pro 100 g Mehl.'),options,note);
   panel.append(box);choose(hydration);
@@ -534,12 +685,12 @@ function openDetail(r){
   source.href=r.source;source.target='_blank';source.rel='noopener noreferrer';
   links.append(source);
  }
- links.append(action('Als PDF speichern','btn',()=>printRecipe(r,n,hydration)));
+ links.append(action('Als PDF speichern','btn',()=>printRecipe(original,n,hydration)));
  actions.append(links);
  if(adminToken){
   const editActions=el('div','recipe-action-group admin-edit-actions'),error=el('p','error recipe-action-error');
   error.setAttribute('role','alert');
-  const pinLabel=()=>pinnedIds.has(r.id)?'Pin lösen':'Anpinnen';
+  const pinLabel=()=>tr(pinnedIds.has(r.id)?'Pin lösen':'Anpinnen');
   const pin=action(pinLabel(),'btn',async()=>{
    if(saving)return;
    const nextPins=new Set(pinnedIds);
@@ -557,11 +708,12 @@ function openDetail(r){
     try{await save(recipes.filter(item=>item.id!==r.id));dialog.close();}
     catch(e){error.textContent=e.message;}
    });
-   const edit=action('Bearbeiten','btn primary',()=>{dialog.close();openEditor(r);});
+   const edit=action('Bearbeiten','btn primary',()=>{dialog.close();openEditor(original);});
    editActions.append(remove,edit);
   }
   actions.append(editActions);panel.append(error);
  }
+ if(r===original&&language==='en')panel.append(el('p','photo-note','Übersetzung fehlt. Originaltext angezeigt.'));
  panel.append(actions);
  dialog.replaceChildren(...(r.image?[imageFor(r.image,'detail-image'),panel]:[panel]));dialog.showModal();
 }
@@ -829,9 +981,9 @@ async function uploadImage(file,url,token){
 }
 function openEditor(r){
  if(!adminToken)return;
- form.elements.category.replaceChildren(...categories.slice(1).map(name=>el('option','',name)));
- editing=r?.id??null;sourceLink=r?.source??'';form.reset();$('import-box').open=false;refreshImportAccessControls();$('import-status').textContent='';$('error').textContent='';$('rows').replaceChildren();$('editor-title').textContent=r?'Rezept bearbeiten':'Rezept anlegen';
- currentImage=r?.image??'';$('image-current').hidden=!currentImage;$('image-current').textContent='Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.';
+ form.elements.category.replaceChildren(...categories.slice(1).map(name=>{const option=el('option','',name);option.value=name;return option;}));
+ editing=r?.id??null;sourceLink=r?.source??'';form.reset();$('import-box').open=false;refreshImportAccessControls();$('import-status').textContent='';$('error').textContent='';$('rows').replaceChildren();$('editor-title').textContent=tr(r?'Rezept bearbeiten':'Rezept anlegen');
+ currentImage=r?.image??'';$('image-current').hidden=!currentImage;$('image-current').textContent=tr('Das vorhandene Bild bleibt erhalten, bis du ein neues auswählst.');
  if(r){for(const name of ['title','category','servings'])form.elements[name].value=r[name];form.elements.steps.value=r.steps.join('\n');}
  (r?.ingredients.length?r.ingredients:[[]]).forEach(row);$('editor').showModal();form.elements.title.focus();
 }
@@ -855,16 +1007,28 @@ form.onsubmit=async event=>{
  const file=inputs.get('imageFile'),hasFile=Boolean(file?.size),button=form.querySelector('[type=submit]');
  let savedImage=currentImage;
  if(hasFile||image){
-  button.disabled=true;button.textContent='Bild wird hochgeladen …';
+  button.disabled=true;button.textContent=tr('Bild wird hochgeladen …');
   const token=adminToken;
   try{savedImage=await uploadImage(hasFile?file:null,image,token);currentImage=savedImage;form.elements.imageFile.value='';form.elements.image.value='';}
   catch(error){$('error').textContent=error.message||'Das Bild konnte nicht gespeichert werden.';return;}
-  finally{button.disabled=false;button.textContent='Rezept speichern';}
+  finally{button.disabled=false;button.textContent=tr('Rezept speichern');}
  }
  const recipe={id,title,image:savedImage,source:sourceLink,ingredients,category:inputs.get('category'),servings:Number(inputs.get('servings')),steps:inputs.get('steps').split('\n').map(s=>s.trim()).filter(Boolean)};
- button.disabled=true;button.textContent='Rezept wird gespeichert …';
- try{await save(editing?recipes.map(r=>r.id===id?recipe:r):[recipe,...recipes]);}catch(error){$('error').textContent=error.message;return;}
- finally{button.disabled=false;button.textContent='Rezept speichern';}
+ button.disabled=true;button.textContent=tr('Rezept wird gespeichert …');
+ const previous=recipes.find(r=>r.id===id);
+ const unchanged=previous&&JSON.stringify(recipeText(previous))===JSON.stringify(recipeText(recipe));
+ const status=$('translation-status');
+ status.textContent='';
+ if(unchanged&&validTranslations(previous.translations,recipeText(recipe).length))recipe.translations=previous.translations;
+ else{
+  button.textContent=language==='en'?'Translating recipe …':'Rezept wird übersetzt …';
+  try{recipe.translations=await translateRecipeText(recipe,adminToken);}
+  catch{status.textContent=language==='en'?'Original saved without translation. Use “Fill in missing translations” to retry.':'Original ohne Übersetzung gespeichert. Über „Übersetzungen ergänzen“ kannst du es erneut versuchen.';}
+ }
+ button.textContent=tr('Rezept wird gespeichert …');
+ try{await save(editing?recipes.map(r=>r.id===id?recipe:r):[recipe,...recipes]);}
+ catch(error){status.textContent='';$('error').textContent=error.message;return;}
+ finally{button.disabled=false;button.textContent=tr('Rezept speichern');}
  $('editor').close();openDetail(recipe);
 };
 document.querySelectorAll('dialog').forEach(dialog=>{
@@ -884,5 +1048,8 @@ document.querySelectorAll('dialog').forEach(dialog=>{
   else if(dialog.dispatchEvent(new Event('cancel',{cancelable:true})))dialog.close();
  });
 });
-render();updateAdmin();restoreAdmin().finally(()=>loadCollection().catch(()=>{}));
+captureInterfaceLanguage();
+for(const button of document.querySelectorAll('[data-language]'))button.onclick=()=>setLanguage(button.dataset.language);
+$('translate-existing').onclick=translateMissingRecipes;
+setLanguage(language);restoreAdmin().finally(()=>loadCollection().catch(()=>{}));
 </script></body></html>
