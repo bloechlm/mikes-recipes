@@ -151,7 +151,7 @@ try {
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Zum Nachkochen</span><h1>Unsere Küche,<br><em>unsere Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
 <section class="measure-guides" aria-label="Umrechnungstabellen">
 <div class="measure-guide">
- <table>
+ <table data-measure-language="de">
   <caption>US-Maße auf einen Blick</caption>
   <thead><tr><th scope="col">Angabe im Rezept</th><th scope="col">Feste Zutaten<small>ca. Gramm</small></th><th scope="col">Flüssigkeiten<small>ca. Milliliter</small></th></tr></thead>
   <tbody>
@@ -163,9 +163,21 @@ try {
    <tr><th scope="row">16 oz / fl oz</th><td>454 g<small>1 lb (Pfund)</small></td><td>480 ml</td></tr>
   </tbody>
  </table>
+ <table data-measure-language="en" hidden>
+  <caption>Metric to US measurements</caption>
+  <thead><tr><th scope="col">Weight</th><th scope="col">Volume</th><th scope="col">US equivalents</th></tr></thead>
+  <tbody>
+   <tr><th scope="row">25 g</th><td>30 ml</td><td>0.88 oz<small>1.01 fl oz</small></td></tr>
+   <tr><th scope="row">50 g</th><td>60 ml</td><td>1.76 oz<small>2.03 fl oz</small></td></tr>
+   <tr><th scope="row">100 g</th><td>120 ml</td><td>3.53 oz<small>4.06 fl oz</small></td></tr>
+   <tr><th scope="row">225 g</th><td>240 ml</td><td>7.94 oz<small>8.12 fl oz</small></td></tr>
+   <tr><th scope="row">350 g</th><td>350 ml</td><td>12.35 oz<small>11.83 fl oz</small></td></tr>
+   <tr><th scope="row">450 g</th><td>500 ml</td><td>15.87 oz<small>16.91 fl oz</small></td></tr>
+  </tbody>
+ </table>
 </div>
 <div class="measure-guide">
- <table aria-describedby="cup-note">
+ <table data-measure-language="de" aria-describedby="cup-note">
   <caption>US Cups umrechnen</caption>
   <thead><tr><th scope="col">US Cup</th><th scope="col">Volumen</th><th scope="col">Weizenmehl</th><th scope="col">Kristallzucker</th></tr></thead>
   <tbody>
@@ -177,9 +189,21 @@ try {
    <tr><th scope="row">1 Cup</th><td>237 ml</td><td>120 g</td><td>198 g</td></tr>
   </tbody>
  </table>
+ <table data-measure-language="en" hidden aria-describedby="cup-note">
+  <caption>Milliliters to US cups</caption>
+  <thead><tr><th scope="col">Volume</th><th scope="col">All-purpose flour</th><th scope="col">Granulated sugar</th><th scope="col">US cups</th></tr></thead>
+  <tbody>
+   <tr><th scope="row">50 ml</th><td>25 g</td><td>42 g</td><td>0.21</td></tr>
+   <tr><th scope="row">75 ml</th><td>38 g</td><td>63 g</td><td>0.32</td></tr>
+   <tr><th scope="row">100 ml</th><td>51 g</td><td>84 g</td><td>0.42</td></tr>
+   <tr><th scope="row">150 ml</th><td>76 g</td><td>126 g</td><td>0.63</td></tr>
+   <tr><th scope="row">200 ml</th><td>101 g</td><td>167 g</td><td>0.85</td></tr>
+   <tr><th scope="row">250 ml</th><td>127 g</td><td>209 g</td><td>1.06</td></tr>
+  </tbody>
+ </table>
 </div>
 <div class="measure-guide measure-guide--temperature">
- <table>
+ <table data-measure-language="de">
   <caption>Backofen</caption>
   <thead><tr><th scope="col">°F</th><th scope="col">ca. °C</th></tr></thead>
   <tbody>
@@ -189,6 +213,18 @@ try {
    <tr><th scope="row">375 °F</th><td>191 °C</td></tr>
    <tr><th scope="row">400 °F</th><td>204 °C</td></tr>
    <tr><th scope="row">425 °F</th><td>218 °C</td></tr>
+  </tbody>
+ </table>
+ <table data-measure-language="en" hidden>
+  <caption>Oven</caption>
+  <thead><tr><th scope="col">°C</th><th scope="col">°F</th></tr></thead>
+  <tbody>
+   <tr><th scope="row">150 °C</th><td>302 °F</td></tr>
+   <tr><th scope="row">160 °C</th><td>320 °F</td></tr>
+   <tr><th scope="row">180 °C</th><td>356 °F</td></tr>
+   <tr><th scope="row">190 °C</th><td>374 °F</td></tr>
+   <tr><th scope="row">200 °C</th><td>392 °F</td></tr>
+   <tr><th scope="row">220 °C</th><td>428 °F</td></tr>
   </tbody>
  </table>
 </div>
@@ -278,12 +314,9 @@ const englishHydration={
  70:'Very soft and sticky. A flour that absorbs more water and a dough scraper make it easier to handle. Fermentation and oven heat also affect how airy the crust gets.'
 };
 const staticLanguageBindings=[];
-const measureTableRows=Array.from(document.querySelectorAll('.measure-guides tr'),row=>({row,cells:Array.from(row.cells)}));
-function orderMeasureColumns(){
- for(const {row,cells} of measureTableRows){
-  const ordered=language==='en'?[...cells.slice(1),cells[0]]:cells;
-  row.append(...ordered);
- }
+const measureTables=document.querySelectorAll('[data-measure-language]');
+function updateMeasureTables(){
+ for(const table of measureTables)table.hidden=table.dataset.measureLanguage!==language;
 }
 function captureInterfaceLanguage(){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
@@ -304,7 +337,7 @@ function setLanguage(next){
  document.documentElement.lang=language==='en'?'en-US':'de-AT';
  try{localStorage.setItem('em-recipes:language',language);}catch{}
  for(const update of staticLanguageBindings)update();
- orderMeasureColumns();
+ updateMeasureTables();
  for(const button of document.querySelectorAll('[data-language]'))button.setAttribute('aria-pressed',String(button.dataset.language===language));
  updateThemeButton();updateAdmin();render();
 }
