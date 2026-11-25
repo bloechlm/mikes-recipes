@@ -28,12 +28,17 @@ try {
 
 [hidden]{display:none!important}.nav-actions,.category-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.category-row{padding:10px 0;border-bottom:1px solid var(--line)}.category-row span{flex:1}.category-row input{width:auto;flex:1}.brand-logo{width:clamp(90px,18vw,170px);height:auto;max-height:54px;object-fit:contain}.brand-name{white-space:nowrap}@media(max-width:650px){nav{padding-block:10px;flex-wrap:wrap}.nav-actions .btn{padding:8px 11px}.brand-name{font-size:18px}}
 
-#print-recipe{display:none}
+#print-recipe{display:none;width:184mm;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+#print-recipe.is-measuring{display:block;position:fixed;top:0;left:-200mm;visibility:hidden;pointer-events:none}
+.print-page-limit{position:absolute;height:269mm;width:0}
+.print-page{padding:4mm;border:1px solid #e0e6d7;border-radius:5mm;background:linear-gradient(145deg,rgba(132,155,102,.17),rgba(215,195,147,.10) 65%,rgba(132,155,102,.11));box-decoration-break:clone;-webkit-box-decoration-break:clone}
 @page{size:A4 portrait;margin:13mm}
 @media print{
  html,body{background:white!important;color:#252a21!important;min-height:auto;margin:0}
  body>header,body>main,body>footer,body>dialog{display:none!important}
- #print-recipe{display:block;padding:4mm;border:1px solid #e0e6d7;border-radius:5mm;background:linear-gradient(145deg,rgba(132,155,102,.17),rgba(215,195,147,.10) 65%,rgba(132,155,102,.11));box-decoration-break:clone;-webkit-box-decoration-break:clone;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+ #print-recipe{display:block}
+ .print-page+.print-page{page-break-before:always;break-before:page}
+}
  .print-head,.print-box,.print-photo{border:1px solid #87916c;border-radius:4mm}
  .print-head{padding:5mm 7mm;margin-bottom:4mm;background:rgba(255,255,255,.55)}
  .print-brand{font:700 8pt system-ui,sans-serif;letter-spacing:.18em;text-transform:uppercase;color:#4f6140}
@@ -51,7 +56,6 @@ try {
  .print-box ul li:last-child{border-bottom:0}
  .print-box strong{white-space:nowrap}
 
-}
 #editor .dialog-head,#detail .dialog-head{position:sticky;top:0;z-index:3;background:#22291f;border-bottom:1px solid var(--line);padding:10px 0;margin-top:-10px}
 
 .category-grip{cursor:grab;touch-action:none;user-select:none;font-size:21px;padding:4px 12px;color:var(--leaf)}.category-grip:active{cursor:grabbing}.category-row.is-dragging{opacity:.5}.category-row.drop-before{box-shadow:inset 0 2px var(--leaf)}.category-row.drop-after{box-shadow:inset 0 -2px var(--leaf)}
@@ -933,24 +937,64 @@ function render(){
  $('grid').replaceChildren(...shown.map(r=>{const b=action('','card',()=>openDetail(r));const copy=el('div','copy');copy.append(el('span','eyebrow',pinnedIds.has(r.id)?tr(r.category)+' · '+tr('Angepinnt'):tr(r.category)),el('h3','',recipeView(r).title));const img=imageFor(r.image);if(img.tagName==='IMG')img.loading='lazy';b.append(img,copy);return b;}));
  if(!shown.length)$('grid').append(el('p','empty','Keine Rezepte gefunden.'));
 }
+function appendPrintSections(root,head,picture,sections){
+ root.classList.add('is-measuring');
+ try{
+  const limit=el('div','print-page-limit');
+  root.replaceChildren(limit);
+  // A4 minus the two 13 mm page margins and a 2 mm buffer for printer rounding.
+  const heightLimit=limit.getBoundingClientRect().height;
+  const newPage=()=>{const page=el('div','print-page');root.append(page);return page;};
+  let page=newPage();
+  page.append(head);
+  if(picture)page.append(picture);
+  for(const [title,tag,groups] of sections){
+   let box,list,number=1;
+   const startBox=()=>{
+    box=el('section','print-box');
+    list=el(tag);
+    if(tag==='ol')list.start=number;
+    box.append(el('h2','',title),list);
+    page.append(box);
+   };
+   for(const rows of groups){
+    if(!box)startBox();
+    list.append(...rows);
+    if(page.getBoundingClientRect().height>heightLimit){
+     const firstInBox=list.children.length===rows.length;
+     if(!firstInBox||page.children.length>1){
+      if(firstInBox)box.remove();
+      page=newPage();
+      startBox();
+      list.append(...rows);
+     }
+    }
+    number+=rows.length;
+   }
+  }
+  limit.remove();
+ }finally{root.classList.remove('is-measuring');}
+}
 async function printRecipe(original,n,hydration){
  const r=recipeView(original);
- const page=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · EM Recipes');
+ const root=$('print-recipe'),head=el('div','print-head'),brand=el('div','print-brand','Oceanfactory · EM Recipes');
  const logo=siteLogo?imageFor(siteLogo):null;if(logo)brand.prepend(logo);
  head.append(brand,el('h1','',r.title),el('div','print-meta',tr(r.category)+' · '+portionText(n)+(r.id==='pizza'?' · '+hydration+' % Hydration':'')));
- const ingredients=el('section','print-box'),list=el('ul');
+ const ingredients=[];
+ let group=[];
  for(const [index,[name,quantity,unit]] of r.ingredients.entries()){
   const amount=r.id==='pizza'&&index===1?r.ingredients[0][1]*hydration/100:quantity;
-  list.append(ingredientDisplay([name,quantity,unit],amount,n,r.servings));
+  const row=ingredientDisplay([name,quantity,unit],amount,n,r.servings);
+  group.push(row);
+  if(!row.classList.contains('ingredient-heading')){ingredients.push(group);group=[];}
  }
- ingredients.append(el('h2','','Zutaten'),list);
- const stepBox=el('section','print-box'),steps=el('ol');
- steps.append(...r.steps.map(step=>el('li','',step)));stepBox.append(el('h2','','Zubereitung'),steps);
+ if(group.length)ingredients.push(group);
+ const steps=r.steps.map(step=>[el('li','',step)]);
  const picture=r.image?imageFor(r.image,'print-photo'):null;
- page.replaceChildren(head,...(picture?.tagName==='IMG'?[picture]:[]),ingredients,...(r.steps.length?[stepBox]:[]));
  const images=[picture,logo].filter(img=>img?.tagName==='IMG');
  await Promise.race([Promise.allSettled(images.map(img=>img.decode())),new Promise(resolve=>setTimeout(resolve,3000))]);
  for(const img of images){if(!img.naturalWidth)img.remove();}
+ appendPrintSections(root,head,picture?.naturalWidth?picture:null,[['Zutaten','ul',ingredients],['Zubereitung','ol',steps]]);
  const title=document.title;document.title=r.title+' – EM Recipes';
  try{window.print();}finally{document.title=title;}
 }
