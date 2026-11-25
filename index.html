@@ -278,6 +278,13 @@ const englishHydration={
  70:'Very soft and sticky. A flour that absorbs more water and a dough scraper make it easier to handle. Fermentation and oven heat also affect how airy the crust gets.'
 };
 const staticLanguageBindings=[];
+const measureTableRows=Array.from(document.querySelectorAll('.measure-guides tr'),row=>({row,cells:Array.from(row.cells)}));
+function orderMeasureColumns(){
+ for(const {row,cells} of measureTableRows){
+  const ordered=language==='en'?[...cells.slice(1),cells[0]]:cells;
+  row.append(...ordered);
+ }
+}
 function captureInterfaceLanguage(){
  const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
  for(let node=walker.nextNode();node;node=walker.nextNode()){
@@ -297,6 +304,7 @@ function setLanguage(next){
  document.documentElement.lang=language==='en'?'en-US':'de-AT';
  try{localStorage.setItem('em-recipes:language',language);}catch{}
  for(const update of staticLanguageBindings)update();
+ orderMeasureColumns();
  for(const button of document.querySelectorAll('[data-language]'))button.setAttribute('aria-pressed',String(button.dataset.language===language));
  updateThemeButton();updateAdmin();render();
 }
