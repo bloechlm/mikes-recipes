@@ -185,7 +185,47 @@
         "Für das Crumble das Mehl mit Zucker, Salz und Zimt vermischen. Die kalten Butterstücke dazugeben und alles mit den Händen zu Streuseln verkneten.",
         "Die Streuselmasse gleichmäßig auf den Äpfeln verteilen.",
         "Den Apple Crumble auf mittlerer Schiene für etwa 30 bis 40 Minuten backen."
-      ]
+      ],
+      "translations": {
+        "de": [
+          "Apple Crumble",
+          "Butter (für die Form)",
+          "Äpfel (säuerliche)",
+          "Zitronensaft",
+          "Zucker (braun)",
+          "Vanillezucker",
+          "Crumbles",
+          "Weizenmehl (glatt, W480)",
+          "Zucker",
+          "Butter (kalt, in Stücke geschnitten)",
+          "Salz",
+          "Zimt (gemahlen)",
+          "Den Backofen auf 200 °C Ober-/Unterhitze vorheizen und eine Auflaufform mit Butter einfetten.",
+          "Die Äpfel schälen, entkernen, in Würfel schneiden und in die Auflaufform geben. Anschließend mit Zitronensaft beträufeln sowie mit braunem Zucker und Vanillezucker bestreuen.",
+          "Für das Crumble das Mehl mit Zucker, Salz und Zimt vermischen. Die kalten Butterstücke dazugeben und alles mit den Händen zu Streuseln verkneten.",
+          "Die Streuselmasse gleichmäßig auf den Äpfeln verteilen.",
+          "Den Apple Crumble auf mittlerer Schiene für etwa 30 bis 40 Minuten backen."
+        ],
+        "en": [
+          "Apple Crumble",
+          "Butter (for the baking dish)",
+          "Apples (tart)",
+          "Lemon juice",
+          "Sugar (brown)",
+          "Vanilla sugar",
+          "Crumbles",
+          "Wheat flour (all-purpose, W480)",
+          "Sugar",
+          "Butter (cold, cut into pieces)",
+          "Salt",
+          "Cinnamon (ground)",
+          "Preheat the oven to 200 °C conventional heat and grease a baking dish with butter.",
+          "Peel, core, and dice the apples, then place them in the baking dish. Afterwards, drizzle with lemon juice and sprinkle with brown sugar and vanilla sugar.",
+          "For the crumble, mix the flour with sugar, salt, and cinnamon. Add the cold butter pieces and knead everything with your hands into streusel.",
+          "Distribute the streusel mixture evenly over the apples.",
+          "Bake the apple crumble on the middle rack for about 30 to 40 minutes."
+        ]
+      }
     },
     {
       "id": "9cb9d681-194b-4adc-b4f2-d96e7822d487",
@@ -242,7 +282,49 @@
         "Das Brot in den Deckel der Gusseisen-Backform geben, die Oberseite beliebig einritzen und den Topf als Deckel daraufsetzen.",
         "Im Backofen ohne Vorheizen bei 240 °C Ober-/Unterhitze 80 Minuten backen.",
         "Das Brot sofort herausholen und abgedeckt abkühlen lassen."
-      ]
+      ],
+      "translations": {
+        "de": [
+          "Mikes Sauerteigbrot",
+          "Weizenmehl",
+          "Roggenmehl",
+          "Wasser lauwarm",
+          "Sauerteig",
+          "Salz",
+          "Brotgewürz",
+          "Olivenöl",
+          "Die trockenen Zutaten in den Mixtopf geben und gut vermengen.",
+          "Den Sauerteig mit dem Wasser vermischen und unter langsam eingeschaltetem Rührwerk langsam zugeben.",
+          "Sobald das Wasser gebunden ist, das Olivenöl hinzugeben und das Rührwerk schneller schalten.",
+          "Den Teig so lange kneten, bis er klebrig und ballig wird.",
+          "Den Teig abgedeckt im Backofen bei eingeschaltetem Licht 3 Stunden gehen lassen.",
+          "Den Teig auf eine bemehlte Arbeitsfläche stürzen, die Hände mit Olivenöl einreiben und den Teig dehnen und falten. Den Teig zu einer Kugel auf der Arbeitsfläche ziehen, bis Oberflächenspannung entsteht.",
+          "Den Teig in eine bemehlte Brotform geben und eine weitere Stunde im Ofen gehen lassen.",
+          "Das Brot in den Deckel der Gusseisen-Backform geben, die Oberseite beliebig einritzen und den Topf als Deckel daraufsetzen.",
+          "Im Backofen ohne Vorheizen bei 240 °C Ober-/Unterhitze 80 Minuten backen.",
+          "Das Brot sofort herausholen und abgedeckt abkühlen lassen."
+        ],
+        "en": [
+          "Mike's Sourdough Bread",
+          "Wheat flour",
+          "Rye flour",
+          "Lukewarm water",
+          "Sourdough starter",
+          "Salt",
+          "Bread spice",
+          "Olive oil",
+          "Add the dry ingredients to the mixing bowl and mix well.",
+          "Mix the sourdough starter with the water and add slowly while the mixer is running at a low speed.",
+          "As soon as the water is absorbed, add the olive oil and turn the mixer to a higher speed.",
+          "Knead the dough until it becomes sticky and forms a ball.",
+          "Cover the dough and let it rise in the oven with the light on for 3 hours.",
+          "Turn the dough out onto a floured work surface, rub your hands with olive oil, and stretch and fold the dough. Pull the dough into a ball on the work surface until surface tension develops.",
+          "Place the dough into a floured loaf pan and let it rise in the oven for another hour.",
+          "Place the bread onto the lid of the cast-iron Dutch oven, score the top as desired, and place the pot over it as a lid.",
+          "Bake in the oven without preheating at 240 °C conventional heat for 80 minutes.",
+          "Remove the bread immediately and let it cool covered."
+        ]
+      }
     },
     {
       "id": "chocolate-babka-streusel-20261124",
