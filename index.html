@@ -907,7 +907,19 @@ $('browse').onclick=()=>$('collection').scrollIntoView({block:'start',behavior:w
 $('new').onclick=()=>openEditor();
 $('search').oninput=render;
 function render(){
- $('filters').replaceChildren(...categories.map(name=>{const b=action(name,'chip',()=>{category=name;render();[...$('filters').children].find(item=>item.textContent===tr(name))?.focus();});b.setAttribute('aria-pressed',name===category);return b;}));
+ const counts=new Map();
+ for(const recipe of recipes)counts.set(recipe.category,(counts.get(recipe.category)??0)+1);
+ const filters=$('filters');
+ filters.replaceChildren(...categories.map((name,index)=>{
+  const count=name==='Alle'?recipes.length:counts.get(name)??0;
+  const button=action(tr(name)+' ('+count+')','chip',()=>{
+   category=name;
+   render();
+   filters.children[index]?.focus();
+  });
+  button.setAttribute('aria-pressed',name===category);
+  return button;
+ }));
  const query=$('search').value.trim().toLocaleLowerCase(locale());
  const shown=recipes.filter(r=>{const view=recipeView(r);return (category==='Alle'||r.category===category)&&[...recipeText(view),r.title].some(value=>value.toLocaleLowerCase(locale()).includes(query));});
  shown.sort((a,b)=>Number(pinnedIds.has(b.id))-Number(pinnedIds.has(a.id)));
