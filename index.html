@@ -12,7 +12,7 @@ try {
 }catch{}
 </script>
 <style>
-:root{color-scheme:dark;--ink:#faf5e8;--dim:#c7c5b7;--glass:#ffffff0b;--line:#fff2;--leaf:#d8e6ab;--serif:'Playfair Display',Georgia,serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 86% 20%,#363e29,transparent 58%),#191e18;color:var(--ink);font:16px 'DM Sans',system-ui,sans-serif;min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--leaf);outline-offset:3px}button{color:inherit}header{border-bottom:1px solid var(--line);background:#20261cb8;backdrop-filter:blur(20px);position:sticky;top:0;z-index:2}.wrap{max-width:1320px;margin:auto;padding-inline:clamp(18px,5vw,70px)}nav{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:78px}.brand{font:500 clamp(20px,3vw,26px) var(--serif);display:flex;align-items:center;gap:12px}.seal{width:37px;height:37px;border:1px solid #d8e6ab66;border-radius:50%;display:grid;place-items:center;color:var(--leaf);font:italic 20px var(--serif)}.btn,.chip{border:1px solid var(--line);border-radius:100px;background:#ffffff0c;padding:10px 17px;font-weight:600;backdrop-filter:blur(16px)}.btn:hover,.chip:hover{background:#ffffff20}.primary,.chip[aria-pressed=true]{background:var(--leaf);border-color:transparent;color:#202719}.primary:hover{background:#ecf3cd}main{padding-top:32px;padding-bottom:72px}.hero{position:relative;isolation:isolate;min-height:420px;display:flex;align-items:center;padding:clamp(25px,6vw,78px);overflow:hidden;border:1px solid var(--line);border-radius:32px;background:#2c2f20;box-shadow:0 24px 80px #0004}.hero-image,.hero:after{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+:root{color-scheme:dark;--ink:#faf5e8;--dim:#c7c5b7;--glass:#ffffff0b;--line:#fff2;--leaf:#d8e6ab;--serif:'Playfair Display',Georgia,serif}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 86% 20%,#363e29,transparent 58%),#191e18;color:var(--ink);font:16px 'DM Sans',system-ui,sans-serif;min-height:100vh}button,input,textarea,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid var(--leaf);outline-offset:3px}button{color:inherit}header{border-bottom:1px solid var(--line);background:#20261cb8;backdrop-filter:blur(20px);position:sticky;top:0;z-index:2}.wrap{max-width:1320px;margin:auto;padding-inline:clamp(18px,5vw,70px)}nav{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:78px}.brand{font:500 clamp(20px,3vw,26px) var(--serif);display:flex;align-items:center;gap:12px}.seal{width:37px;height:37px;border:1px solid #d8e6ab66;border-radius:50%;display:grid;place-items:center;color:var(--leaf);font:italic 20px var(--serif)}.btn,.chip{border:1px solid var(--line);border-radius:100px;background:#ffffff0c;padding:10px 17px;font-weight:600;backdrop-filter:blur(16px)}.btn:hover,.chip-count{font-size:.68em;font-weight:400;opacity:.76;white-space:nowrap}.chip:hover{background:#ffffff20}.primary,.chip[aria-pressed=true]{background:var(--leaf);border-color:transparent;color:#202719}.primary:hover{background:#ecf3cd}main{padding-top:32px;padding-bottom:72px}.hero{position:relative;isolation:isolate;min-height:420px;display:flex;align-items:center;padding:clamp(25px,6vw,78px);overflow:hidden;border:1px solid var(--line);border-radius:32px;background:#2c2f20;box-shadow:0 24px 80px #0004}.hero-image,.hero:after{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .hero-image{z-index:-3;object-fit:cover;object-position:70% 54%;opacity:0}
 .hero-image.is-visible{opacity:1}
 .hero-image.is-front{z-index:-2}
@@ -912,11 +912,12 @@ function render(){
  const filters=$('filters');
  filters.replaceChildren(...categories.map((name,index)=>{
   const count=name==='Alle'?recipes.length:counts.get(name)??0;
-  const button=action(tr(name)+' ('+count+')','chip',()=>{
+  const button=action(tr(name),'chip',()=>{
    category=name;
    render();
    filters.children[index]?.focus();
   });
+  button.append(' ',el('span','chip-count','('+count+')'));
   button.setAttribute('aria-pressed',name===category);
   return button;
  }));
