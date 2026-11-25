@@ -25,7 +25,7 @@ try {
 @page{size:A4 portrait;margin:13mm}
 @media print{
  html,body{background:white!important;color:#252a21!important;min-height:auto;margin:0}
- body>header,body>main,body>dialog{display:none!important}
+ body>header,body>main,body>footer,body>dialog{display:none!important}
  #print-recipe{display:block;padding:4mm;border:1px solid #e0e6d7;border-radius:5mm;background:linear-gradient(145deg,rgba(132,155,102,.17),rgba(215,195,147,.10) 65%,rgba(132,155,102,.11));box-decoration-break:clone;-webkit-box-decoration-break:clone;color:#252a21;font:10.5pt/1.42 Georgia,serif;print-color-adjust:exact;-webkit-print-color-adjust:exact}
  .print-head,.print-box,.print-photo{border:1px solid #87916c;border-radius:4mm}
  .print-head{padding:5mm 7mm;margin-bottom:4mm;background:rgba(255,255,255,.55)}
@@ -128,9 +128,13 @@ try {
 .measure-guide--temperature th,.measure-guide--temperature td{padding-inline:9px}
 .measure-guide tbody th{font-weight:600;white-space:nowrap}
 .measure-guide small{display:block;color:var(--dim);font-size:.72rem;font-weight:400;line-height:1}
-.measure-note{grid-column:1/-1;margin:0;padding:0 12px;color:var(--dim);font-size:.72rem;line-height:1.35}
+.measure-guide caption sup{margin-inline-start:.18em}
+.site-footer{margin-top:clamp(36px,6vw,72px);padding-bottom:clamp(20px,4vw,36px);color:var(--dim);font-size:.8rem;line-height:1.5}
+.site-footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:8px 24px;border-top:1px solid var(--line);padding-top:16px}
+.site-footer p{margin:0}
+.site-footer-copy{font-weight:600}
 @media(max-width:800px){.measure-guides{grid-template-columns:1fr}}
-@media(max-width:380px){.measure-guide th,.measure-guide td,.measure-guide caption,.measure-note{padding-inline:7px}}
+@media(max-width:380px){.measure-guide th,.measure-guide td,.measure-guide caption{padding-inline:7px}}
 </style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
@@ -178,7 +182,7 @@ try {
 </div>
 <div class="measure-guide">
  <table data-measure-language="de" aria-describedby="cup-note">
-  <caption>US Cups umrechnen</caption>
+  <caption>US Cups umrechnen<sup aria-hidden="true">*</sup></caption>
   <thead><tr><th scope="col">US Cup</th><th scope="col">Volumen</th><th scope="col">Weizenmehl</th><th scope="col">Kristallzucker</th></tr></thead>
   <tbody>
    <tr><th scope="row">¼ Cup</th><td>59 ml</td><td>30 g</td><td>50 g</td></tr>
@@ -190,7 +194,7 @@ try {
   </tbody>
  </table>
  <table data-measure-language="en" hidden aria-describedby="cup-note">
-  <caption>Milliliters to US cups</caption>
+  <caption>Milliliters to US cups<sup aria-hidden="true">*</sup></caption>
   <thead><tr><th scope="col">Volume</th><th scope="col">All-purpose flour</th><th scope="col">Granulated sugar</th><th scope="col">US cups</th></tr></thead>
   <tbody>
    <tr><th scope="row">50 ml</th><td>25 g</td><td>42 g</td><td>0.21</td></tr>
@@ -228,9 +232,14 @@ try {
   </tbody>
  </table>
 </div>
- <p class="measure-note" id="cup-note">Grammwerte für Cups sind Richtwerte und hängen von der Zutat und der Füllweise ab.</p>
 </section>
 <section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><p id="translation-status" class="photo-note" role="status"></p><div class="grid" id="grid"></div></section></main>
+<footer class="site-footer wrap">
+ <div class="site-footer-inner">
+  <p id="cup-note"><span aria-hidden="true">*</span> Grammwerte für Cups sind Richtwerte und hängen von der Zutat und der Füllweise ab.</p>
+  <p class="site-footer-copy">© 2026 Michael Bloechl &amp; Eva Haas</p>
+ </div>
+</footer>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
 <p id="admin-error" class="error" role="alert"></p>
 <p id="admin-status" class="muted" role="status" hidden></p>
