@@ -11,6 +11,73 @@
   ],
   "recipes": [
     {
+      "id": "ae389874-76d8-4294-a733-8d3ec9235384",
+      "title": "our US style Pickles",
+      "image": "",
+      "source": "",
+      "ingredients": [
+        [
+          "Für ein 1,5l Glas",
+          null,
+          " "
+        ],
+        [
+          "kleine Feldgurken",
+          3,
+          ""
+        ],
+        [
+          "Senfkörner",
+          2,
+          "Teelöffel"
+        ],
+        [
+          "Pfefferkörner",
+          2,
+          "Teelöffel"
+        ],
+        [
+          "Knoblauchzehen, groß",
+          4,
+          ""
+        ],
+        [
+          "Dill (einen Zweig frischen Dill)",
+          2,
+          "Teelöffel"
+        ],
+        [
+          "Apfelessig",
+          1,
+          "cup"
+        ],
+        [
+          "Wasser",
+          1,
+          "cup"
+        ],
+        [
+          "Rohrzucker",
+          0.125,
+          "cup"
+        ],
+        [
+          "Salz",
+          1,
+          "Esslöfel"
+        ]
+      ],
+      "category": "Sonstiges",
+      "servings": 1,
+      "steps": [
+        "Die Gurken gründlich waschen und der Länge nach in Viertel schneiden.",
+        "Den Knoblauch fein würfeln.",
+        "Essig, Wasser, Zucker und Salz in einem Topf bei mittlerer Hitze erwärmen, bis sich die festen Bestandteile vollständig gelöst haben.",
+        "Die Gurken und Gewürze in ein 1,5-Liter-Glas schichten und mit dem Sud übergießen.",
+        "Das Glas fest verschließen, im Kühlschrank lagern und etwa eine Woche ziehen lassen."
+      ]
+    },
+    {
       "id": "a472b29b-9815-41d2-99ba-c18dfdb2b8c6",
       "title": "Mama’s Topfennockerl",
       "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/6ae7c9c3-88a3-4c28-ac83-780c73635472.png",
