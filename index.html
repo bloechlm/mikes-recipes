@@ -117,14 +117,17 @@ try {
 .brand-menu-items .language-picker button[aria-pressed=true]{background:var(--glass);color:var(--leaf);box-shadow:inset 0 0 0 1px var(--line)}
 #translation-status:empty{display:none}
 
-.measure-guide{max-width:560px;margin:0 0 20px;border:1px solid var(--line);border-radius:16px;background:var(--glass);overflow:hidden}
+.measure-guides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px;margin:24px 0 0;max-width:1050px}
+.measure-guide{min-width:0;border:1px solid var(--line);border-radius:16px;background:var(--glass);overflow:hidden}
 .measure-guide table{width:100%;border-collapse:collapse;font-size:.875rem;line-height:1.3;font-variant-numeric:tabular-nums}
 .measure-guide caption{text-align:start;color:var(--leaf);font-weight:700;padding:10px 12px 7px}
 .measure-guide th,.measure-guide td{text-align:start;padding:5px 12px;border-top:1px solid var(--line);vertical-align:top}
 .measure-guide thead th{color:var(--dim);font-size:.77rem;line-height:1.25}
 .measure-guide tbody th{font-weight:600;white-space:nowrap}
 .measure-guide small{display:block;color:var(--dim);font-size:.72rem;font-weight:400}
-@media(max-width:380px){.measure-guide th,.measure-guide td{padding-inline:7px}.measure-guide caption{padding-inline:7px}}
+.measure-note{border-top:1px solid var(--line);margin:0;padding:7px 12px;color:var(--dim);font-size:.72rem;line-height:1.35}
+@media(max-width:700px){.measure-guides{grid-template-columns:1fr;max-width:560px}}
+@media(max-width:380px){.measure-guide th,.measure-guide td,.measure-guide caption,.measure-note{padding-inline:7px}}
 </style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
@@ -143,7 +146,8 @@ try {
  </details>
 </nav></header>
 <main class="wrap"><section class="hero"><img id="hero-image" alt="" fetchpriority="high"><div class="hero-copy"><span class="eyebrow">Ricette di casa</span><h1>Meine Küche,<br><em>meine Rezepte.</em></h1><p>Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.</p><button class="btn" id="browse" type="button">Rezepte entdecken</button></div></section>
-<section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><p id="translation-status" class="photo-note" role="status"></p><div class="measure-guide">
+<section class="measure-guides" aria-label="Umrechnungstabellen">
+<div class="measure-guide">
  <table>
   <caption>US-Maße auf einen Blick</caption>
   <thead><tr><th scope="col">Angabe im Rezept</th><th scope="col">Feste Zutaten<small>ca. Gramm</small></th><th scope="col">Flüssigkeiten<small>ca. Milliliter</small></th></tr></thead>
@@ -155,7 +159,24 @@ try {
    <tr><th scope="row">16 oz / fl oz</th><td>454 g<small>1 lb (Pfund)</small></td><td>480 ml</td></tr>
   </tbody>
  </table>
-</div><div class="grid" id="grid"></div></section></main>
+</div>
+<div class="measure-guide">
+ <table aria-describedby="cup-note">
+  <caption>US Cups umrechnen</caption>
+  <thead><tr><th scope="col">US Cup</th><th scope="col">Volumen</th><th scope="col">Weizenmehl</th><th scope="col">Kristallzucker</th></tr></thead>
+  <tbody>
+   <tr><th scope="row">¼ Cup</th><td>59 ml</td><td>30 g</td><td>50 g</td></tr>
+   <tr><th scope="row">⅓ Cup</th><td>79 ml</td><td>40 g</td><td>66 g</td></tr>
+   <tr><th scope="row">½ Cup</th><td>118 ml</td><td>60 g</td><td>99 g</td></tr>
+   <tr><th scope="row">⅔ Cup</th><td>158 ml</td><td>80 g</td><td>132 g</td></tr>
+   <tr><th scope="row">¾ Cup</th><td>177 ml</td><td>90 g</td><td>149 g</td></tr>
+   <tr><th scope="row">1 Cup</th><td>237 ml</td><td>120 g</td><td>198 g</td></tr>
+  </tbody>
+ </table>
+ <p class="measure-note" id="cup-note">Grammwerte sind Richtwerte und hängen von der Zutat und der Füllweise ab.</p>
+</div>
+</section>
+<section class="collection" id="collection" aria-labelledby="collection-title"><div class="heading"><h2 id="collection-title">Rezeptsammlung</h2><input class="search" id="search" type="search" placeholder="Rezept suchen …" aria-label="Rezept suchen"></div><div class="filters" id="filters" aria-label="Nach Kategorie filtern"></div><p id="translation-status" class="photo-note" role="status"></p><div class="grid" id="grid"></div></section></main>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><form id="admin-form" class="panel"><div class="dialog-head"><h2 id="admin-title">Admin-Zugang</h2><button class="btn icon" type="button" id="admin-close" aria-label="Schließen">×</button></div>
 <p id="admin-error" class="error" role="alert"></p>
 <p id="admin-status" class="muted" role="status" hidden></p>
@@ -212,6 +233,7 @@ const $=id=>document.getElementById(id);
 let language='de';
 try{if(localStorage.getItem('em-recipes:language')==='en')language='en';}catch{}
 const english={
+ 'Umrechnungstabellen':'Measurement conversion tables','US Cups umrechnen':'US cup conversions','Volumen':'Volume','Weizenmehl':'All-purpose flour','Kristallzucker':'Granulated sugar','Grammwerte sind Richtwerte und hängen von der Zutat und der Füllweise ab.':'Gram values are approximate and depend on the ingredient and how the cup is filled.',
  'US-Maße auf einen Blick':'US measurements at a glance','Angabe im Rezept':'Recipe measure','Feste Zutaten':'Solid ingredients','Flüssigkeiten':'Liquids','ca. Gramm':'approx. grams','ca. Milliliter':'approx. milliliters','1 lb (Pfund)':'1 lb (pound)',
  'Hauptnavigation':'Main navigation','Seitenanfang':'Back to top','Eva‘s & Michi‘s Recipes – Seitenanfang':'Eva’s & Michi’s Recipes – Back to top','Menü öffnen':'Open menu',
  'Meine Küche,':'My kitchen,','meine Rezepte.':'my recipes.','Ein Kochbuch für deine Lieblingsgerichte. Koch für dich, für zwei oder für die ganze Runde.':'A cookbook for your favorite dishes. Cook for yourself, for two, or for the whole table.','Rezepte entdecken':'Explore recipes','Rezeptsammlung':'Recipe collection','Rezept suchen …':'Search recipes …','Rezept suchen':'Search recipes','Nach Kategorie filtern':'Filter by category',
