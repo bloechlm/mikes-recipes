@@ -1,5 +1,5 @@
 {
-  "logo": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png",
+  "logo": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png",
   "categories": [
     "Pizza",
     "Vorspeise",
@@ -13,7 +13,7 @@
     {
       "id": "a472b29b-9815-41d2-99ba-c18dfdb2b8c6",
       "title": "Mama’s Topfennockerl",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/6ae7c9c3-88a3-4c28-ac83-780c73635472.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/6ae7c9c3-88a3-4c28-ac83-780c73635472.png",
       "source": "",
       "ingredients": [
         [
@@ -75,12 +75,50 @@
         "Mit einem Löffel Nockerl formen und diese in kochendes Wasser einlegen, bis sie an der Oberfläche schwimmen.",
         "Für die Brösel Butter in einer Pfanne schmelzen, die Brösel und den Zucker hinzufügen und goldbraun anrösten.",
         "Die fertigen Topfennockerl in der Bröselmischung wälzen und mit Sauce nach Wahl servieren."
-      ]
+      ],
+      "translations": {
+        "de": [
+          "Mamas Topfennockerl",
+          "Teig",
+          "Butter",
+          "Topfen",
+          "Eier",
+          "Salz",
+          "Weizenmehl glatt",
+          "Brösel",
+          "Butter",
+          "Brösel",
+          "Zucker",
+          "Butter schaumig rühren und den Topfen, die Eier, eine Prise Salz sowie das Mehl unterrühren, bis ein glatter Teig entsteht.",
+          "Den Teig kurz ruhen lassen.",
+          "Mit einem Löffel Nockerl formen und diese in kochendes Wasser einlegen, bis sie an der Oberfläche schwimmen.",
+          "Für die Brösel Butter in einer Pfanne schmelzen, die Brösel und den Zucker hinzufügen und goldbraun anrösten.",
+          "Die fertigen Topfennockerl in der Bröselmischung wälzen und mit Sauce nach Wahl servieren."
+        ],
+        "en": [
+          "Mom’s Quark Dumplings",
+          "Dough",
+          "butter",
+          "quark",
+          "eggs",
+          "salt",
+          "all-purpose flour",
+          "breadcrumbs",
+          "butter",
+          "breadcrumbs",
+          "sugar",
+          "Beat the butter until fluffy, then mix in the quark, eggs, a pinch of salt, and the flour until a smooth dough forms.",
+          "Let the dough rest briefly.",
+          "Form dumplings with a spoon and drop them into boiling water until they float to the surface.",
+          "For the breadcrumbs, melt the butter in a skillet, add the breadcrumbs and sugar, and toast until golden brown.",
+          "Roll the finished quark dumplings in the breadcrumb mixture and serve with a sauce of your choice."
+        ]
+      }
     },
     {
       "id": "dc69ab7c-6a82-4249-b646-9c175f53d4fc",
       "title": "Apple Crumble",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/c0cc6438-e4d2-4dc3-b20d-270966e2636f.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/c0cc6438-e4d2-4dc3-b20d-270966e2636f.png",
       "source": "https://www.gutekueche.at/apple-crumble-rezept-6030",
       "ingredients": [
         [
@@ -152,7 +190,7 @@
     {
       "id": "9cb9d681-194b-4adc-b4f2-d96e7822d487",
       "title": "Mike's Sauerteigbrot",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1ee1a7ac-88b8-4648-84e0-eb4c5e93829d.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/1ee1a7ac-88b8-4648-84e0-eb4c5e93829d.png",
       "source": "",
       "ingredients": [
         [
@@ -375,7 +413,7 @@
     {
       "id": "fa47b66f-07ae-4a5e-9db0-7a6b3831a467",
       "title": "Eva's Schoko-Bananen-Hafer Cookies",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/41071b63-b965-4a89-8636-4f63b3c00f38.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/41071b63-b965-4a89-8636-4f63b3c00f38.png",
       "source": "",
       "ingredients": [
         [
@@ -447,7 +485,7 @@
     {
       "id": "955426f9-5d81-4e47-9051-7df39b80fa28",
       "title": "Uncle Mike's Tabasco",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/2c8f99d2-0eea-4c0d-bfa5-3b79df7e8331.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/2c8f99d2-0eea-4c0d-bfa5-3b79df7e8331.png",
       "source": "",
       "ingredients": [
         [
@@ -478,7 +516,7 @@
     {
       "id": "d5563044-d58f-4fb0-976f-fd9737e32cbf",
       "title": "Tepache",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/1d3d752f-24d2-4c57-9ec4-c1b0bd462962.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/1d3d752f-24d2-4c57-9ec4-c1b0bd462962.png",
       "source": "https://www.vegetaria.at/tepache-selbstgebrautes-ananasbier-aus-mexiko/",
       "ingredients": [
         [
@@ -519,7 +557,7 @@
     {
       "id": "30e791ce-ef3f-48da-8983-f1586f0f1311",
       "title": "Waffles",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/23839bfe-8a86-40b5-9c70-cbecb1ba04e9.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/23839bfe-8a86-40b5-9c70-cbecb1ba04e9.png",
       "source": "",
       "ingredients": [
         [
@@ -575,7 +613,7 @@
     {
       "id": "bd2dc9e9-b534-4d14-9597-4cc5314d34c3",
       "title": "Oma's Grießknödel",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/77290f8a-6a47-49cd-8543-8037a06fa679.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/77290f8a-6a47-49cd-8543-8037a06fa679.png",
       "source": "https://www.gutekueche.at/omas-griessknodel-rezept-33121",
       "ingredients": [
         [
@@ -623,7 +661,7 @@
     {
       "id": "8a9b9f4b-2d8d-427f-8a89-0008f092f19d",
       "title": "Einfaches Palatschinkenrezept",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/85d628e4-69b0-45a8-8ee3-69967657bf44.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/85d628e4-69b0-45a8-8ee3-69967657bf44.png",
       "source": "https://www.gutekueche.at/einfaches-palatschinkenrezept-rezept-4278",
       "ingredients": [
         [
@@ -676,7 +714,7 @@
     {
       "id": "44dfba3a-86f7-4bc1-9ba1-50069c06f639",
       "title": "Old Fashioned Pancakes",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/35511c73-6e13-4afe-a539-71e0f3cc8f64.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/35511c73-6e13-4afe-a539-71e0f3cc8f64.png",
       "source": "",
       "ingredients": [
         [
@@ -726,7 +764,7 @@
     {
       "id": "ddfbcd0c-305d-45b6-ac0e-0698a58e40ec",
       "title": "Spätzleteig",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/9b3a68d5-d26a-425e-8b9a-86ffce39c160.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/9b3a68d5-d26a-425e-8b9a-86ffce39c160.png",
       "source": "https://www.gutekueche.at/spaetzleteig-rezept-3858",
       "ingredients": [
         [
@@ -768,7 +806,7 @@
     {
       "id": "4d5b4a0f-7f91-4da8-b2e3-ab4a4806d86b",
       "title": "Klassischer Erdäpfelsalat nach Wiener Art",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/665f03ce-c426-4595-bcc1-e1a1440a0824.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/665f03ce-c426-4595-bcc1-e1a1440a0824.png",
       "source": "https://www.ichkoche.at/klassischer-erdaepfelsalat-nach-wiener-art-zum-wiener-schnitzel-rezept-12925",
       "ingredients": [
         [
@@ -836,7 +874,7 @@
     {
       "id": "9b1ecee8-d93d-44d2-85f5-859f822f4ec8",
       "title": "Oma's Semmelknödel",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/501fd369-8996-429f-94bb-065c3a978852.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/501fd369-8996-429f-94bb-065c3a978852.png",
       "source": "https://foodbyjos.de/semmelknoedel-grundrezept/",
       "ingredients": [
         [
@@ -901,7 +939,7 @@
     {
       "id": "9a816253-8c11-4845-b40a-3adc980896bb",
       "title": "Grießnockerl",
-      "image": "https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/9725c6d1-2d4d-4d56-b2b0-426fd9c7f739.png",
+      "image": "https://raw.githubusercontent.com/bloechlm/recipes/main/recipe-images/9725c6d1-2d4d-4d56-b2b0-426fd9c7f739.png",
       "source": "https://www.finis-feinstes.at/r/griessnockerl-649/",
       "ingredients": [
         [
