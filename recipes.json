@@ -75,7 +75,45 @@
         "Essig, Wasser, Zucker und Salz in einem Topf bei mittlerer Hitze erwärmen, bis sich die festen Bestandteile vollständig gelöst haben.",
         "Die Gurken und Gewürze in ein 1,5-Liter-Glas schichten und mit dem Sud übergießen.",
         "Das Glas fest verschließen, im Kühlschrank lagern und etwa eine Woche ziehen lassen."
-      ]
+      ],
+      "translations": {
+        "de": [
+          "unsere US-Style Pickles",
+          "Für ein 1,5l Glas",
+          "kleine Feldgurken",
+          "Senfkörner",
+          "Pfefferkörner",
+          "Knoblauchzehen, groß",
+          "Dill (einen Zweig frischen Dill)",
+          "Apfelessig",
+          "Wasser",
+          "Rohrzucker",
+          "Salz",
+          "Die Gurken gründlich waschen und der Länge nach in Viertel schneiden.",
+          "Den Knoblauch fein würfeln.",
+          "Essig, Wasser, Zucker und Salz in einem Topf bei mittlerer Hitze erwärmen, bis sich die festen Bestandteile vollständig gelöst haben.",
+          "Die Gurken und Gewürze in ein 1,5-Liter-Glas schichten und mit dem Sud übergießen.",
+          "Das Glas fest verschließen, im Kühlschrank lagern und etwa eine Woche ziehen lassen."
+        ],
+        "en": [
+          "our US style pickles",
+          "For a 1,5l jar",
+          "small field cucumbers",
+          "mustard seeds",
+          "peppercorns",
+          "garlic cloves, large",
+          "dill (a sprig of fresh dill)",
+          "apple cider vinegar",
+          "water",
+          "raw cane sugar",
+          "salt",
+          "Wash the cucumbers thoroughly and cut them lengthways into quarters.",
+          "Finely dice the garlic.",
+          "Heat the vinegar, water, sugar and salt in a saucepan over medium heat until the solids have completely dissolved.",
+          "Layer the cucumbers and spices in a 1,5-liter jar and pour the hot liquid over them.",
+          "Seal the jar tightly, store it in the refrigerator and let it pickle for about a week."
+        ]
+      }
     },
     {
       "id": "a472b29b-9815-41d2-99ba-c18dfdb2b8c6",
