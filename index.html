@@ -250,18 +250,25 @@ function readRecipes(){
 const adminApi='https://mikes-recipes-import.prince-of-turbo.workers.dev/admin/';
 const sessionKey='mikes-recipes:admin-session';
 const recipeFile='recipes.json';
+const recipeRepository='https://raw.githubusercontent.com/bloechlm/recipes/main/';
+const oldRecipeImageRoot='https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/';
+function currentRecipeImage(value){
+ return typeof value==='string'&&value.startsWith(oldRecipeImageRoot)
+  ?recipeRepository+'recipe-images/'+value.slice(oldRecipeImageRoot.length):value;
+}
 const oceanfactoryLogo='recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png';
 let adminToken='',recipeSHA=null,saving=false,siteLogo='';
 let recipes=[...samples],category='Alle',editing=null;
 let pinnedIds=new Set(['pizza']);
 function applyCollection(data){
- siteLogo=typeof data.logo==='string'&&data.logo.startsWith('https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/recipe-images/')?data.logo:'';
+ const logo=currentRecipeImage(data.logo);
+ siteLogo=typeof logo==='string'&&logo.startsWith(recipeRepository+'recipe-images/')?logo:'';
  const headerLogo=$('site-logo');
  const usesOceanfactoryLogo=!siteLogo||siteLogo.endsWith('/'+oceanfactoryLogo);
  headerLogo.classList.toggle('brand-logo--compass',usesOceanfactoryLogo);
  headerLogo.src=usesOceanfactoryLogo?oceanfactoryLogo:siteLogo;
  categories=['Alle',...new Set([...(data.categories||defaults),'Pizza','Sonstiges'])];
- recipes=[samples[0],...data.recipes.filter(r=>r.id!=='pizza')];
+ recipes=[samples[0],...data.recipes.filter(r=>r.id!=='pizza').map(r=>({...r,image:currentRecipeImage(r.image)}))];
  pinnedIds=new Set(Array.isArray(data.pinnedIds)?data.pinnedIds:['pizza']);
  if(!categories.includes(category))category='Alle';
  render();
@@ -284,7 +291,7 @@ async function loadCollection(token){
   if(!res.ok)throw new Error('GitHub konnte die Rezeptsammlung nicht laden ('+res.status+').');
   const file=await res.json();applyCollection(decodeCollection(file.content));recipeSHA=file.sha;return;
  }
- const res=await fetch('https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+recipeFile,{cache:'no-store',signal:AbortSignal.timeout(10000)});
+ const res=await fetch(recipeRepository+recipeFile,{cache:'no-store',signal:AbortSignal.timeout(10000)});
  if(res.ok&&!adminToken&&!saving)applyCollection(await res.json());
 }
 async function save(next,nextCategories=categories.slice(1),logo=siteLogo,pins=pinnedIds){
@@ -816,9 +823,9 @@ async function uploadImage(file,url,token){
  const path='recipe-images/'+crypto.randomUUID()+(compact.type==='image/webp'?'.webp':'.png');
  const response=await github(adminApi+path,token,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:data})});
  if(response.status===413)throw new Error('Das Bild überschreitet das Uploadlimit. Wähle eine kleinere Datei.');
- if(response.status===403)throw new Error('GitHub verweigert den Upload (403). Prüfe den Schreibzugriff für mikes-recipes.');
+ if(response.status===403)throw new Error('GitHub verweigert den Upload (403). Prüfe den Schreibzugriff für recipes.');
  if(!response.ok)throw new Error('Das Bild konnte nicht gespeichert werden (HTTP '+response.status+').');
- return 'https://raw.githubusercontent.com/bloechlm/mikes-recipes/main/'+path;
+ return recipeRepository+path;
 }
 function openEditor(r){
  if(!adminToken)return;
