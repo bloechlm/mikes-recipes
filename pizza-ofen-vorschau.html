@@ -35,10 +35,20 @@
     }
     header a, header button { pointer-events: auto; }
     button { color: inherit; font: inherit; cursor: pointer; }
-    .brand { display: grid; width: max-content; line-height: .96; text-shadow: 0 2px 12px #160903; }
-    .brand strong { font: 500 42px/.95 var(--serif); }
-    .brand span { font: 500 12px/1.6 var(--serif); letter-spacing: .24em; }
-    .brand::after { content: ''; height: 3px; background: linear-gradient(90deg, #56815b 33%, #f7e5cd 33% 66%, #bd503d 66%); }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: clamp(7px, 1.3vw, 16px);
+      font: italic 500 clamp(18px, 2vw, 31px)/1.15 var(--serif);
+      text-shadow: 0 2px 12px #160903;
+      white-space: nowrap;
+    }
+    .brand img {
+      width: clamp(34px, 4vw, 56px);
+      aspect-ratio: 1;
+      object-fit: cover;
+      object-position: center;
+    }
     .back { border: 1px solid #fff4; background: #21140f99; border-radius: 100px; padding: 8px 14px; font-size: .85rem; }
     .stage {
       position: fixed;
@@ -188,8 +198,6 @@
       .choices .pizza-dots a[aria-current="true"] { color: var(--accent); background: transparent; }
       .choices .pizza-dots a[aria-current="true"]::before { width: 7px; height: 7px; opacity: 1; }
       .choices button { width: 44px; height: 44px; }
-      .brand strong { font-size: 33px; }
-      .brand span { font-size: 10px; }
       .intro { align-content: end; padding-bottom: max(75px, 12svh); }
       .intro-content, .description { width: auto; }
       .intro-content { transform: translate(5vw, -7svh); }
@@ -226,7 +234,7 @@
     <img class="kitchen" src="pizza-assets/ofen-kueche-pizza-dezent.webp" alt="" fetchpriority="high">
   </div>
   <header>
-    <a class="brand" href="./index.html" aria-label="EM Recipes Startseite"><strong>EM</strong><span>RECIPES</span></a>
+    <a class="brand" href="./index.html" aria-label="Eva's &amp; Michi's – Rezeptübersicht"><img src="recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png" alt=""><span>Eva's &amp; Michi's</span></a>
     <a class="back" href="./index.html">Home</a>
     <button class="back kitchen-back" type="button" hidden>Zurück</button>
   </header>
