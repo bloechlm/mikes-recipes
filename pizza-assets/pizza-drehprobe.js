@@ -25,6 +25,7 @@ function pizzaMesh(topping) {
   const sampler = document.createElement('canvas');
   sampler.width = sampler.height = 192;
   const ctx = sampler.getContext('2d');
+  ctx.filter = 'blur(1.2px)';
   ctx.drawImage(topping, 0, 0, 192, 192);
   const pixels = ctx.getImageData(0, 0, 192, 192).data;
   const surfaceRings = 27;
@@ -117,8 +118,8 @@ async function start() {
         elevation = -.008;
       }
       float depth = 1.0 - groundPosition.y * .21 - elevation * .10;
-      vec2 screen = vec2(.62, -.47) + vec2(groundPosition.x * .735,
-        (elevation * .96 - groundPosition.y * .43) * 1.22) / depth;
+      vec2 screen = vec2(.48, -.57) + vec2(groundPosition.x * .79,
+        (elevation * .96 - groundPosition.y * .43) * 1.28) / depth;
       gl_Position = vec4(screen * depth, depth - 1.0, depth);
       texcoord = uv;
       vec2 n = spin * shapeNormal.xz;
@@ -128,12 +129,17 @@ async function start() {
     precision mediump float;
     uniform sampler2D topping;
     uniform sampler2D crust;
+    uniform float angle;
     uniform sampler2D diavola;
     uniform float toppingMix;
     uniform float shadowPass;
     varying vec2 texcoord;
     varying vec3 surfaceNormal;
     varying vec3 localPosition;
+    vec3 surfaceColor(vec2 uv) {
+      return mix(texture2D(topping, uv).rgb, texture2D(diavola, uv).rgb, toppingMix);
+    }
+    float luminance(vec3 color) { return dot(color, vec3(.299, .587, .114)); }
     void main() {
       if (shadowPass > 0.5) {
         float distanceFromCenter = length(localPosition.xz);
@@ -142,12 +148,28 @@ async function start() {
       }
       vec3 n = normalize(surfaceNormal + vec3(0., .00001, 0.));
       vec3 fire = normalize(vec3(-.48, .55, -.72));
-      vec3 diffuse = mix(texture2D(topping, texcoord).rgb, texture2D(diavola, texcoord).rgb, toppingMix);
+      vec3 diffuse = surfaceColor(texcoord);
       float radius = length(localPosition.xz);
       float side = smoothstep(.815, .94, radius);
       float around = atan(localPosition.z, localPosition.x) / 6.2831853 + .5;
       vec2 breadUV = vec2(around * 6.0, .88 - localPosition.y * 3.8);
       vec3 bread = texture2D(crust, breadUV).rgb;
+      const float detailStep = .003;
+      vec2 texelX = vec2(detailStep, 0.0);
+      vec2 texelY = vec2(0.0, detailStep);
+      vec2 toppingSlope = vec2(
+        luminance(surfaceColor(texcoord + texelX)) - luminance(surfaceColor(texcoord - texelX)),
+        luminance(surfaceColor(texcoord + texelY)) - luminance(surfaceColor(texcoord - texelY))
+      );
+      mat2 spin = mat2(cos(angle), sin(angle), -sin(angle), cos(angle));
+      vec2 ingredientBump = spin * toppingSlope;
+      vec3 rimTangent = normalize(vec3(-localPosition.z, 0.0, localPosition.x + .00001));
+      vec2 rotatedTangent = spin * rimTangent.xz;
+      float poreSlope = luminance(texture2D(crust, breadUV + texelX).rgb)
+        - luminance(texture2D(crust, breadUV - texelX).rgb);
+      vec3 bump = mix(vec3(ingredientBump.x, 0., ingredientBump.y) * .32,
+        vec3(rotatedTangent.x, .15, rotatedTangent.y) * poreSlope * .44, side);
+      n = normalize(n - bump);
       float toasted = smoothstep(.08, .42, dot(bread, vec3(.299, .587, .114)));
       bread *= mix(.64, 1.04, toasted);
       diffuse = mix(diffuse, bread, side);
@@ -157,8 +179,10 @@ async function start() {
       vec3 halfVector = normalize(fire + normalize(vec3(-.16, .43, 1.0)));
       float highlight = max(dot(n, halfVector), 0.0);
       float wetness = smoothstep(.16, .72, max(diffuse.r, diffuse.g));
-      float sheen = pow(highlight, 16.0) * .20 + pow(highlight, 46.0) * .56;
-      vec3 reflection = vec3(1.0, .68, .38) * sheen * mix(.18, .9, wetness) * (1.0 - side * .94);
+      vec3 emberHalf = normalize(normalize(vec3(.24, .33, -.55)) + normalize(vec3(-.16, .43, 1.0)));
+      float ember = max(dot(n, emberHalf), 0.0);
+      float sheen = pow(highlight, 17.0) * .19 + pow(highlight, 48.0) * .44 + pow(ember, 36.0) * .24;
+      vec3 reflection = vec3(1.0, .73, .45) * sheen * mix(.13, 1.0, wetness) * (1.0 - side * .91);
       gl_FragColor = vec4(diffuse * warmth * contact + reflection, 1.);
     }`);
   gl.useProgram(program);
