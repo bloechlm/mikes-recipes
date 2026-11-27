@@ -37,9 +37,11 @@
     button { color: inherit; font: inherit; cursor: pointer; }
     .brand {
       display: inline-flex;
+      flex-direction: column;
       align-items: center;
-      gap: clamp(7px, 1.3vw, 16px);
-      font: italic 500 clamp(18px, 2vw, 31px)/1.15 var(--serif);
+      gap: 4px;
+      font: italic 500 clamp(13px, 1.25vw, 20px)/1.15 var(--serif);
+      letter-spacing: .035em;
       text-shadow: 0 2px 12px #160903;
       white-space: nowrap;
     }
