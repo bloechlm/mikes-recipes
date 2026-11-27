@@ -1,6 +1,7 @@
 'use strict';
 
 const canvas = document.querySelector('canvas');
+const title = document.querySelector('h1');
 const button = document.querySelector('button');
 const status = document.querySelector('#status');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
@@ -86,7 +87,9 @@ async function start() {
   topping.src = 'pizza-assets/margherita.webp';
   const crust = new Image();
   crust.src = 'pizza-assets/cornicione-texture.webp';
-  await Promise.all([topping.decode(), crust.decode()]);
+  const diavola = new Image();
+  diavola.src = 'pizza-assets/diavola.webp';
+  await Promise.all([topping.decode(), crust.decode(), diavola.decode()]);
 
   const program = makeProgram(`
     precision mediump float;
@@ -109,7 +112,7 @@ async function start() {
         elevation = -.008;
       }
       float depth = 1.0 - groundPosition.y * .21 - elevation * .10;
-      vec2 screen = vec2(.48, -.35) + vec2(groundPosition.x * .66,
+      vec2 screen = vec2(.75, -.35) + vec2(groundPosition.x * .66,
         (elevation * .90 - groundPosition.y * .43) * 1.15) / depth;
       gl_Position = vec4(screen * depth, depth - 1.0, depth);
       texcoord = uv;
@@ -120,6 +123,8 @@ async function start() {
     precision mediump float;
     uniform sampler2D topping;
     uniform sampler2D crust;
+    uniform sampler2D diavola;
+    uniform float toppingMix;
     uniform float shadowPass;
     varying vec2 texcoord;
     varying vec3 surfaceNormal;
@@ -132,7 +137,7 @@ async function start() {
       }
       vec3 n = normalize(surfaceNormal + vec3(0., .00001, 0.));
       vec3 fire = normalize(vec3(-.48, .55, -.72));
-      vec3 diffuse = texture2D(topping, texcoord).rgb;
+      vec3 diffuse = mix(texture2D(topping, texcoord).rgb, texture2D(diavola, texcoord).rgb, toppingMix);
       float radius = length(localPosition.xz);
       float side = smoothstep(.815, .94, radius);
       float around = atan(localPosition.z, localPosition.x) / 6.2831853 + .5;
@@ -144,8 +149,12 @@ async function start() {
       float contact = mix(.56, 1.0, smoothstep(.009, .13, localPosition.y));
       float lit = max(dot(n, fire), 0.0);
       vec3 warmth = vec3(.76, .66, .53) + lit * vec3(.44, .31, .19);
-      float gloss = pow(max(dot(n, normalize(fire + vec3(0., .4, 1.))), 0.), 18.);
-      gl_FragColor = vec4(diffuse * warmth * contact + mix(.12, .02, side) * gloss * vec3(1., .61, .3), 1.);
+      vec3 halfVector = normalize(fire + normalize(vec3(-.16, .43, 1.0)));
+      float highlight = max(dot(n, halfVector), 0.0);
+      float wetness = smoothstep(.16, .72, max(diffuse.r, diffuse.g));
+      float sheen = pow(highlight, 13.0) * .17 + pow(highlight, 42.0) * .48;
+      vec3 reflection = vec3(1.0, .68, .38) * sheen * mix(.18, .9, wetness) * (1.0 - side * .94);
+      gl_FragColor = vec4(diffuse * warmth * contact + reflection, 1.);
     }`);
   gl.useProgram(program);
   const mesh = pizzaMesh(topping);
@@ -158,15 +167,15 @@ async function start() {
   }
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, mesh.indices, gl.STATIC_DRAW);
-  for (const [unit, name, image] of [[0, 'topping', topping], [1, 'crust', crust]]) {
+  for (const [unit, name, image] of [[0, 'topping', topping], [1, 'crust', crust], [2, 'diavola', diavola]]) {
     gl.activeTexture(gl.TEXTURE0 + unit);
     gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, unit ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, unit === 1 ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, unit ? gl.MIRRORED_REPEAT : gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, unit === 1 ? gl.MIRRORED_REPEAT : gl.CLAMP_TO_EDGE);
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-    if (unit) gl.generateMipmap(gl.TEXTURE_2D);
+    if (unit === 1) gl.generateMipmap(gl.TEXTURE_2D);
     gl.uniform1i(gl.getUniformLocation(program, name), unit);
   }
 
@@ -176,6 +185,8 @@ async function start() {
   let turns = 0;
   let manualAngle = 0;
   let previousTime = 0;
+  let selectedDiavola = false;
+  const toppingMix = gl.getUniformLocation(program, 'toppingMix');
   gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(0, 0, 0, 0);
   gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
@@ -189,21 +200,29 @@ async function start() {
     manualAngle = isAnimating && !reducedMotion.matches
       ? manualAngle + (targetAngle - manualAngle) * Math.min(elapsed / 140, 1) : targetAngle;
     const scrollRange = document.documentElement.scrollHeight - innerHeight;
-    const progress = reducedMotion.matches || scrollRange <= 0 ? 0
+    const progress = scrollRange <= 0 ? 0
       : Math.max(0, Math.min(1, scrollY / scrollRange));
+    const isDiavola = progress >= .5;
+    if (selectedDiavola !== isDiavola) {
+      selectedDiavola = isDiavola;
+      title.textContent = isDiavola ? 'Diavola' : 'Margherita';
+    }
+    const blend = Math.max(0, Math.min(1, (progress - .20) / .60));
+    gl.uniform1f(toppingMix, reducedMotion.matches ? Number(isDiavola) : blend * blend * (3 - 2 * blend));
+    const rotation = (reducedMotion.matches ? 0 : progress) * Math.PI / 3 + manualAngle;
     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
     // Flat shadow stays on the stone while the model rotates above it.
     gl.enable(gl.BLEND);
     gl.enable(gl.DEPTH_TEST);
-    gl.uniform1f(angle, progress * Math.PI / 3 + manualAngle);
+    gl.uniform1f(angle, rotation);
     gl.uniform1f(shadowPass, 1);
     gl.drawElements(gl.TRIANGLES, mesh.shadowIndexCount, gl.UNSIGNED_SHORT, 0);
 
     gl.clear(gl.DEPTH_BUFFER_BIT);
     gl.disable(gl.BLEND);
     gl.uniform1f(shadowPass, 0);
-    gl.uniform1f(angle, progress * Math.PI / 3 + manualAngle);
+    gl.uniform1f(angle, rotation);
     gl.drawElements(gl.TRIANGLES, mesh.indices.length, gl.UNSIGNED_SHORT, 0);
     if (isAnimating && !reducedMotion.matches) schedule();
   }
