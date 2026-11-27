@@ -136,6 +136,13 @@
     .in-menu .description, .in-menu .choices {
       animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
     }
+    .pizza-dots { display: flex; gap: 4px; }
+    @media (max-width: 640px) {
+      .choices { max-width: calc(100% - 40px); align-items: center; border-radius: 26px; }
+      .pizza-dots { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+      .choices .pizza-dots a { width: clamp(24px, 8vw, 36px); height: 36px; }
+      .choices button { flex-shrink: 0; }
+    }
     .choices a { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; }
     .choices button {
       display: grid;
@@ -182,9 +189,15 @@
   <div class="stage" aria-hidden="true">
     <div class="camera">
       <img class="scene" src="pizza-assets/scene-margherita.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-salami.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-siziliana.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-marinara.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-rustica.webp" alt="">
       <img class="scene variant" src="pizza-assets/scene-diavola.webp" alt="">
-      <img class="scene variant" src="pizza-assets/scene-funghi.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-pizza-eva.webp" alt="">
       <img class="scene variant" src="pizza-assets/scene-prosciutto.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-ortolana.webp" alt="">
+      <img class="scene variant" src="pizza-assets/scene-calzone.webp" alt="">
     </div>
     <img class="kitchen" src="pizza-assets/ofen-kueche-pizza-dezent.webp" alt="" fetchpriority="high">
   </div>
@@ -206,28 +219,60 @@
       <ul class="order">
         <li id="margherita"><div class="description">
           <h2 tabindex="-1">Margherita</h2>
-          <p>Tomatensauce, Fior di Latte und frisches Basilikum</p>
+          <p>Tomatensauce, Fior di Latte, Basilikum</p>
+        </div></li>
+        <li id="salami"><div class="description">
+          <h2 tabindex="-1">Salami</h2>
+          <p>Tomatensauce, Fior di Latte, milde Salami</p>
+        </div></li>
+        <li id="siziliana"><div class="description">
+          <h2 tabindex="-1">Siziliana</h2>
+          <p>Tomatensauce, Sardellen, Kapern, schwarze Oliven, Oregano</p>
+        </div></li>
+        <li id="marinara"><div class="description">
+          <h2 tabindex="-1">Marinara</h2>
+          <p>Tomatensauce, Knoblauch, Oregano, Olivenöl</p>
+        </div></li>
+        <li id="rustica"><div class="description">
+          <h2 tabindex="-1">Rustica</h2>
+          <p>Tomatensauce, Fior di Latte, Speck, rote Zwiebeln, Champignons optional</p>
         </div></li>
         <li id="diavola"><div class="description">
           <h2 tabindex="-1">Diavola</h2>
-          <p>Tomatensauce, Fior di Latte und scharfe Salami</p>
+          <p>Tomatensauce, Fior di Latte, scharfe Salami</p>
         </div></li>
-        <li id="funghi"><div class="description">
-          <h2 tabindex="-1">Funghi</h2>
-          <p>Tomatensauce, Fior di Latte, Champignons und Petersilie</p>
+        <li id="pizza-eva"><div class="description">
+          <h2 tabindex="-1">Pizza Eva</h2>
+          <p>Tomatensauce, Cocktailtomaten, Fior di Latte, Pizzakäse, Zwiebeln, Mais</p>
         </div></li>
         <li id="prosciutto"><div class="description">
           <h2 tabindex="-1">Prosciutto e Rucola</h2>
-          <p>Tomatensauce, Fior di Latte, Prosciutto crudo, Rucola und Parmesan</p>
+          <p>Tomatensauce, Fior di Latte, Rohschinken, Rucola, Parmesan</p>
+        </div></li>
+        <li id="ortolana"><div class="description">
+          <h2 tabindex="-1">Ortolana</h2>
+          <p>Tomatensauce, Fior di Latte, gegrillte Zucchini, Melanzani und Paprika</p>
+        </div></li>
+        <li id="calzone"><div class="description">
+          <h2 tabindex="-1">Calzone</h2>
+          <p>Gefüllt mit Tomatensauce, Fior di Latte und Kochschinken, Champignons optional</p>
         </div></li>
       </ul>
     </section>
   </main>
   <nav class="choices" aria-label="Pizza auswählen" hidden>
-    <a href="#margherita" aria-label="Margherita" aria-current="true"></a>
-    <a href="#diavola" aria-label="Diavola"></a>
-    <a href="#funghi" aria-label="Funghi"></a>
-    <a href="#prosciutto" aria-label="Prosciutto e Rucola"></a>
+    <div class="pizza-dots">
+      <a href="#margherita" aria-label="Margherita" aria-current="true"></a>
+      <a href="#salami" aria-label="Salami"></a>
+      <a href="#siziliana" aria-label="Siziliana"></a>
+      <a href="#marinara" aria-label="Marinara"></a>
+      <a href="#rustica" aria-label="Rustica"></a>
+      <a href="#diavola" aria-label="Diavola"></a>
+      <a href="#pizza-eva" aria-label="Pizza Eva"></a>
+      <a href="#prosciutto" aria-label="Prosciutto e Rucola"></a>
+      <a href="#ortolana" aria-label="Ortolana"></a>
+      <a href="#calzone" aria-label="Calzone"></a>
+    </div>
     <button type="button" class="previous-pizza" aria-label="Vorherige Pizza" disabled>↑</button>
     <button type="button" class="next-pizza" aria-label="Nächste Pizza">↓</button>
   </nav>
