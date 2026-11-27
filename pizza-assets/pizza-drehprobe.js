@@ -20,11 +20,18 @@ function makeProgram(vertexSource, fragmentSource) {
   return program;
 }
 
-function pizzaMesh() {
+function pizzaMesh(topping) {
+  const sampler = document.createElement('canvas');
+  sampler.width = sampler.height = 192;
+  const ctx = sampler.getContext('2d');
+  ctx.drawImage(topping, 0, 0, 192, 192);
+  const pixels = ctx.getImageData(0, 0, 192, 192).data;
+  const surfaceRings = 27;
   const segments = 144;
   const rings = [
-    [0, .057], [.31, .06], [.61, .061], [.74, .065], [.8, .075],
-    [.85, .105], [.89, .159], [.93, .165], [.968, .143],
+    ...Array.from({ length: surfaceRings }, (_, i) => [.78 * i / (surfaceRings - 1), .066]),
+    [.8, .075],
+    [.85, .118], [.89, .152], [.93, .161], [.968, .145],
     [.993, .102], [1, .064], [.985, .028], [.955, .009], [.91, 0],
   ];
   const vertices = [];
@@ -39,9 +46,17 @@ function pizzaMesh() {
       const distance = radius * (1 + edge);
       const x = Math.cos(angle) * distance;
       const z = Math.sin(angle) * distance;
-      const y = Math.max(0, elevation + bubbles * Math.exp(-((radius - .93) ** 2) / .012)
+      const sampleX = Math.floor((.5 + .485 * radius * Math.cos(angle)) * 192);
+      const sampleY = Math.floor((.5 + .485 * radius * Math.sin(angle)) * 192);
+      const pixel = (sampleY * 192 + sampleX) * 4;
+      const [red, green, blue] = [pixels[pixel], pixels[pixel + 1], pixels[pixel + 2]];
+      const cheese = Math.max(0, (green + blue - 175) / 335);
+      const basil = Math.max(0, (green - red + 18) / 100);
+      const relief = (cheese * .029 + basil * .027 + .005 * Math.cos(x * 29 + z * 23))
+        * Math.max(0, Math.min(1, (.79 - radius) * 14));
+      const y = Math.max(0, elevation + relief + bubbles * Math.exp(-((radius - .93) ** 2) / .012)
         * Math.min(elevation / .085, 1));
-      const textureRadius = index <= 8 ? radius : .965 - (index - 8) * .006;
+      const textureRadius = index < surfaceRings + 5 ? radius : .96;
       vertices.push(x, y, z, .5 + .485 * textureRadius * Math.cos(angle),
         .5 + .485 * textureRadius * Math.sin(angle), 0, 0, 0);
       if (index) {
@@ -62,14 +77,16 @@ function pizzaMesh() {
       normal.forEach((value, axis) => { vertices[offset + 5 + axis] += value; });
     }
   }
-  return { vertices: new Float32Array(vertices), indices: new Uint16Array(indices) };
+  return { vertices: new Float32Array(vertices), indices: new Uint16Array(indices), shadowIndexCount: (surfaceRings + 6) * segments * 6 };
 }
 
 async function start() {
   if (!gl) throw Error('WebGL unavailable');
   const topping = new Image();
   topping.src = 'pizza-assets/margherita.webp';
-  await topping.decode();
+  const crust = new Image();
+  crust.src = 'pizza-assets/cornicione-texture.webp';
+  await Promise.all([topping.decode(), crust.decode()]);
 
   const program = makeProgram(`
     precision mediump float;
@@ -88,7 +105,7 @@ async function start() {
       vec2 groundPosition = spin * position.xz;
       float elevation = position.y;
       if (shadowPass > 0.5) {
-        groundPosition = position.xz * vec2(1.13, 1.15) + vec2(.04, .11);
+        groundPosition = (spin * position.xz) * vec2(1.08, 1.12) + vec2(.04, .11);
         elevation = -.008;
       }
       float depth = 1.0 - groundPosition.y * .21 - elevation * .10;
@@ -102,6 +119,7 @@ async function start() {
     }`, `
     precision mediump float;
     uniform sampler2D topping;
+    uniform sampler2D crust;
     uniform float shadowPass;
     varying vec2 texcoord;
     varying vec3 surfaceNormal;
@@ -115,17 +133,22 @@ async function start() {
       vec3 n = normalize(surfaceNormal + vec3(0., .00001, 0.));
       vec3 fire = normalize(vec3(-.48, .55, -.72));
       vec3 diffuse = texture2D(topping, texcoord).rgb;
-      float side = smoothstep(.26, .85, 1.0 - n.y);
-      float grain = sin(localPosition.x * 91.0 + localPosition.y * 59.0)
-        * sin(localPosition.z * 83.0 - localPosition.y * 27.0);
-      diffuse = mix(diffuse, diffuse * (.79 + .09 * grain), side);
+      float radius = length(localPosition.xz);
+      float side = smoothstep(.815, .94, radius);
+      float around = atan(localPosition.z, localPosition.x) / 6.2831853 + .5;
+      vec2 breadUV = vec2(around * 6.0, .88 - localPosition.y * 3.8);
+      vec3 bread = texture2D(crust, breadUV).rgb;
+      float toasted = smoothstep(.08, .42, dot(bread, vec3(.299, .587, .114)));
+      bread *= mix(.64, 1.04, toasted);
+      diffuse = mix(diffuse, bread, side);
+      float contact = mix(.56, 1.0, smoothstep(.009, .13, localPosition.y));
       float lit = max(dot(n, fire), 0.0);
       vec3 warmth = vec3(.76, .66, .53) + lit * vec3(.44, .31, .19);
       float gloss = pow(max(dot(n, normalize(fire + vec3(0., .4, 1.))), 0.), 18.);
-      gl_FragColor = vec4(diffuse * warmth + .065 * gloss * vec3(1., .61, .3), 1.);
+      gl_FragColor = vec4(diffuse * warmth * contact + mix(.12, .02, side) * gloss * vec3(1., .61, .3), 1.);
     }`);
   gl.useProgram(program);
-  const mesh = pizzaMesh();
+  const mesh = pizzaMesh(topping);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.STATIC_DRAW);
   for (const [name, size, offset] of [['position', 3, 0], ['uv', 2, 12], ['normal', 3, 20]]) {
@@ -135,12 +158,17 @@ async function start() {
   }
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, mesh.indices, gl.STATIC_DRAW);
-  gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-  gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, topping);
+  for (const [unit, name, image] of [[0, 'topping', topping], [1, 'crust', crust]]) {
+    gl.activeTexture(gl.TEXTURE0 + unit);
+    gl.bindTexture(gl.TEXTURE_2D, gl.createTexture());
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, unit ? gl.LINEAR_MIPMAP_LINEAR : gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, unit ? gl.MIRRORED_REPEAT : gl.CLAMP_TO_EDGE);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+    if (unit) gl.generateMipmap(gl.TEXTURE_2D);
+    gl.uniform1i(gl.getUniformLocation(program, name), unit);
+  }
 
   const angle = gl.getUniformLocation(program, 'angle');
   const shadowPass = gl.getUniformLocation(program, 'shadowPass');
@@ -168,8 +196,9 @@ async function start() {
     // Flat shadow stays on the stone while the model rotates above it.
     gl.enable(gl.BLEND);
     gl.enable(gl.DEPTH_TEST);
+    gl.uniform1f(angle, progress * Math.PI / 3 + manualAngle);
     gl.uniform1f(shadowPass, 1);
-    gl.drawElements(gl.TRIANGLES, 144 * 6 * 10, gl.UNSIGNED_SHORT, 0);
+    gl.drawElements(gl.TRIANGLES, mesh.shadowIndexCount, gl.UNSIGNED_SHORT, 0);
 
     gl.clear(gl.DEPTH_BUFFER_BIT);
     gl.disable(gl.BLEND);
