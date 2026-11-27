@@ -160,7 +160,12 @@
     .choices a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
     @media (max-width: 720px) and (orientation: portrait) {
-      .scene { object-position: 72% center; }
+      .camera {
+        top: 14%;
+        mask-image: linear-gradient(to bottom, transparent, black 15%);
+      }
+      body.in-menu .camera { transform: scale(1.02); }
+      .scene { object-position: 74% center; }
       body:not(.in-menu) .stage::after {
         background: linear-gradient(180deg, #180b0666, transparent 34%, #180b06e8 91%);
       }
@@ -171,11 +176,11 @@
       .intro-content, .description { width: auto; }
       .intro-content { transform: translate(5vw, -7svh); }
       .description { max-width: 31rem; }
-      .order li { padding: max(88px, 25svh) 6vw max(104px, 16svh); }
+      .order li { padding: max(88px, 20svh) 6vw max(104px, 16svh); }
       .order h2 { font-size: clamp(36px, 10vw, 56px); }
-      .order .description { width: min(86vw, 27rem); }
+      .order .description { width: min(88vw, 28rem); }
       body.in-menu .stage::after {
-        background: linear-gradient(180deg, #180b0666, transparent 17%, #180b06bb 27%, #180b0688 43%, transparent 64%, #180b0666);
+        background: linear-gradient(180deg, #180b0666, transparent 16%, #180b06c9 24%, #180b0699 38%, transparent 53%, #180b0666);
       }
     }
     @media (prefers-reduced-motion: reduce) {
