@@ -15,6 +15,7 @@
       --accent: #ffba88;
       --serif: 'Playfair Display', Georgia, serif;
     }
+    html { scroll-snap-type: y mandatory; }
     * { box-sizing: border-box; }
     body { isolation: isolate; margin: 0; background: #21140f; color: var(--ink); font: 16px/1.5 'DM Sans', system-ui, sans-serif; }
     a { color: inherit; text-decoration: none; }
@@ -46,7 +47,7 @@
     .camera {
       transform: scale(1);
       transform-origin: 72% 61%;
-      transition: transform 900ms cubic-bezier(.22,.7,.25,1);
+      transition: transform 2500ms cubic-bezier(.25,.65,.25,1);
     }
     body.in-menu .camera { transform: scale(1.13); }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
@@ -58,7 +59,7 @@
                   linear-gradient(180deg, #150b0655, transparent 26%, transparent 72%, #150b0655);
     }
     main { isolation: isolate; }
-    .intro, .order li { display: grid; min-height: 100svh; align-content: center; }
+    .intro, .order li { display: grid; min-height: 100svh; align-content: center; scroll-snap-align: start; }
     .intro { padding: 90px max(5vw, 20px) 55px; }
     .intro-content { text-align: center; width: min(42vw, 680px); }
     .eyebrow {
@@ -89,7 +90,11 @@
     .discover::after { content: ''; width: 8px; height: 8px; border: solid currentColor; border-width: 0 1px 1px 0; transform: translateY(-2px) rotate(45deg); }
     .discover:hover, .back:hover { background: #3a2016cb; }
     .order { margin: 0; padding: 0; list-style: none; }
-    .order li { padding: 96px max(8vw, 20px) 80px; }
+    .order li {
+      align-content: start;
+      padding: max(86px, 25svh) max(7vw, 20px) 80px;
+      scroll-snap-stop: always;
+    }
     .description { width: min(34vw, 470px); text-shadow: 0 2px 16px #100703; }
     h2 { margin: 0 0 12px; font: italic 500 clamp(42px, 6vw, 100px)/1.03 var(--serif); overflow-wrap: break-word; }
     .description p { margin: 0; font-size: clamp(15px, 1.5vw, 21px); }
@@ -116,10 +121,15 @@
       .stage::after { background: linear-gradient(180deg, #180b0677, transparent 25%, transparent 43%, #180b06e8 89%); }
       .brand strong { font-size: 33px; }
       .brand span { font-size: 10px; }
-      .intro, .order li { align-content: end; padding-bottom: max(75px, 12svh); }
+      .intro { align-content: end; padding-bottom: max(75px, 12svh); }
       .intro-content, .description { width: auto; }
       .description { max-width: 31rem; }
-      .order li { padding-bottom: max(104px, 16svh); }
+      .order li { padding: max(88px, 25svh) 6vw max(104px, 16svh); }
+      .order h2 { font-size: clamp(36px, 10vw, 56px); }
+      .order .description { width: min(86vw, 27rem); }
+      body.in-menu .stage::after {
+        background: linear-gradient(180deg, #180b0666, transparent 17%, #180b06bb 27%, #180b0688 43%, transparent 64%, #180b0666);
+      }
     }
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .choices { transition: none; }
@@ -199,7 +209,7 @@
       event.preventDefault();
       const entry = entries[index];
       entry.querySelector('h2').focus({ preventScroll: true });
-      entry.scrollIntoView({ behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+      entry.scrollIntoView({ block: 'start', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
     }
 
     document.querySelector('.discover').addEventListener('click', event => reveal(event, 0));
