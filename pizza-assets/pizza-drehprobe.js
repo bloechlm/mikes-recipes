@@ -84,11 +84,11 @@ function pizzaMesh(topping) {
 async function start() {
   if (!gl) throw Error('WebGL unavailable');
   const topping = new Image();
-  topping.src = 'pizza-assets/margherita.webp';
+  topping.src = 'pizza-assets/margherita-render.webp';
   const crust = new Image();
   crust.src = 'pizza-assets/cornicione-texture.webp';
   const diavola = new Image();
-  diavola.src = 'pizza-assets/diavola.webp';
+  diavola.src = 'pizza-assets/diavola-render.webp';
   await Promise.all([topping.decode(), crust.decode(), diavola.decode()]);
 
   const program = makeProgram(`
@@ -96,6 +96,9 @@ async function start() {
     attribute vec3 position;
     attribute vec2 uv;
     attribute vec3 normal;
+    attribute vec3 diavolaPosition;
+    attribute vec3 diavolaNormal;
+    uniform float toppingMix;
     uniform float angle;
     uniform float shadowPass;
     varying vec2 texcoord;
@@ -105,20 +108,22 @@ async function start() {
       float c = cos(angle);
       float s = sin(angle);
       mat2 spin = mat2(c, s, -s, c);
-      vec2 groundPosition = spin * position.xz;
-      float elevation = position.y;
+      vec3 shape = mix(position, diavolaPosition, toppingMix);
+      vec3 shapeNormal = mix(normal, diavolaNormal, toppingMix);
+      vec2 groundPosition = spin * shape.xz;
+      float elevation = shape.y;
       if (shadowPass > 0.5) {
         groundPosition = (spin * position.xz) * vec2(1.08, 1.12) + vec2(.04, .11);
         elevation = -.008;
       }
       float depth = 1.0 - groundPosition.y * .21 - elevation * .10;
-      vec2 screen = vec2(.75, -.35) + vec2(groundPosition.x * .66,
-        (elevation * .90 - groundPosition.y * .43) * 1.15) / depth;
+      vec2 screen = vec2(.62, -.47) + vec2(groundPosition.x * .735,
+        (elevation * .96 - groundPosition.y * .43) * 1.22) / depth;
       gl_Position = vec4(screen * depth, depth - 1.0, depth);
       texcoord = uv;
-      vec2 n = spin * normal.xz;
-      surfaceNormal = vec3(n.x, normal.y, n.y);
-      localPosition = position;
+      vec2 n = spin * shapeNormal.xz;
+      surfaceNormal = vec3(n.x, shapeNormal.y, n.y);
+      localPosition = shape;
     }`, `
     precision mediump float;
     uniform sampler2D topping;
@@ -148,21 +153,29 @@ async function start() {
       diffuse = mix(diffuse, bread, side);
       float contact = mix(.56, 1.0, smoothstep(.009, .13, localPosition.y));
       float lit = max(dot(n, fire), 0.0);
-      vec3 warmth = vec3(.76, .66, .53) + lit * vec3(.44, .31, .19);
+      vec3 warmth = vec3(.66, .56, .46) + lit * vec3(.56, .41, .26);
       vec3 halfVector = normalize(fire + normalize(vec3(-.16, .43, 1.0)));
       float highlight = max(dot(n, halfVector), 0.0);
       float wetness = smoothstep(.16, .72, max(diffuse.r, diffuse.g));
-      float sheen = pow(highlight, 13.0) * .17 + pow(highlight, 42.0) * .48;
+      float sheen = pow(highlight, 16.0) * .20 + pow(highlight, 46.0) * .56;
       vec3 reflection = vec3(1.0, .68, .38) * sheen * mix(.18, .9, wetness) * (1.0 - side * .94);
       gl_FragColor = vec4(diffuse * warmth * contact + reflection, 1.);
     }`);
   gl.useProgram(program);
   const mesh = pizzaMesh(topping);
+  const secondMesh = pizzaMesh(diavola);
   gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
   gl.bufferData(gl.ARRAY_BUFFER, mesh.vertices, gl.STATIC_DRAW);
   for (const [name, size, offset] of [['position', 3, 0], ['uv', 2, 12], ['normal', 3, 20]]) {
     const location = gl.getAttribLocation(program, name);
     gl.vertexAttribPointer(location, size, gl.FLOAT, false, 32, offset);
+    gl.enableVertexAttribArray(location);
+  }
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+  gl.bufferData(gl.ARRAY_BUFFER, secondMesh.vertices, gl.STATIC_DRAW);
+  for (const [name, offset] of [['diavolaPosition', 0], ['diavolaNormal', 20]]) {
+    const location = gl.getAttribLocation(program, name);
+    gl.vertexAttribPointer(location, 3, gl.FLOAT, false, 32, offset);
     gl.enableVertexAttribArray(location);
   }
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, gl.createBuffer());
