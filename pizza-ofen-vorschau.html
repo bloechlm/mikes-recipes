@@ -12,6 +12,7 @@
     :root {
       color-scheme: dark;
       --oven-zoom-duration: 2500ms;
+      --pizza-change-duration: 1250ms;
       --ink: #fff0d9;
       --accent: #ffba88;
       --serif: 'Playfair Display', Georgia, serif;
@@ -69,7 +70,7 @@
                   opacity 850ms ease 1550ms;
     }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
-    .scene.variant { opacity: 0; transition: opacity 1250ms cubic-bezier(.35, 0, .25, 1); }
+    .scene.variant { opacity: 0; transition: opacity var(--pizza-change-duration) cubic-bezier(.35, 0, .25, 1); }
     .scene.variant.active { opacity: 1; }
     body:not(.in-menu) .stage::after {
       background: linear-gradient(90deg, #1d0d06a8, #1d0d0640 45%, transparent 68%);
@@ -116,7 +117,24 @@
       padding: max(86px, 25svh) max(7vw, 20px) 80px;
       scroll-snap-stop: always;
     }
-    .description { width: min(34vw, 470px); text-shadow: 0 2px 16px #100703; }
+    .description {
+      position: fixed;
+      top: max(86px, 25svh);
+      left: max(7vw, 20px);
+      width: min(34vw, 470px);
+      text-shadow: 0 2px 16px #100703;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(48px);
+      transition: opacity var(--pizza-change-duration) ease,
+                  transform var(--pizza-change-duration) cubic-bezier(.35, 0, .25, 1);
+    }
+    .order li.past .description { transform: translateY(-48px); }
+    .order li.current .description {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
     h2 { margin: 0 0 12px; font: italic 500 clamp(42px, 6vw, 100px)/1.03 var(--serif); overflow-wrap: break-word; }
     .order h2:focus { outline: none; }
     .description p { margin: 0; font-size: clamp(15px, 1.5vw, 21px); }
@@ -132,7 +150,7 @@
       background: #21140fb8;
     }
     @keyframes oven-copy-in { from { opacity: 0; } to { opacity: 1; } }
-    .in-menu .description, .in-menu .choices {
+    .in-menu .order, .in-menu .choices {
       animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
     }
     .choices a { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; }
@@ -165,7 +183,7 @@
       .description { max-width: 31rem; }
       .order li { padding: max(88px, 25svh) 6vw max(104px, 16svh); }
       .order h2 { font-size: clamp(36px, 10vw, 56px); }
-      .order .description { width: min(86vw, 27rem); }
+      .order .description { top: max(88px, 25svh); left: 6vw; width: min(86vw, 27rem); }
       body.in-menu .stage::after {
         background: linear-gradient(180deg, #180b0666, transparent 17%, #180b06bb 27%, #180b0688 43%, transparent 64%, #180b0666);
       }
@@ -173,7 +191,8 @@
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .kitchen, body.in-menu .kitchen { transition: none; }
       body.in-menu .kitchen { transform: none; }
-      .in-menu .description, .in-menu .choices { animation: none; }
+      .in-menu .order, .in-menu .choices { animation: none; }
+      .description { transition: none; }
     }
   </style>
 </head>
@@ -274,6 +293,10 @@
       const marker = document.documentElement.clientHeight / 2;
       const index = Math.max(0, entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker));
       activeIndex = index;
+      entries.forEach((entry, position) => {
+        entry.classList.toggle('past', position < index);
+        entry.classList.toggle('current', position === index);
+      });
       previousPizza.disabled = index === 0;
       nextPizza.disabled = index === entries.length - 1;
       pictures.forEach((picture, position) => picture.classList.toggle('active', position === index));
