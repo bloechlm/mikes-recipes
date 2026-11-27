@@ -125,7 +125,9 @@
       position: fixed;
       z-index: 2;
       bottom: max(24px, env(safe-area-inset-bottom));
-      left: max(8vw, 20px);
+      left: max(8vw, 20px, env(safe-area-inset-left));
+      right: max(5vw, 20px, env(safe-area-inset-right));
+      pointer-events: none;
       display: flex;
       gap: 8px;
       align-items: center;
@@ -134,6 +136,8 @@
     .in-menu .description, .in-menu .choices {
       animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
     }
+    .choices .pizza-dots, .choices button { pointer-events: auto; }
+    .choices .previous-pizza { margin-inline-start: auto; }
     .pizza-dots {
       display: flex;
       gap: 4px;
