@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pizza-Drehprobe | EM Recipes</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#21130c;color:#fff0d9;font:16px/1.5 system-ui,sans-serif}
+.stage{position:fixed;inset:0;overflow:hidden;background:#2e190e}
+.stage img,.stage canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:70% 50%}
+.stage::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#1d0d06a8,transparent 58%);pointer-events:none}
+header{position:fixed;z-index:2;top:24px;right:5vw}
+a,button{color:inherit;background:#21140fbb;border:1px solid #fff6;padding:10px 16px;border-radius:32px;text-decoration:none;font:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible{outline:2px solid #ffbc87;outline-offset:4px}
+main{position:relative;min-height:180svh}
+.content{position:sticky;top:0;min-height:100svh;display:grid;align-content:center;justify-items:start;padding:70px 8vw;width:48%}
+h1{font:italic 500 clamp(42px,8vw,114px)/1 Georgia,serif;margin:0}
+p{margin:16px 0 24px}
+@media(max-width:700px) and (orientation:portrait){
+.stage img,.stage canvas{object-position:76% 50%}
+.stage::after{background:linear-gradient(0deg,#1d0d06e8,transparent 46%)}
+.content{width:100%;align-content:end;padding-bottom:8svh}
+}
+</style>
+<script src="pizza-assets/pizza-drehprobe.js" defer></script>
+</head>
+<body>
+<div class="stage" aria-hidden="true">
+<img src="pizza-assets/drehprobe-ofen.webp" alt="">
+<canvas width="1500" height="844"></canvas>
+</div>
+<header><a href="pizza.html">← Pizzakarte</a></header>
+<main>
+<section class="content">
+<h1>Margherita</h1>
+<p id="status">Scrolle, um die Pizza auf dem Stein zu drehen.</p>
+<button type="button" disabled>Drehen ↻</button>
+</section>
+</main>
+</body>
+</html>
