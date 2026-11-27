@@ -11,6 +11,7 @@
   <style>
     :root {
       color-scheme: dark;
+      --oven-zoom-duration: 2500ms;
       --ink: #fff0d9;
       --accent: #ffba88;
       --serif: 'Playfair Display', Georgia, serif;
@@ -46,9 +47,27 @@
       background: #21140f;
     }
     .camera, .scene, .kitchen, .stage::after { position: absolute; inset: 0; }
-    .camera { transform: scale(1.13); transform-origin: 72% 61%; }
-    .kitchen { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
-    body.in-menu .kitchen { visibility: hidden; }
+    .camera {
+      transform: scale(1);
+      transform-origin: 72% 61%;
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.25,.65,.25,1);
+    }
+    body.in-menu .camera { transform: scale(1.13); }
+    .kitchen {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: var(--kitchen-position, 66%) center;
+      transform-origin: var(--oven-x, 73%) var(--oven-y, 53%);
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.42,0,.24,1),
+                  opacity 720ms ease;
+    }
+    body.in-menu .kitchen {
+      transform: translate(var(--oven-shift-x, -23%), var(--oven-shift-y, -3%)) scale(var(--oven-zoom, 3.2));
+      opacity: 0;
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.42,0,.24,1),
+                  opacity 850ms ease 1550ms;
+    }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
     .scene.variant { opacity: 0; transition: opacity 560ms ease; }
     .scene.variant.active { opacity: 1; }
@@ -112,12 +131,15 @@
       border-radius: 50px;
       background: #21140fb8;
     }
+    @keyframes oven-copy-in { from { opacity: 0; } to { opacity: 1; } }
+    .in-menu .description, .in-menu .choices {
+      animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
+    }
     .choices a { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; }
     .choices a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
     @media (max-width: 720px) and (orientation: portrait) {
       .scene { object-position: 72% center; }
-      .kitchen { object-position: 76.8% center; }
       body:not(.in-menu) .stage::after {
         background: linear-gradient(180deg, #180b0666, transparent 34%, #180b06e8 91%);
       }
@@ -136,7 +158,9 @@
       }
     }
     @media (prefers-reduced-motion: reduce) {
-      .scene.variant { transition: none; }
+      .camera, .scene.variant, .kitchen, body.in-menu .kitchen { transition: none; }
+      body.in-menu .kitchen { transform: none; }
+      .in-menu .description, .in-menu .choices { animation: none; }
     }
   </style>
 </head>
@@ -153,7 +177,7 @@
   <header>
     <a class="brand" href="./index.html" aria-label="EM Recipes Startseite"><strong>EM</strong><span>RECIPES</span></a>
     <a class="back" href="./index.html">Home</a>
-    <button class="back kitchen-back" type="button" hidden>← Zur Küche</button>
+    <button class="back kitchen-back" type="button" hidden>Zurück</button>
   </header>
   <main>
     <section class="intro" aria-labelledby="menu-title">
@@ -196,6 +220,7 @@
     const selectors = Array.from(document.querySelectorAll('.choices a'));
     const pictures = Array.from(document.querySelectorAll('.scene'));
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    const kitchen = document.querySelector('.kitchen');
     const intro = document.querySelector('.intro');
     const discover = document.querySelector('.discover');
     const menu = document.querySelector('.order').parentElement;
@@ -203,6 +228,27 @@
     const home = document.querySelector('a.back');
     const kitchenBack = document.querySelector('.kitchen-back');
     let frame = 0;
+
+    function alignOvenZoom() {
+      const width = kitchen.clientWidth;
+      const height = kitchen.clientHeight;
+      if (!width || !height) return;
+      const ovenCenterX = .768;
+      const ovenCenterY = .418;
+      const imageRatio = (kitchen.naturalWidth / kitchen.naturalHeight) || 16 / 9;
+      const imageWidth = Math.max(width, height * imageRatio);
+      const imageHeight = imageWidth / imageRatio;
+      const position = width / height < 1 ? ovenCenterX : .66;
+      const ovenX = ovenCenterX * imageWidth - position * (imageWidth - width);
+      const ovenY = ovenCenterY * imageHeight - (imageHeight - height) / 2;
+      const zoom = Math.max(2.1, Math.min(3.7, width / (imageWidth * .30)));
+      kitchen.style.setProperty('--kitchen-position', position * 100 + '%');
+      kitchen.style.setProperty('--oven-x', ovenX + 'px');
+      kitchen.style.setProperty('--oven-y', ovenY + 'px');
+      kitchen.style.setProperty('--oven-shift-x', width / 2 - ovenX + 'px');
+      kitchen.style.setProperty('--oven-shift-y', height / 2 - ovenY + 'px');
+      kitchen.style.setProperty('--oven-zoom', zoom);
+    }
 
     function updateScene() {
       frame = 0;
@@ -238,7 +284,12 @@
     kitchenBack.addEventListener('click', () => showMenu(false));
     selectors.forEach((link, index) => link.addEventListener('click', event => reveal(event, index)));
     addEventListener('scroll', scheduleUpdate, { passive: true });
-    addEventListener('resize', scheduleUpdate);
+    addEventListener('resize', () => {
+      alignOvenZoom();
+      scheduleUpdate();
+    });
+    kitchen.addEventListener('load', alignOvenZoom);
+    alignOvenZoom();
     addEventListener('pageshow', scheduleUpdate);
     updateScene();
   </script>
