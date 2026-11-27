@@ -166,7 +166,7 @@
       <img class="scene variant" src="pizza-assets/scene-funghi.webp" alt="">
       <img class="scene variant" src="pizza-assets/scene-prosciutto.webp" alt="">
     </div>
-    <img class="kitchen" src="pizza-assets/ofen-arbeitsplatte.webp" alt="" fetchpriority="high">
+    <img class="kitchen" src="pizza-assets/ofen-kueche-weit.webp" alt="" fetchpriority="high">
   </div>
   <header>
     <a class="brand" href="./index.html" aria-label="EM Recipes Startseite"><strong>EM</strong><span>RECIPES</span></a>
@@ -220,15 +220,15 @@
       const width = kitchen.clientWidth;
       const height = kitchen.clientHeight;
       if (!width || !height) return;
-      const ovenCenterX = .695;
-      const ovenCenterY = .40;
+      const ovenCenterX = .768;
+      const ovenCenterY = .418;
       const imageRatio = (kitchen.naturalWidth / kitchen.naturalHeight) || 16 / 9;
       const imageWidth = Math.max(width, height * imageRatio);
       const imageHeight = imageWidth / imageRatio;
       const position = width / height < 1 ? ovenCenterX : .66;
       const ovenX = ovenCenterX * imageWidth - position * (imageWidth - width);
       const ovenY = ovenCenterY * imageHeight - (imageHeight - height) / 2;
-      const zoom = Math.max(2.1, Math.min(3.7, width / (imageWidth * .44)));
+      const zoom = Math.max(2.1, Math.min(3.7, width / (imageWidth * .30)));
       kitchen.style.setProperty('--kitchen-position', position * 100 + '%');
       kitchen.style.setProperty('--oven-x', ovenX + 'px');
       kitchen.style.setProperty('--oven-y', ovenY + 'px');
