@@ -109,6 +109,7 @@
       text-transform: uppercase;
     }
     .discover::after { content: ''; width: 8px; height: 8px; border: solid currentColor; border-width: 0 1px 1px 0; transform: translateY(-2px) rotate(45deg); }
+    body.in-menu .back { visibility: hidden; }
     .discover:hover, .back:hover { background: #3a2016cb; }
     .order { margin: 0; padding: 0; list-style: none; }
     .order li {
@@ -139,7 +140,11 @@
       background: #21140fb8;
       transition: opacity 240ms ease, visibility 240ms;
     }
-    .in-menu .choices { opacity: 1; visibility: visible; }
+    .in-menu .choices {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 320ms ease var(--oven-zoom-duration), visibility 0s var(--oven-zoom-duration);
+    }
     .choices a { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; }
     .choices a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
@@ -165,7 +170,7 @@
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .choices, .kitchen, body.in-menu .kitchen { transition: none; }
       body.in-menu .kitchen { transform: none; }
-      .intro-content, body.in-menu .description { transition: none; }
+      .intro-content, body.in-menu .description, .in-menu .choices { transition: none; }
     }
   </style>
 </head>
@@ -181,7 +186,7 @@
   </div>
   <header>
     <a class="brand" href="./index.html" aria-label="EM Recipes Startseite"><strong>EM</strong><span>RECIPES</span></a>
-    <a class="back" href="./index.html">← Rezepte</a>
+    <a class="back" href="./index.html">Home</a>
   </header>
   <main>
     <section class="intro" aria-labelledby="menu-title">
