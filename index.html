@@ -159,6 +159,29 @@ try {
 .site-footer-copy{font-weight:600}
 @media(max-width:800px){.measure-guides{grid-template-columns:1fr}}
 @media(max-width:380px){.measure-guide th,.measure-guide td,.measure-guide caption{padding-inline:7px}}
+
+  .collection {
+    position: relative;
+    isolation: isolate;
+    --collection-tint: #192018a8;
+  }
+  [data-theme=light] .collection { --collection-tint: #f7f2df9c; }
+  .collection::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: -18px 0 auto;
+    height: min(820px, calc(100% + 18px));
+    background:
+      linear-gradient(var(--collection-tint), var(--collection-tint)),
+      url('recipe-images/rezept-kueche.webp') 50% 42% / cover no-repeat;
+    mask-image: radial-gradient(ellipse 76% 76% at 50% 34%, #000 39%, transparent 96%);
+    pointer-events: none;
+  }
+  @media (max-width: 650px) {
+    .collection::before { background-position: 36% center; }
+  }
+  @media print { .collection::before { display: none; } }
 </style><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&amp;display=swap"></head>
 <body>
 <header><nav class="wrap" aria-label="Hauptnavigation">
