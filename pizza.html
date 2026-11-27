@@ -1,4 +1,303 @@
 <!doctype html>
-<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Pizza | EM Recipes</title><link rel="icon" href="favicon.png"><link rel="apple-touch-icon" href="apple-touch-icon.png"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Playfair+Display:wght@500;600&display=swap"><style>
-*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(ellipse at 75% 15%,#a36c46,#593526 55%,#2c1b15);color:#fff4df;font:16px 'DM Sans',sans-serif}header{display:flex;align-items:center;justify-content:space-between;padding:18px clamp(18px,5vw,70px);border-bottom:1px solid #fff3;background:#35221980;backdrop-filter:blur(16px)}a{color:inherit;text-decoration:none}a:focus-visible{outline:2px solid #fff4df;outline-offset:5px}main{min-height:75dvh;display:grid;place-content:center;text-align:center;padding:24px}h1{font:500 clamp(64px,14vw,150px)/1 'Playfair Display',Georgia,serif;margin:18px 0}p{color:#f3d9bc}small{letter-spacing:.25em;text-transform:uppercase}
-</style></head><body><header><a href="./index.html">← EM Recipes</a><a href="./index.html" aria-label="EM Recipes Startseite"><img src="recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png" alt="" width="54"></a></header><main><small>Eva &amp; Michi</small><h1>Pizza</h1><p>Was darf's heute sein?</p></main></body></html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#21140f">
+  <title>Pizza | EM Recipes</title>
+  <link rel="icon" href="favicon.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600&display=swap">
+  <style>
+    :root {
+      color-scheme: dark;
+      --ink: #fff3dc;
+      --muted: #d7bda5;
+      --accent: #ffad79;
+      --line: #eab48a38;
+      --serif: 'Playfair Display', Georgia, serif;
+      --header: 64px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(ellipse at 75% 4%, #543021, #21140f 58%);
+      color: var(--ink);
+      font: 16px/1.5 'DM Sans', system-ui, sans-serif;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 3;
+      height: var(--header);
+      padding-inline: max(5vw, 18px);
+      border-bottom: 1px solid var(--line);
+      background: #251610e8;
+      backdrop-filter: blur(14px);
+    }
+    header a { color: inherit; text-decoration: none; }
+    header img { display: block; width: 42px; }
+    :focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+    main {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+      align-items: start;
+      gap: clamp(24px, 5vw, 80px);
+      max-width: 1440px;
+      margin: auto;
+      padding: clamp(24px, 4vw, 58px) max(5vw, 18px) 0;
+    }
+    .showcase { position: sticky; top: calc(var(--header) + 22px); }
+    .oven {
+      position: relative;
+      isolation: isolate;
+      height: clamp(340px, 65svh, 680px);
+      overflow: hidden;
+      border-radius: 48% 48% 22px 22px / 24% 24% 22px 22px;
+      border: 1px solid #e8a2776b;
+      background: #804830 url('pizza-assets/oven.webp') center / cover no-repeat;
+      box-shadow: 0 24px 70px #100703a6, inset 0 0 75px #180b06ab;
+    }
+    .oven::after {
+      content: '';
+      position: absolute;
+      inset: 62% 0 0;
+      background: linear-gradient(transparent, #26130985);
+      pointer-events: none;
+    }
+    .pizza-plane {
+      position: absolute;
+      left: 3%;
+      top: 53%;
+      width: 88%;
+      transform: scaleY(.55);
+      transform-origin: top center;
+    }
+    .pizza-wheel {
+      display: grid;
+      transform: rotate(var(--angle, 0deg));
+      transition: transform 650ms cubic-bezier(.22,.7,.25,1);
+      filter: drop-shadow(0 8px 8px #170801bd);
+    }
+    .pizza-wheel img {
+      grid-area: 1 / 1;
+      display: block;
+      width: 100%;
+      height: auto;
+      opacity: 0;
+      transition: opacity 460ms ease;
+    }
+    .pizza-wheel img.active { opacity: 1; }
+    .choices {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      position: absolute;
+      bottom: 14px;
+      left: 0;
+      right: 0;
+    }
+    .choices a {
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      border: 1px solid #fff4;
+      border-radius: 50%;
+      background: #21140fe6;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .choices a::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+    }
+    .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
+    h1 { font: 500 clamp(54px, 8.5vw, 120px)/.95 var(--serif); margin: 4px 0 14px; }
+    .intro p { color: var(--muted); margin: 0 0 24px; }
+    .order { margin: 0; padding: 0; list-style: none; }
+    .order li {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 36svh;
+      padding: 24px 0;
+      border-top: 1px solid var(--line);
+      scroll-margin-top: calc(var(--header) + 38px);
+    }
+    .order li:last-child { min-height: 50svh; }
+    .order h2 {
+      margin: 0 0 8px;
+      font: 500 clamp(30px, 4.1vw, 63px)/1.08 var(--serif);
+    }
+    .order h2 button {
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .order li.active h2, .order h2 button:hover { color: var(--accent); }
+    .order p { color: var(--muted); margin: 0; }
+    @media (max-width: 720px) {
+      :root { --header: 52px; }
+      main { display: block; padding-top: 12px; }
+      .showcase {
+        top: var(--header);
+        z-index: 2;
+        padding: 8px 0 12px;
+        background: #302017;
+      }
+      .oven { height: clamp(175px, 36svh, 340px); }
+      .pizza-plane { width: min(81%, 370px); left: 9%; top: 56%; }
+      .choices { bottom: 8px; gap: 8px; }
+      .choices a { width: 38px; height: 38px; }
+      .intro { padding-top: 12px; }
+      .order li { min-height: 30svh; }
+      .order li:last-child { min-height: 47svh; }
+    }
+    @media (max-height: 480px) and (orientation: landscape) {
+      .oven { height: 65svh; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .pizza-wheel, .pizza-wheel img { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="./index.html">← EM Recipes</a>
+    <a href="./index.html" aria-label="EM Recipes Startseite"><img src="recipe-images/ee0d71b3-4c93-4646-b262-0432eb955c47.png" alt=""></a>
+  </header>
+  <main>
+    <div class="showcase">
+      <div class="oven">
+        <div class="pizza-plane" aria-hidden="true">
+          <div class="pizza-wheel">
+            <img class="active" src="pizza-assets/margherita.webp" alt="" width="420" height="420">
+            <img src="pizza-assets/diavola.webp" alt="" width="420" height="420">
+            <img src="pizza-assets/funghi.webp" alt="" width="420" height="420">
+            <img src="pizza-assets/prosciutto.webp" alt="" width="420" height="420">
+          </div>
+        </div>
+        <nav class="choices" aria-label="Pizza auswählen">
+          <a href="#margherita" aria-label="Margherita" aria-current="true"></a>
+          <a href="#diavola" aria-label="Diavola"></a>
+          <a href="#funghi" aria-label="Funghi"></a>
+          <a href="#prosciutto" aria-label="Prosciutto e Rucola"></a>
+        </nav>
+      </div>
+    </div>
+    <section aria-labelledby="menu-title">
+      <div class="intro">
+        <h1 id="menu-title">Pizza</h1>
+        <p>Was darf’s heute sein?</p>
+      </div>
+      <ul class="order">
+        <li id="margherita" class="active">
+          <h2><button type="button" aria-pressed="true">Margherita</button></h2>
+          <p>Tomatensauce, Fior di Latte und frisches Basilikum</p>
+        </li>
+        <li id="diavola">
+          <h2><button type="button" aria-pressed="false">Diavola</button></h2>
+          <p>Tomatensauce, Fior di Latte und scharfe Salami</p>
+        </li>
+        <li id="funghi">
+          <h2><button type="button" aria-pressed="false">Funghi</button></h2>
+          <p>Tomatensauce, Fior di Latte, Champignons und Petersilie</p>
+        </li>
+        <li id="prosciutto">
+          <h2><button type="button" aria-pressed="false">Prosciutto e Rucola</button></h2>
+          <p>Tomatensauce, Fior di Latte, Prosciutto crudo, Rucola und Parmesan</p>
+        </li>
+      </ul>
+    </section>
+  </main>
+  <script>
+    const entries = Array.from(document.querySelectorAll('.order li'));
+    const selectors = Array.from(document.querySelectorAll('.choices a'));
+    const buttons = entries.map(entry => entry.querySelector('button'));
+    const showcase = document.querySelector('.showcase');
+    const wheel = document.querySelector('.pizza-wheel');
+    const pictures = Array.from(wheel.querySelectorAll('img'));
+    const mobile = matchMedia('(max-width: 720px)');
+    const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+    let selected = 0;
+    let angle = 0;
+    let clicked = false;
+    let frame = 0;
+
+    function select(index, animate = true) {
+      if (index === selected) return;
+      if (animate) angle += 60 * Math.sign(index - selected);
+      selected = index;
+      wheel.style.setProperty('--angle', angle + 'deg');
+      entries.forEach((entry, position) => {
+        const active = position === index;
+        entry.classList.toggle('active', active);
+        buttons[position].setAttribute('aria-pressed', String(active));
+        pictures[position].classList.toggle('active', active);
+        selectors[position].setAttribute('aria-current', String(active));
+      });
+    }
+
+    function choose(index) {
+      clicked = true;
+      select(index);
+      const entry = entries[index];
+      const headerBottom = document.querySelector('header').getBoundingClientRect().bottom;
+      const visibleTop = mobile.matches ? headerBottom + showcase.offsetHeight : headerBottom;
+      const marker = visibleTop + (innerHeight - visibleTop) * (mobile.matches ? .4 : .56);
+      const target = entry.getBoundingClientRect().top + scrollY - marker + 18;
+      scrollTo({ top: target, behavior: reducedMotion.matches ? 'instant' : 'smooth' });
+    }
+
+    function selectFromScroll(animate = true) {
+      const headerBottom = document.querySelector('header').getBoundingClientRect().bottom;
+      const visibleTop = mobile.matches ? showcase.getBoundingClientRect().bottom : headerBottom;
+      const marker = visibleTop + (innerHeight - visibleTop) * (mobile.matches ? .4 : .56);
+      const lastVisible = entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker);
+      select(Math.max(0, lastVisible), animate);
+    }
+
+    selectors.forEach((link, index) => {
+      link.addEventListener('click', event => {
+        event.preventDefault();
+        choose(index);
+      });
+      buttons[index].addEventListener('click', () => choose(index));
+    });
+    function resumeScrollSelection() { clicked = false; }
+    addEventListener('wheel', resumeScrollSelection, { passive: true });
+    addEventListener('touchstart', resumeScrollSelection, { passive: true });
+    addEventListener('pointerdown', resumeScrollSelection, { passive: true });
+    addEventListener('keydown', event => {
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End', ' '].includes(event.key)) {
+        resumeScrollSelection();
+      }
+    });
+    addEventListener('scroll', () => {
+      if (frame || clicked) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        if (!clicked) selectFromScroll();
+      });
+    }, { passive: true });
+    const linked = entries.findIndex(entry => '#' + entry.id === location.hash);
+    if (linked >= 0) {
+      requestAnimationFrame(() => {
+        select(linked, false);
+        choose(linked);
+      });
+    }
+  </script>
+</body>
+</html>
