@@ -133,7 +133,7 @@
       align-items: center;
     }
     @keyframes oven-copy-in { from { opacity: 0; } to { opacity: 1; } }
-    .in-menu .description, .in-menu .choices {
+    .in-menu .description, .in-menu .choices, .returning-kitchen .intro-content {
       animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
     }
     .choices .pizza-dots, .choices button { pointer-events: auto; }
@@ -205,7 +205,7 @@
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .kitchen, body.in-menu .kitchen { transition: none; }
       body.in-menu .kitchen { transform: none; }
-      .in-menu .description, .in-menu .choices, body.in-menu .stage::after { animation: none; }
+      .in-menu .description, .in-menu .choices, body.in-menu .stage::after, .returning-kitchen .intro-content { animation: none; }
     }
   </style>
 </head>
@@ -410,6 +410,7 @@
       pictureIndex = 0;
       lastScrollTop = 0;
       document.body.classList.toggle('in-menu', open);
+      document.body.classList.toggle('returning-kitchen', !open);
       menu.hidden = choices.hidden = kitchenBack.hidden = !open;
       intro.hidden = home.hidden = open;
       window.scrollTo({ top: 0, behavior: 'instant' });
