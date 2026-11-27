@@ -11,6 +11,7 @@
   <style>
     :root {
       color-scheme: dark;
+      --oven-zoom-duration: 2500ms;
       --ink: #fff0d9;
       --accent: #ffba88;
       --serif: 'Playfair Display', Georgia, serif;
@@ -47,7 +48,7 @@
     .camera {
       transform: scale(1);
       transform-origin: 72% 61%;
-      transition: transform 2500ms cubic-bezier(.25,.65,.25,1);
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.25,.65,.25,1);
     }
     body.in-menu .camera { transform: scale(1.13); }
     .kitchen {
@@ -56,13 +57,13 @@
       object-fit: cover;
       object-position: var(--kitchen-position, 66%) center;
       transform-origin: var(--oven-x, 73%) var(--oven-y, 53%);
-      transition: transform 2500ms cubic-bezier(.42,0,.24,1),
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.42,0,.24,1),
                   opacity 720ms ease;
     }
     body.in-menu .kitchen {
       transform: translate(var(--oven-shift-x, -23%), var(--oven-shift-y, -3%)) scale(var(--oven-zoom, 3.2));
       opacity: 0;
-      transition: transform 2500ms cubic-bezier(.42,0,.24,1),
+      transition: transform var(--oven-zoom-duration) cubic-bezier(.42,0,.24,1),
                   opacity 850ms ease 1550ms;
     }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
@@ -80,6 +81,8 @@
     .intro, .order li { display: grid; min-height: 100svh; align-content: center; scroll-snap-align: start; }
     .intro { padding: 90px max(5vw, 20px) 55px; }
     .intro-content { text-align: center; width: min(42vw, 680px); }
+    .intro-content { transition: opacity 180ms ease; }
+    body.in-menu .intro-content { opacity: 0; }
     .eyebrow {
       display: flex;
       align-items: center;
@@ -115,6 +118,11 @@
     }
     .description { width: min(34vw, 470px); text-shadow: 0 2px 16px #100703; }
     h2 { margin: 0 0 12px; font: italic 500 clamp(42px, 6vw, 100px)/1.03 var(--serif); overflow-wrap: break-word; }
+    .description { opacity: 0; }
+    body.in-menu .description {
+      opacity: 1;
+      transition: opacity 320ms ease var(--oven-zoom-duration);
+    }
     .description p { margin: 0; font-size: clamp(15px, 1.5vw, 21px); }
     .choices {
       position: fixed;
@@ -155,6 +163,7 @@
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .choices, .kitchen, body.in-menu .kitchen { transition: none; }
       body.in-menu .kitchen { transform: none; }
+      .intro-content, body.in-menu .description { transition: none; }
     }
   </style>
 </head>
