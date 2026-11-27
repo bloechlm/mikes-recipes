@@ -70,7 +70,7 @@
                   opacity 850ms ease 1550ms;
     }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
-    .scene.variant { opacity: 0; transition: opacity 1250ms cubic-bezier(.35, 0, .25, 1); }
+    .scene.variant { opacity: 0; transition: opacity 750ms cubic-bezier(.35, 0, .25, 1); }
     .scene.variant.active { opacity: 1; }
     body:not(.in-menu) .stage::after {
       background: linear-gradient(90deg, #1d0d06a8, #1d0d0640 45%, transparent 68%);
@@ -246,6 +246,8 @@
     const previousPizza = document.querySelector('.previous-pizza');
     const nextPizza = document.querySelector('.next-pizza');
     let activeIndex = 0;
+    let pictureIndex = 0;
+    let lastScrollTop = 0;
     let frame = 0;
     let scrollAnimation = 0;
     let lastWheelEvent = -Infinity;
@@ -279,7 +281,13 @@
       activeIndex = index;
       previousPizza.disabled = index === 0;
       nextPizza.disabled = index === entries.length - 1;
-      pictures.forEach((picture, position) => picture.classList.toggle('active', position === index));
+      const scrollTop = window.scrollY;
+      if (scrollTop !== lastScrollTop) {
+        const imageMarker = marker * (scrollTop > lastScrollTop ? 1.28 : .72);
+        pictureIndex = Math.max(0, entries.findLastIndex(entry => entry.getBoundingClientRect().top <= imageMarker));
+      }
+      lastScrollTop = scrollTop;
+      pictures.forEach((picture, position) => picture.classList.toggle('active', position === pictureIndex));
       selectors.forEach((link, position) => link.setAttribute('aria-current', String(position === index)));
     }
 
@@ -308,7 +316,7 @@
       document.documentElement.classList.add('pizza-scrolling');
 
       function move(now) {
-        const progress = Math.min(1, (now - started) / 1100);
+        const progress = Math.min(1, (now - started) / 600);
         const eased = progress * progress * (3 - 2 * progress);
         window.scrollTo({ top: start + distance * eased, behavior: 'instant' });
         if (progress < 1) scrollAnimation = requestAnimationFrame(move);
@@ -330,6 +338,8 @@
     function showMenu(open) {
       stopMenuScroll();
       lastWheelEvent = -Infinity;
+      pictureIndex = 0;
+      lastScrollTop = 0;
       document.body.classList.toggle('in-menu', open);
       menu.hidden = choices.hidden = kitchenBack.hidden = !open;
       intro.hidden = home.hidden = open;
