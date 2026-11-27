@@ -85,15 +85,15 @@ async function start() {
       float c = cos(angle);
       float s = sin(angle);
       mat2 spin = mat2(c, s, -s, c);
-      vec2 flat = spin * position.xz;
+      vec2 groundPosition = spin * position.xz;
       float elevation = position.y;
       if (shadowPass > 0.5) {
-        flat = position.xz * vec2(1.13, 1.15) + vec2(.04, .11);
+        groundPosition = position.xz * vec2(1.13, 1.15) + vec2(.04, .11);
         elevation = -.008;
       }
-      float depth = 1.0 - flat.y * .21 - elevation * .10;
-      vec2 screen = vec2(.48, -.35) + vec2(flat.x * .66,
-        (elevation * .90 - flat.y * .43) * 1.15) / depth;
+      float depth = 1.0 - groundPosition.y * .21 - elevation * .10;
+      vec2 screen = vec2(.48, -.35) + vec2(groundPosition.x * .66,
+        (elevation * .90 - groundPosition.y * .43) * 1.15) / depth;
       gl_Position = vec4(screen * depth, depth - 1.0, depth);
       texcoord = uv;
       vec2 n = spin * normal.xz;
