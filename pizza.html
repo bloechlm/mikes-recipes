@@ -170,17 +170,29 @@
         background: linear-gradient(180deg, #180b0666, transparent 34%, #180b06e8 91%);
       }
       .stage::after { background: linear-gradient(180deg, #180b0677, transparent 25%, transparent 43%, #180b06e8 89%); }
+      .choices {
+        gap: 5px;
+        padding: 3px 5px;
+        border-radius: 18px;
+        background: #21140f80;
+      }
+      .choices .pizza-dots { gap: 0 2px; }
+      .choices .pizza-dots a { width: 22px; height: 22px; }
+      .choices .pizza-dots a::before { width: 5px; height: 5px; opacity: .7; }
+      .choices .pizza-dots a[aria-current="true"] { color: var(--accent); background: transparent; }
+      .choices .pizza-dots a[aria-current="true"]::before { width: 7px; height: 7px; opacity: 1; }
+      .choices button { width: 34px; height: 34px; }
       .brand strong { font-size: 33px; }
       .brand span { font-size: 10px; }
       .intro { align-content: end; padding-bottom: max(75px, 12svh); }
       .intro-content, .description { width: auto; }
       .intro-content { transform: translate(5vw, -7svh); }
       .description { max-width: 31rem; }
-      .order li { padding: max(88px, 20svh) 6vw max(104px, 16svh); }
+      .order li { padding: max(88px, 23svh) 6vw max(104px, 16svh); }
       .order h2 { font-size: clamp(36px, 10vw, 56px); }
       .order .description { width: min(88vw, 28rem); }
       body.in-menu .stage::after {
-        background: linear-gradient(180deg, #180b0666, transparent 16%, #180b06c9 24%, #180b0699 38%, transparent 53%, #180b0666);
+        background: linear-gradient(180deg, transparent 20%, #180b0690 26%, #180b0670 33%, transparent 40%);
       }
     }
     @media (prefers-reduced-motion: reduce) {
