@@ -42,26 +42,13 @@
       overflow: hidden;
       background: #21140f;
     }
-    .camera, .scene, .approach, .stage::after { position: absolute; inset: 0; }
+    .camera, .scene, .stage::after { position: absolute; inset: 0; }
     .camera {
-      transform: scale(var(--close-scale, 1));
+      transform: scale(1);
       transform-origin: 72% 61%;
+      transition: transform 900ms cubic-bezier(.22,.7,.25,1);
     }
-    .approach {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: 66% center;
-      transform-origin: 72% 61%;
-    }
-    .approach.middle {
-      opacity: var(--middle-opacity, 1);
-      transform: scale(var(--middle-scale, 1));
-    }
-    .approach.wide {
-      opacity: var(--wide-opacity, 1);
-      transform: scale(var(--wide-scale, 1));
-    }
+    body.in-menu .camera { transform: scale(1.13); }
     .scene { width: 100%; height: 100%; object-fit: cover; object-position: 66% center; }
     .scene.variant { opacity: 0; transition: opacity 560ms ease; }
     .scene.variant.active { opacity: 1; }
@@ -125,7 +112,7 @@
     .choices a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
     @media (max-width: 720px) and (orientation: portrait) {
-      .scene, .approach { object-position: 72% center; }
+      .scene { object-position: 72% center; }
       .stage::after { background: linear-gradient(180deg, #180b0677, transparent 25%, transparent 43%, #180b06e8 89%); }
       .brand strong { font-size: 33px; }
       .brand span { font-size: 10px; }
@@ -135,21 +122,18 @@
       .order li { padding-bottom: max(104px, 16svh); }
     }
     @media (prefers-reduced-motion: reduce) {
-      .scene.variant, .choices { transition: none; }
-      .camera, .approach { transform: none; }
+      .camera, .scene.variant, .choices { transition: none; }
     }
   </style>
 </head>
 <body>
   <div class="stage" aria-hidden="true">
     <div class="camera">
-      <img class="scene" src="pizza-assets/scene-margherita.webp" alt="">
+      <img class="scene" src="pizza-assets/scene-margherita.webp" alt="" fetchpriority="high">
       <img class="scene variant" src="pizza-assets/scene-diavola.webp" alt="">
       <img class="scene variant" src="pizza-assets/scene-funghi.webp" alt="">
       <img class="scene variant" src="pizza-assets/scene-prosciutto.webp" alt="">
     </div>
-    <img class="approach middle" src="pizza-assets/camera-middle.webp" alt="">
-    <img class="approach wide" src="pizza-assets/camera-wide.webp" alt="" fetchpriority="high">
   </div>
   <header>
     <a class="brand" href="./index.html" aria-label="EM Recipes Startseite"><strong>EM</strong><span>RECIPES</span></a>
@@ -196,33 +180,12 @@
     const selectors = Array.from(document.querySelectorAll('.choices a'));
     const pictures = Array.from(document.querySelectorAll('.scene'));
     const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
-    const stage = document.querySelector('.stage');
-    const intro = document.querySelector('.intro');
     let frame = 0;
-    let selected;
-
-    function smoothStep(value) {
-      const t = Math.max(0, Math.min(1, value));
-      return t * t * (3 - 2 * t);
-    }
-
-    function updateCamera(progress) {
-      stage.style.setProperty('--wide-opacity', 1 - smoothStep((progress - .10) / .42));
-      stage.style.setProperty('--middle-opacity', 1 - smoothStep((progress - .47) / .50));
-      stage.style.setProperty('--wide-scale', 1 + .21 * Math.min(progress / .52, 1));
-      stage.style.setProperty('--middle-scale', 1 + .25 * smoothStep((progress - .25) / .72));
-      stage.style.setProperty('--close-scale', 1 + .13 * smoothStep((progress - .57) / .43));
-    }
 
     function updateScene() {
       frame = 0;
       const marker = document.documentElement.clientHeight / 2;
-      const firstTop = entries[0].getBoundingClientRect().top;
-      const progress = Math.max(0, Math.min(1, 1 - firstTop / intro.offsetHeight));
-      updateCamera(reducedMotion.matches ? Number(firstTop <= marker) : progress);
       const index = entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker);
-      if (index === selected) return;
-      selected = index;
       document.body.classList.toggle('in-menu', index >= 0);
       pictures.forEach((picture, position) => picture.classList.toggle('active', position === index));
       selectors.forEach((link, position) => link.setAttribute('aria-current', String(position === index)));
@@ -244,7 +207,6 @@
     addEventListener('scroll', scheduleUpdate, { passive: true });
     addEventListener('resize', scheduleUpdate);
     addEventListener('pageshow', scheduleUpdate);
-    reducedMotion.addEventListener('change', scheduleUpdate);
     updateScene();
   </script>
 </body>
