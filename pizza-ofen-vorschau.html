@@ -136,6 +136,19 @@
       animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
     }
     .choices a { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; }
+    .choices button {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      border-radius: 50%;
+      background: #fff1;
+    }
+    .choices button:hover:not(:disabled) { background: #fff3; }
+    .choices button:disabled { opacity: .35; cursor: default; }
+    @media (max-width: 420px) { .choices { gap: 4px; } }
     .choices a::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
     .choices a[aria-current="true"] { color: #28150d; background: var(--accent); }
     @media (max-width: 720px) and (orientation: portrait) {
@@ -214,6 +227,8 @@
     <a href="#diavola" aria-label="Diavola"></a>
     <a href="#funghi" aria-label="Funghi"></a>
     <a href="#prosciutto" aria-label="Prosciutto e Rucola"></a>
+    <button type="button" class="previous-pizza" aria-label="Vorherige Pizza" disabled>↑</button>
+    <button type="button" class="next-pizza" aria-label="Nächste Pizza">↓</button>
   </nav>
   <script>
     const entries = Array.from(document.querySelectorAll('.order li'));
@@ -227,6 +242,9 @@
     const choices = document.querySelector('.choices');
     const home = document.querySelector('a.back');
     const kitchenBack = document.querySelector('.kitchen-back');
+    const previousPizza = document.querySelector('.previous-pizza');
+    const nextPizza = document.querySelector('.next-pizza');
+    let activeIndex = 0;
     let frame = 0;
 
     function alignOvenZoom() {
@@ -254,7 +272,10 @@
       frame = 0;
       if (menu.hidden) return;
       const marker = document.documentElement.clientHeight / 2;
-      const index = entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker);
+      const index = Math.max(0, entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker));
+      activeIndex = index;
+      previousPizza.disabled = index === 0;
+      nextPizza.disabled = index === entries.length - 1;
       pictures.forEach((picture, position) => picture.classList.toggle('active', position === index));
       selectors.forEach((link, position) => link.setAttribute('aria-current', String(position === index)));
     }
@@ -263,8 +284,8 @@
       if (!frame) frame = requestAnimationFrame(updateScene);
     }
 
-    function reveal(event, index) {
-      event.preventDefault();
+    function reveal(index) {
+      if (index < 0 || index >= entries.length) return;
       const entry = entries[index];
       entry.querySelector('h2').focus({ preventScroll: true });
       entry.scrollIntoView({ block: 'start', behavior: reducedMotion.matches ? 'instant' : 'smooth' });
@@ -282,7 +303,12 @@
 
     discover.addEventListener('click', () => showMenu(true));
     kitchenBack.addEventListener('click', () => showMenu(false));
-    selectors.forEach((link, index) => link.addEventListener('click', event => reveal(event, index)));
+    selectors.forEach((link, index) => link.addEventListener('click', event => {
+      event.preventDefault();
+      reveal(index);
+    }));
+    previousPizza.addEventListener('click', () => reveal(activeIndex - 1));
+    nextPizza.addEventListener('click', () => reveal(activeIndex + 1));
     addEventListener('scroll', scheduleUpdate, { passive: true });
     addEventListener('resize', () => {
       alignOvenZoom();
