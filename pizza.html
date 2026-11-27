@@ -138,6 +138,7 @@
     }
     .choices .pizza-dots, .choices button { pointer-events: auto; }
     .choices .previous-pizza { margin-inline-start: auto; }
+    @media (min-width: 1101px) { .choices { right: 33.333vw; } }
     .pizza-dots {
       display: flex;
       gap: 4px;
@@ -179,10 +180,7 @@
       }
       body.in-menu .camera { transform: scale(1.02); }
       .scene { object-position: 74% center; }
-      body:not(.in-menu) .stage::after {
-        background: linear-gradient(180deg, #180b0666, transparent 34%, #180b06e8 91%);
-      }
-      .stage::after { background: linear-gradient(180deg, #180b0677, transparent 25%, transparent 43%, #180b06e8 89%); }
+      body:not(.in-menu) .stage::after { background: none; }
       .choices { gap: 6px; }
       .choices .pizza-dots { padding: 2px 4px; }
       .choices .pizza-dots a { width: clamp(16px, 5.2vw, 24px); height: 28px; }
@@ -200,13 +198,14 @@
       .order h2 { font-size: clamp(36px, 10vw, 56px); }
       .order .description { width: min(88vw, 28rem); }
       body.in-menu .stage::after {
-        background: linear-gradient(180deg, transparent 20%, #180b0690 26%, #180b0670 33%, transparent 40%);
+        background: linear-gradient(180deg, transparent 20%, #180b064d 26%, #180b0638 33%, transparent 40%);
+        animation: oven-copy-in 320ms ease var(--oven-zoom-duration) backwards;
       }
     }
     @media (prefers-reduced-motion: reduce) {
       .camera, .scene.variant, .kitchen, body.in-menu .kitchen { transition: none; }
       body.in-menu .kitchen { transform: none; }
-      .in-menu .description, .in-menu .choices { animation: none; }
+      .in-menu .description, .in-menu .choices, body.in-menu .stage::after { animation: none; }
     }
   </style>
 </head>
