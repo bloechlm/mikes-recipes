@@ -390,8 +390,8 @@
       document.documentElement.classList.remove('pizza-scrolling');
     }
 
-    function reveal(index, focus = true, direction = 1) {
-      if (!direction || index < 0 || index >= entries.length) return;
+    function reveal(index, focus = true) {
+      if (index < 0 || index >= entries.length) return;
       stopMenuScroll();
       const entry = entries[index];
       if (focus) entry.querySelector('h2').focus({ preventScroll: true });
@@ -412,7 +412,7 @@
         else {
           const direction = queuedDirection;
           stopMenuScroll();
-          reveal(index + direction, false, direction);
+          if (direction) reveal(index + direction, false);
         }
       }
       scrollAnimation = requestAnimationFrame(move);
