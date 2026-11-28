@@ -330,6 +330,7 @@
     let frame = 0;
     let scrollAnimation = 0;
     let lastWheelEvent = -Infinity;
+    let queuedDirection = 0;
 
     function alignOvenZoom() {
       const width = kitchen.clientWidth;
@@ -357,17 +358,25 @@
       if (menu.hidden) return;
       const marker = document.documentElement.clientHeight / 2;
       const index = Math.max(0, entries.findLastIndex(entry => entry.getBoundingClientRect().top <= marker));
-      activeIndex = index;
-      previousPizza.disabled = index === 0;
-      nextPizza.disabled = index === entries.length - 1;
+      const previousIndex = activeIndex;
+      const previousPicture = pictureIndex;
       const scrollTop = window.scrollY;
       if (scrollTop !== lastScrollTop) {
         const imageMarker = marker * (scrollTop > lastScrollTop ? 1.28 : .72);
         pictureIndex = Math.max(0, entries.findLastIndex(entry => entry.getBoundingClientRect().top <= imageMarker));
       }
       lastScrollTop = scrollTop;
-      pictures.forEach((picture, position) => picture.classList.toggle('active', position === pictureIndex));
-      selectors.forEach((link, position) => link.setAttribute('aria-current', String(position === index)));
+      if (previousPicture !== pictureIndex) {
+        pictures[previousPicture].classList.remove('active');
+        pictures[pictureIndex].classList.add('active');
+      }
+      if (previousIndex !== index) {
+        selectors[previousIndex].setAttribute('aria-current', 'false');
+        selectors[index].setAttribute('aria-current', 'true');
+        previousPizza.disabled = index === 0;
+        nextPizza.disabled = index === entries.length - 1;
+        activeIndex = index;
+      }
     }
 
     function scheduleUpdate() {
@@ -377,11 +386,12 @@
     function stopMenuScroll() {
       cancelAnimationFrame(scrollAnimation);
       scrollAnimation = 0;
+      queuedDirection = 0;
       document.documentElement.classList.remove('pizza-scrolling');
     }
 
-    function reveal(index, focus = true) {
-      if (index < 0 || index >= entries.length) return;
+    function reveal(index, focus = true, direction = 1) {
+      if (!direction || index < 0 || index >= entries.length) return;
       stopMenuScroll();
       const entry = entries[index];
       if (focus) entry.querySelector('h2').focus({ preventScroll: true });
@@ -399,7 +409,11 @@
         const eased = progress * progress * (3 - 2 * progress);
         window.scrollTo({ top: start + distance * eased, behavior: 'instant' });
         if (progress < 1) scrollAnimation = requestAnimationFrame(move);
-        else stopMenuScroll();
+        else {
+          const direction = queuedDirection;
+          stopMenuScroll();
+          reveal(index + direction, false, direction);
+        }
       }
       scrollAnimation = requestAnimationFrame(move);
     }
@@ -411,12 +425,16 @@
       const now = performance.now();
       const repeat = now - lastWheelEvent < 160;
       lastWheelEvent = now;
-      if (!repeat && !scrollAnimation) reveal(activeIndex + Math.sign(event.deltaY), false);
+      if (repeat) return;
+      const direction = Math.sign(event.deltaY);
+      if (scrollAnimation) queuedDirection = direction;
+      else reveal(activeIndex + direction, false);
     }
 
     function showMenu(open) {
       stopMenuScroll();
       lastWheelEvent = -Infinity;
+      pictures[pictureIndex].classList.remove('active');
       pictureIndex = 0;
       lastScrollTop = 0;
       document.body.classList.toggle('in-menu', open);
